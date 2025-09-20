@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 
 
 const apiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_BASE_URL,
+  baseURL: process.env.NEXT_PUBLIC_AUTH_SERVICE_URL,
   withCredentials: true,
 });
 
