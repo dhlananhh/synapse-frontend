@@ -18,6 +18,10 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface RefreshTokenPayload {
+  refresh_token: string;
+}
+
 export interface VerifyEmailPayload {
   email: string;
   code: string;
@@ -42,7 +46,6 @@ export interface SetNewPasswordPayload {
 }
 
 export interface ChangePasswordPayload {
-  email: string;
   current_password: string;
   new_password: string;
 }
@@ -80,8 +83,11 @@ export interface LoginResponse {
   user: AuthUser;
 }
 
-export interface RefreshTokenResponse extends Omit<LoginResponse, 'refresh_token'> {
-  refresh_token: string;
+export interface RefreshTokenResponse {
+  access_token: string;
+  token_type: "Bearer";
+  expires_in: number;
+  user: AuthUser;
 }
 
 export interface VerifyResetCodeResponse {
