@@ -2,15 +2,18 @@
 
 
 import React, { useState } from "react";
-import RequestPasswordResetForm from "@/components/features/auth/RequestPasswordResetForm";
-import VerifyResetCodeForm from "@/components/features/auth/VerifyResetCodeForm";
-import SetNewPasswordForm from "@/components/features/auth/SetNewPasswordForm";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { RequestPasswordResetForm } from "@/components/features/auth/RequestPasswordResetForm";
+import { VerifyResetCodeForm } from "@/components/features/auth/VerifyResetCodeForm";
+import { SetNewPasswordForm } from "@/components/features/auth/SetNewPasswordForm";
 
 
-type Step = "request" | "verify" | "set-new";
+type Step = "request" | "verify" | "set_new_password";
 
 
 export default function ResetPasswordPage() {
+  const router = useRouter();
   const [ step, setStep ] = useState<Step>("request");
   const [ email, setEmail ] = useState("");
   const [ resetToken, setResetToken ] = useState("");
@@ -20,31 +23,55 @@ export default function ResetPasswordPage() {
     setStep("verify");
   };
 
-  const handleVerifySuccess = (token: string) => {
-    setResetToken(token);
-    setStep("set-new");
-  }
+  const handleVerifySuccess = (verifiedToken: string) => {
+    setResetToken(verifiedToken);
+    setStep("set_new_password");
+  };
 
-  return (
-    <div className="container flex h-screen w-screen flex-col items-center justify-center">
-      {
-        step === "request" && (
-          <RequestPasswordResetForm onSuccess={ handleRequestSuccess } />
+  const handleResetSuccess = () => {
+    toast.success("Password has been reset successfully! Please log in.");
+    router.push("/login");
+  };
+
+  const renderStep = () => {
+    switch (step) {
+      case "request":
+        return (
+          <RequestPasswordResetForm
+            onSuccess={ handleRequestSuccess }
+          />
         )
-      }
-      {
-        step === "verify" && (
+
+      case "verify":
+        return (
           <VerifyResetCodeForm
             email={ email }
             onSuccess={ handleVerifySuccess }
           />
         )
-      }
-      {
-        step === "set-new" && (
-          <SetNewPasswordForm reset_token={ resetToken } />
+
+      case "set_new_password":
+        return (
+          <SetNewPasswordForm
+            resetToken={ resetToken }
+            onSuccess={ handleResetSuccess }
+          />
         )
-      }
+
+      default:
+        return (
+          <RequestPasswordResetForm
+            onSuccess={ handleRequestSuccess }
+          />
+        )
+    }
+  };
+
+  return (
+    <div className="container flex h-screen w-screen flex-col items-center justify-center">
+      <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[400px]">
+        { renderStep() }
+      </div>
     </div>
   );
 }
