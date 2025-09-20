@@ -59,12 +59,4 @@ export const authService = {
   setNewPassword: (payload: SetNewPasswordPayload): Promise<GenericMessageResponse> => {
     return apiClient.post(`${AUTH_SERVICE_PATH}/set-new-password`, payload).then(res => res.data);
   },
-
-  // We add a function to get the current user profile, useful for session checking.
-  // Assuming you will have a 'user-service' with a '/me' or '/profile' endpoint later.
-  // For now, we can use the refresh token endpoint as a way to check session validity.
-  getProfile: (): Promise<LoginResponse> => {
-    // This will either succeed and refresh tokens, or fail if refresh token is invalid
-    return apiClient.post(`${AUTH_SERVICE_PATH}/refresh`).then(res => res.data);
-  }
 };
