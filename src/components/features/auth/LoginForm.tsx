@@ -5,10 +5,10 @@ import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { useAuth } from "@/context/AuthContext";
 import { authService } from "@/modules/services/auth-service";
 import { LoginPayload } from "@/types/services/auth";
 
@@ -23,7 +23,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { BrainCircuit } from "lucide-react";
-import { toast } from "sonner";
 
 
 const loginSchema = z.object({
@@ -100,7 +99,7 @@ export default function LoginForm() {
                 className="ml-auto inline-block text-sm text-muted-foreground hover:text-primary hover:underline"
                 tabIndex={ -1 }
               >
-                Forgot your password?
+                Forgot your password? Reset now!
               </Link>
             </div>
 
