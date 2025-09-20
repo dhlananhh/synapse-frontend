@@ -3,12 +3,23 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+
+import { authService } from "@/modules/services/auth-service";
+import { toast } from "sonner";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -17,18 +28,7 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import { authService } from "@/modules/services/auth-service";
-import {
-  BrainCircuit,
-  Loader2
-} from "lucide-react";
+import { BrainCircuit } from "lucide-react";
 
 
 const formSchema = z.object({
@@ -36,12 +36,12 @@ const formSchema = z.object({
 });
 
 
-interface RequestPasswordResetFormProps {
+interface RequestResetFormProps {
   onSuccess: (email: string) => void;
 }
 
 
-export default function RequestPasswordResetForm({ onSuccess }: RequestPasswordResetFormProps) {
+export function RequestPasswordResetForm({ onSuccess }: RequestResetFormProps) {
   const [ isLoading, setIsLoading ] = useState(false);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,14 +51,14 @@ export default function RequestPasswordResetForm({ onSuccess }: RequestPasswordR
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      await authService.requestPasswordReset(values);
+      await authService.requestPasswordReset({ email: values.email });
       toast.success("Password reset code sent!", {
-        description: `Check your inbox at ${values.email}.`
+        description: "Please check your email inbox."
       });
       onSuccess(values.email);
     } catch (error: any) {
-      toast.error("Failed to send code", {
-        description: error.response?.data?.message || "Please try again later."
+      toast.error("Failed to send reset code", {
+        description: error.response?.data?.message || error.message
       });
     } finally {
       setIsLoading(false);
@@ -67,17 +67,16 @@ export default function RequestPasswordResetForm({ onSuccess }: RequestPasswordR
 
   return (
     <Card className="mx-auto max-w-lg w-full">
-      <CardHeader className="items-center text-center">
+      <CardHeader className="items-center">
         <Link
           href="/"
-          className="flex flex-col items-center gap-2 mb-4"
+          className="flex flex-col items-center gap-2 mb-2"
         >
           <BrainCircuit className="h-10 w-10 text-primary" />
           <CardTitle className="text-2xl">Synapse</CardTitle>
         </Link>
-
         <CardTitle className="text-2xl mt-5 uppercase">
-          Reset Password
+          Reset Your Password
         </CardTitle>
         <CardDescription>
           Enter your email to receive a password reset code.
@@ -101,7 +100,7 @@ export default function RequestPasswordResetForm({ onSuccess }: RequestPasswordR
                     <FormLabel>Email</FormLabel>
                     <FormControl>
                       <Input
-                        placeholder="name@example.com"
+                        placeholder="Enter your email"
                         { ...field }
                       />
                     </FormControl>
@@ -115,11 +114,7 @@ export default function RequestPasswordResetForm({ onSuccess }: RequestPasswordR
               className="w-full"
               disabled={ isLoading }
             >
-              {
-                isLoading
-                  ? <Loader2 className="animate-spin" />
-                  : "Send Reset Code"
-              }
+              { isLoading ? "Sending..." : "Send Code" }
             </Button>
           </form>
         </Form>
