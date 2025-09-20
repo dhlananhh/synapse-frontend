@@ -3,13 +3,23 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+
+import { authService } from "@/modules/services/auth-service";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -18,18 +28,7 @@ import {
   FormLabel,
   FormMessage
 } from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import { authService } from "@/modules/services/auth-service";
-import {
-  BrainCircuit,
-  Loader2
-} from "lucide-react";
+import { BrainCircuit } from "lucide-react";
 
 
 const formSchema = z.object({
@@ -38,13 +37,13 @@ const formSchema = z.object({
 
 
 interface SetNewPasswordFormProps {
-  reset_token: string;
+  resetToken: string;
+  onSuccess: () => void;
 }
 
 
-export default function SetNewPasswordForm({ reset_token }: SetNewPasswordFormProps) {
+export function SetNewPasswordForm({ resetToken, onSuccess }: SetNewPasswordFormProps) {
   const [ isLoading, setIsLoading ] = useState(false);
-  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { new_password: "" },
@@ -53,14 +52,12 @@ export default function SetNewPasswordForm({ reset_token }: SetNewPasswordFormPr
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setIsLoading(true);
     try {
-      await authService.setNewPassword({ reset_token, new_password: values.new_password });
-      toast.success("Password updated successfully!", {
-        description: "You can now log in with your new password."
-      });
-      router.push("/login");
+      await authService.setNewPassword({ reset_token: resetToken, new_password: values.new_password });
+      toast.success("Password updated successfully!");
+      onSuccess();
     } catch (error: any) {
-      toast.error("Failed to update password", {
-        description: error.response?.data?.message || "The session may have expired. Please try again."
+      toast.error("Failed to set new password", {
+        description: error.response?.data?.message || "Your reset token might be expired."
       });
     } finally {
       setIsLoading(false);
@@ -69,23 +66,21 @@ export default function SetNewPasswordForm({ reset_token }: SetNewPasswordFormPr
 
   return (
     <Card className="mx-auto max-w-lg w-full">
-      <CardHeader className="items-center text-center">
+      <CardHeader className="items-center">
         <Link
           href="/"
-          className="flex flex-col items-center gap-2 mb-4"
+          className="flex flex-col items-center gap-2 mb-2"
         >
           <BrainCircuit className="h-10 w-10 text-primary" />
           <CardTitle className="text-2xl">Synapse</CardTitle>
         </Link>
-
-        <CardTitle className="text-2xl mt-5 uppercase">
-          Set New Password
+        <CardTitle className="mt-5 text-2xl uppercase">
+          Set a New Password
         </CardTitle>
         <CardDescription>
-          Enter your new password below.
+          Choose a new, strong password for your account.
         </CardDescription>
       </CardHeader>
-
       <CardContent>
         <Form
           { ...form }
@@ -97,34 +92,26 @@ export default function SetNewPasswordForm({ reset_token }: SetNewPasswordFormPr
             <FormField
               control={ form.control }
               name="new_password"
-              render={
-                ({ field }) => (
-                  <FormItem>
-                    <FormLabel>New Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        placeholder="••••••••"
-                        { ...field }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )
-              }
+              render={ ({ field }) => (
+                <FormItem>
+                  <FormLabel>Set New Password</FormLabel>
+                  <FormControl>
+                    <Input
+                      type="password"
+                      placeholder="Enter your new password"
+                      { ...field }
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              ) }
             />
-
             <Button
               type="submit"
               className="w-full"
               disabled={ isLoading }
             >
-
-              {
-                isLoading
-                  ? <Loader2 className="animate-spin" />
-                  : "Set New Password"
-              }
+              { isLoading ? "Saving..." : "Set New Password" }
             </Button>
           </form>
         </Form>
