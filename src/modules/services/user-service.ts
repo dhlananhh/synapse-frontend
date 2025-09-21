@@ -1,67 +1,74 @@
-import axios from "axios";
 import apiClient from "@/libs/apiClient";
 import {
-  CreateUserProfilePayload,
-  Follower,
-  Following,
-  UpdateUserPreferencesPayload,
-  UpdateUserProfilePayload,
+  UserProfile,
   UserPreferences,
-  UserProfile
+  UpdateUserProfilePayload,
+  UpdateUserPreferencesPayload,
+  GetFollowersResponse,
+  GetFollowingResponse,
+  FollowResponse
 } from "@/types/services/user";
 
 
-const userApiClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_USER_SERVICE_URL,
-  withCredentials: true,
-});
-
-
-const USER_SERVICE_PATH = "/users";
+const API_BASE_URL = process.env.NEXT_PUBLIC_USER_API_BASE_URL;
 
 
 export const userService = {
-  createUserProfile: (payload: CreateUserProfilePayload): Promise<UserProfile> => {
-    return apiClient.post(USER_SERVICE_PATH, payload).then(res => res.data);
-  },
-
+  // === Profile ===
   getUserProfile: (userId: string): Promise<UserProfile> => {
-    return userApiClient.get(`${USER_SERVICE_PATH}/${userId}`).then(res => res.data);
+    return apiClient.get(`${API_BASE_URL}/users/${userId}`).then(res => res.data);
   },
 
   updateUserProfile: (userId: string, payload: UpdateUserProfilePayload): Promise<UserProfile> => {
-    return userApiClient.patch(`${USER_SERVICE_PATH}/${userId}`, payload).then(res => res.data);
+    return apiClient.patch(`${API_BASE_URL}/users/${userId}`, payload).then(res => res.data);
   },
 
-  togglePrivacy: (userId: string): Promise<{ id: string; isPrivate: boolean; }> => {
-    return userApiClient.patch(`${USER_SERVICE_PATH}/${userId}/privacy`).then(res => res.data);
+  togglePrivacy: (userId: string): Promise<{ id: string; isPrivate: boolean }> => {
+    return apiClient.patch(`${API_BASE_URL}/users/${userId}/privacy`).then(res => res.data);
   },
 
+  // === Preferences ===
   getUserPreferences: (userId: string): Promise<UserPreferences> => {
-    return userApiClient.get(`${USER_SERVICE_PATH}/${userId}/preferences`).then(res => res.data);
+    return apiClient.get(`${API_BASE_URL}/users/${userId}/preferences`).then(res => res.data);
   },
 
   updateUserPreferences: (userId: string, payload: UpdateUserPreferencesPayload): Promise<UserPreferences> => {
-    return userApiClient.patch(`${USER_SERVICE_PATH}/${userId}/preferences`, payload).then(res => res.data);
+    return apiClient.patch(`${API_BASE_URL}/users/${userId}/preferences`, payload).then(res => res.data);
   },
 
-  followUser: (userIdToFollow: string): Promise<any> => {
-    return userApiClient.post(`${USER_SERVICE_PATH}/${userIdToFollow}/follow`).then(res => res.data);
+  // === Social ===
+  followUser: (userIdToFollow: string): Promise<FollowResponse> => {
+    return apiClient.post(`${API_BASE_URL}/users/${userIdToFollow}/follow`).then(res => res.data);
   },
 
   unfollowUser: (userIdToUnfollow: string): Promise<void> => {
-    return userApiClient.delete(`${USER_SERVICE_PATH}/${userIdToUnfollow}/follow`).then(res => res.data);
+    return apiClient.delete(`${API_BASE_URL}/users/${userIdToUnfollow}/follow`).then(res => res.data);
   },
 
-  getFollowers: (userId: string, page = 1, limit = 20): Promise<Follower[]> => {
-    return userApiClient.get(`${USER_SERVICE_PATH}/${userId}/followers`, {
+  acceptFollowRequest: (userIdToAccept: string): Promise<{ message: string }> => {
+    return apiClient.patch(`${API_BASE_URL}/users/${userIdToAccept}/follow/accept`).then(res => res.data);
+  },
+
+  rejectFollowRequest: (userIdToReject: string): Promise<void> => {
+    return apiClient.patch(`${API_BASE_URL}/users/${userIdToReject}/follow/reject`).then(res => res.data);
+  },
+
+  getFollowers: (userId: string, page = 1, limit = 20): Promise<GetFollowersResponse[]> => {
+    return apiClient.get(`${API_BASE_URL}/users/${userId}/followers`, {
       params: { page, limit }
     }).then(res => res.data);
   },
 
-  getFollowing: (userId: string, page = 1, limit = 20): Promise<Following[]> => {
-    return userApiClient.get(`${USER_SERVICE_PATH}/${userId}/following`, {
+  getFollowing: (userId: string, page = 1, limit = 20): Promise<GetFollowingResponse[]> => {
+    return apiClient.get(`${API_BASE_URL}/users/${userId}/following`, {
       params: { page, limit }
+    }).then(res => res.data);
+  },
+
+  // === Search ===
+  searchUsers: (query: string, page = 1, limit = 10): Promise<UserProfile[]> => {
+    return apiClient.get(`${API_BASE_URL}/users/search`, {
+      params: { name: query, page, limit }
     }).then(res => res.data);
   }
 };
