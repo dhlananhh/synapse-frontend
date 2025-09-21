@@ -1,7 +1,3 @@
-export type Gender = "MALE" | "FEMALE";
-export type Theme = "light" | "dark";
-
-
 // =================================
 // Payloads for API Requests
 // =================================
@@ -18,17 +14,17 @@ export interface UpdateUserProfilePayload {
   username?: string;
   firstName?: string;
   lastName?: string;
-  gender?: Gender;
+  gender?: "MALE" | "FEMALE";
   bio?: string;
   location?: string;
-  avatarUrl?: string;
+  avatarUrl?: string | null;
 }
 
 export interface UpdateUserPreferencesPayload {
-  theme?: Theme;
+  theme?: "light" | "dark";
   language?: string;
   extras?: {
-    notifications?: boolean;
+    notifications: boolean;
   };
 }
 
@@ -37,13 +33,15 @@ export interface UpdateUserPreferencesPayload {
 // Responses from API
 // =================================
 
+export type UserGender = "MALE" | "FEMALE";
+
 export interface UserProfile {
   id: string;
   accountId: string;
   username: string;
   firstName: string;
   lastName: string;
-  gender: Gender;
+  gender: UserGender;
   bio: string | null;
   location: string | null;
   avatarUrl: string | null;
@@ -52,35 +50,38 @@ export interface UserProfile {
   updatedAt: string;
   _count?: {
     followers: number;
-  }
+    following: number;
+  };
 }
 
 export interface UserPreferences {
-  theme: Theme;
+  theme: "light" | "dark";
   language: string;
   extras: {
     notifications: boolean;
   } | null;
 }
 
-export interface Follower {
-  follower: {
-    id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    avatarUrl: string | null;
-  };
+export interface FollowerInfo {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+}
+
+export interface GetFollowersResponse {
+  follower: FollowerInfo,
   createdAt: string;
 }
 
-export interface Following {
-  following: {
-    id: string;
-    username: string;
-    firstName: string;
-    lastName: string;
-    avatarUrl: string | null;
-  };
+
+export interface GetFollowingResponse {
+  following: FollowerInfo,
   createdAt: string;
+}
+
+export interface FollowResponse {
+  message: string;
+  status: "PENDING" | "ACCEPTED";
 }
