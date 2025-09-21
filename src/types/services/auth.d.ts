@@ -6,9 +6,9 @@
 export interface RegisterPayload {
   firstName: string;
   lastName: string;
-  username: string;
   email: string;
   password: string;
+  username: string;
   birthday: Date;
   gender: "MALE" | "FEMALE";
 }
@@ -16,10 +16,6 @@ export interface RegisterPayload {
 export interface LoginPayload {
   email: string;
   password: string;
-}
-
-export interface RefreshTokenPayload {
-  refresh_token: string;
 }
 
 export interface VerifyEmailPayload {
@@ -46,6 +42,7 @@ export interface SetNewPasswordPayload {
 }
 
 export interface ChangePasswordPayload {
+  email: string;
   current_password: string;
   new_password: string;
 }
