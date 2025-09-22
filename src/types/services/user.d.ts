@@ -41,7 +41,7 @@ export interface UserProfile {
   username: string;
   firstName: string;
   lastName: string;
-  gender: UserGender;
+  gender: "MALE" | "FEMALE";
   bio: string | null;
   location: string | null;
   avatarUrl: string | null;
@@ -59,10 +59,21 @@ export interface UserPreferences {
   language: string;
   extras: {
     notifications: boolean;
-  } | null;
+  };
 }
 
-export interface FollowerInfo {
+export interface SearchUserResult {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
+  _count: {
+    followers: number;
+  };
+}
+
+export interface FollowInfo {
   id: string;
   username: string;
   firstName: string;
@@ -70,15 +81,19 @@ export interface FollowerInfo {
   avatarUrl: string | null;
 }
 
-export interface GetFollowersResponse {
-  follower: FollowerInfo,
+export interface FollowerResponse {
+  follower: FollowInfo;
   createdAt: string;
 }
 
-
-export interface GetFollowingResponse {
-  following: FollowerInfo,
+export interface FollowingResponse {
+  following: FollowInfo;
   createdAt: string;
+}
+
+export interface TogglePrivacyResponse {
+  id: string;
+  isPrivate: boolean;
 }
 
 export interface FollowResponse {
