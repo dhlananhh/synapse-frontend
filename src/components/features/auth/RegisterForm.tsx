@@ -4,6 +4,7 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -103,6 +104,9 @@ export default function RegisterForm() {
             Synapse
           </CardTitle>
         </Link>
+        <CardTitle className="mt-5 text-2xl uppercase">
+          Register
+        </CardTitle>
         <CardDescription>
           Create your account to start connecting
         </CardDescription>
@@ -114,7 +118,7 @@ export default function RegisterForm() {
         >
           <form
             onSubmit={ form.handleSubmit(onSubmit) }
-            className="space-y-4"
+            className="space-y-6"
           >
             <div className="grid grid-cols-2 gap-4">
               {/* First Name */ }
