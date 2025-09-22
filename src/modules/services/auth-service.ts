@@ -1,62 +1,72 @@
-import apiClient from "@/libs/apiClient";
+import { authApiClient } from "@/libs/apiClient";
 import {
-  RegisterPayload,
-  RegisterResponse,
-  LoginPayload,
-  LoginResponse,
-  VerifyEmailPayload,
-  ResendVerificationPayload,
-  RequestPasswordResetPayload,
-  VerifyResetCodePayload,
-  VerifyResetCodeResponse,
-  SetNewPasswordPayload,
-  ChangePasswordPayload,
-  RefreshTokenResponse,
+  RegisterPayload, RegisterResponse,
+  LoginPayload, LoginResponse,
+  VerifyEmailPayload, ResendVerificationPayload,
+  RequestPasswordResetPayload, VerifyResetCodePayload,
+  VerifyResetCodeResponse, SetNewPasswordPayload,
+  ChangePasswordPayload, RefreshTokenResponse,
   GenericMessageResponse
 } from "@/types/services/auth";
+import Cookies from "js-cookie";
 
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_AUTH_API_BASE_URL;
+const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://192.168.1.5:4000/api/auth";
+const RESET_TOKEN_KEY = "reset_token";
 
 
 export const authService = {
   register: (payload: RegisterPayload): Promise<RegisterResponse> => {
-    return apiClient.post(`${API_BASE_URL}/register`, payload).then(res => res.data);
+    const { ...apiPayload } = payload;
+    return authApiClient.post(`${AUTH_SERVICE_URL}/register`, apiPayload).then(res => res.data);
   },
 
   login: (payload: LoginPayload): Promise<LoginResponse> => {
-    return apiClient.post(`${API_BASE_URL}/login`, payload).then(res => res.data);
+    return authApiClient.post(`${AUTH_SERVICE_URL}/login`, payload).then(res => res.data);
   },
 
   logout: (): Promise<GenericMessageResponse> => {
-    return apiClient.post(`${API_BASE_URL}/logout`).then(res => res.data);
+    return authApiClient.post(`${AUTH_SERVICE_URL}/logout`).then(res => res.data);
   },
 
   refreshToken: (): Promise<RefreshTokenResponse> => {
-    return apiClient.post(`${API_BASE_URL}/refresh`).then(res => res.data);
+    return authApiClient.post(`${AUTH_SERVICE_URL}/refresh`).then(res => res.data);
   },
 
   changePassword: (payload: ChangePasswordPayload): Promise<GenericMessageResponse> => {
-    return apiClient.post(`${API_BASE_URL}/change-password`, payload).then(res => res.data);
+    return authApiClient.post(`${AUTH_SERVICE_URL}/change-password`, payload).then(res => res.data);
   },
 
   verifyEmail: (payload: VerifyEmailPayload): Promise<GenericMessageResponse> => {
-    return apiClient.post(`${API_BASE_URL}/verify-email`, payload).then(res => res.data);
+    return authApiClient.post(`${AUTH_SERVICE_URL}/verify-email`, payload).then(res => res.data);
   },
 
   resendVerification: (payload: ResendVerificationPayload): Promise<GenericMessageResponse> => {
-    return apiClient.post(`${API_BASE_URL}/resend-verification`, payload).then(res => res.data);
+    return authApiClient.post(`${AUTH_SERVICE_URL}/resend-verification`, payload).then(res => res.data);
   },
 
   requestPasswordReset: (payload: RequestPasswordResetPayload): Promise<GenericMessageResponse> => {
-    return apiClient.post(`${API_BASE_URL}/request-password-reset`, payload).then(res => res.data);
+    return authApiClient.post(`${AUTH_SERVICE_URL}/request-password-reset`, payload).then(res => res.data);
   },
 
-  verifyPasswordResetCode: (payload: VerifyResetCodePayload): Promise<VerifyResetCodeResponse> => {
-    return apiClient.post(`${API_BASE_URL}/verify-reset-code`, payload).then(res => res.data);
+  verifyPasswordResetCode: async (payload: VerifyResetCodePayload): Promise<VerifyResetCodeResponse> => {
+    const response = await authApiClient.post(`${AUTH_SERVICE_URL}/verify-reset-code`, payload);
+    if (response.data.reset_token) {
+      Cookies.set(RESET_TOKEN_KEY, response.data.reset_token, { expires: 1 / 288 }); // Expires in 5 minutes
+    }
+    return response.data;
   },
 
   setNewPassword: (payload: SetNewPasswordPayload): Promise<GenericMessageResponse> => {
-    return apiClient.post(`${API_BASE_URL}/set-new-password`, payload).then(res => res.data);
+    const resetToken = Cookies.get(RESET_TOKEN_KEY);
+    if (!resetToken) {
+      return Promise.reject(new Error("Reset token not found or expired."));
+    }
+    Cookies.remove(RESET_TOKEN_KEY);
+    return authApiClient.post(
+      `${AUTH_SERVICE_URL}/set-new-password`,
+      payload,
+      { headers: { Authorization: `Bearer ${resetToken}` } }
+    ).then(res => res.data);
   },
 };
