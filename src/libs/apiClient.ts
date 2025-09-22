@@ -1,66 +1,83 @@
-import axios from "axios";
+import axios, {
+  AxiosError,
+  InternalAxiosRequestConfig
+} from "axios";
 import { authService } from "@/modules/services/auth-service";
 
 
-const apiClient = axios.create({
-  withCredentials: true,
-});
+const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://192.168.1.5:4000/api/auth";
+const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || "http://192.168.1.5:4002/api/users";
 
+
+const createApiClient = (baseURL: string) => {
+  const apiClient = axios.create({
+    baseURL,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    withCredentials: true,
+  });
+
+  return apiClient;
+};
+
+
+const authApiClient = createApiClient(AUTH_SERVICE_URL);
+const userApiClient = createApiClient(USER_SERVICE_URL);
 
 let isRefreshing = false;
-let failedQueue: Array<{ resolve: (token: string) => void; reject: (error: any) => void }> = [];
+let failedQueue: { resolve: (value: unknown) => void; reject: (reason?: any) => void; }[] = [];
 
 
-const processQueue = (error: any, token: string | null = null) => {
+const processQueue = (error: AxiosError | null) => {
   failedQueue.forEach(prom => {
     if (error) {
       prom.reject(error);
     } else {
-      prom.resolve(token!);
+      prom.resolve(true);
     }
   });
+
   failedQueue = [];
 };
 
 
-apiClient.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  async (error) => {
-    const originalRequest = error.config;
+const setupResponseInterceptor = (client: typeof authApiClient) => {
+  client.interceptors.response.use(
+    (response) => response,
+    async (error: AxiosError) => {
+      const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      if (isRefreshing) {
-        return new Promise(function (resolve, reject) {
-          failedQueue.push({ resolve, reject });
-        }).then(token => {
-          originalRequest.headers[ "Authorization" ] = "Bearer " + token;
-          return axios(originalRequest);
-        }).catch(err => {
-          return Promise.reject(err);
-        });
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        if (isRefreshing) {
+          return new Promise((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          }).then(() => client(originalRequest));
+        }
+
+        originalRequest._retry = true;
+        isRefreshing = true;
+
+        try {
+          await authService.refreshToken();
+          processQueue(null);
+          return client(originalRequest);
+        } catch (refreshError) {
+          processQueue(refreshError as AxiosError);
+          await authService.logout();
+          window.location.href = "/login";
+          return Promise.reject(refreshError);
+        } finally {
+          isRefreshing = false;
+        }
       }
-
-      originalRequest._retry = true;
-      isRefreshing = true;
-
-      try {
-        const { access_token } = await authService.refreshToken();
-        processQueue(null, access_token);
-        return apiClient(originalRequest);
-      } catch (refreshError) {
-        processQueue(refreshError, null);
-        console.error("Session expired. Please log in again.");
-        window.location.href = "/login";
-        return Promise.reject(refreshError);
-      } finally {
-        isRefreshing = false;
-      }
+      return Promise.reject(error);
     }
+  );
+}
 
-    return Promise.reject(error);
-  }
-);
+setupResponseInterceptor(authApiClient);
+setupResponseInterceptor(userApiClient);
 
-export default apiClient;
+
+export { authApiClient, userApiClient };
