@@ -9,8 +9,8 @@ export interface RegisterPayload {
   email: string;
   password: string;
   username: string;
-  birthday: Date;
   gender: "MALE" | "FEMALE";
+  birthday?: Date;
 }
 
 export interface LoginPayload {
@@ -37,12 +37,10 @@ export interface VerifyResetCodePayload {
 }
 
 export interface SetNewPasswordPayload {
-  reset_token: string;
   new_password: string;
 }
 
 export interface ChangePasswordPayload {
-  email: string;
   current_password: string;
   new_password: string;
 }
