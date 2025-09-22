@@ -1,65 +1,70 @@
 "use client";
 
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { authService } from "@/modules/services/auth-service";
 import { toast } from "sonner";
 
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+import { authService } from "@/modules/services/auth-service";
+
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
+  CardDescription,
+  CardContent,
 } from "@/components/ui/card";
 import {
   Form,
+  FormLabel,
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage
 } from "@/components/ui/form";
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSlot
+} from "@/components/ui/input-otp";
 import { BrainCircuit } from "lucide-react";
 
 
 const formSchema = z.object({
-  code: z.string().min(6, { message: "Code must be 6 digits." }).max(6),
+  code: z.string().min(6, { message: "Your one-time password must be 6 characters." }),
 });
 
 
-interface VerifyResetCodeFormProps {
+interface VerifyCodeFormProps {
   email: string;
-  onSuccess: (resetToken: string) => void;
+  onSuccess: () => void;
 }
 
 
-export function VerifyResetCodeForm({ email, onSuccess }: VerifyResetCodeFormProps) {
-  const [ isLoading, setIsLoading ] = useState(false);
+export function VerifyResetCodeForm({ email, onSuccess }: VerifyCodeFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { code: "" },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
     try {
-      const response = await authService.verifyPasswordResetCode({ email, code: values.code });
-      toast.success("Code verified successfully!");
-      onSuccess(response.reset_token);
-    } catch (error: any) {
-      toast.error("Verification failed", {
-        description: error.response?.data?.message || error.message
+      await authService.verifyPasswordResetCode({ email, code: values.code });
+      toast.success("Code Verified", {
+        description: "You can now set a new password.",
       });
-    } finally {
-      setIsLoading(false);
+      onSuccess();
+    } catch (error: any) {
+      toast.error("Invalid Code", {
+        description:
+          error.response?.data?.message
+          || "The code is incorrect or has expired. Please try again.",
+      });
     }
   };
 
@@ -77,17 +82,17 @@ export function VerifyResetCodeForm({ email, onSuccess }: VerifyResetCodeFormPro
           Enter Verification Code
         </CardTitle>
         <CardDescription>
-          A 6-digit code was sent to <strong>{ email }</strong>. It will expire soon.
+          We&apos;ve sent a 6-digit code to { email }. It expires in 5 minutes.
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <Form
           { ...form }
         >
-
           <form
             onSubmit={ form.handleSubmit(onSubmit) }
-            className="space-y-4"
+            className="space-y-6"
           >
             <FormField
               control={ form.control }
@@ -95,24 +100,36 @@ export function VerifyResetCodeForm({ email, onSuccess }: VerifyResetCodeFormPro
               render={
                 ({ field }) => (
                   <FormItem>
-                    <FormLabel>Verification Code</FormLabel>
+                    <FormLabel>Enter your verification code</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Enter your verification code"
+                      <InputOTP
+                        maxLength={ 6 }
                         { ...field }
-                      />
+                      >
+                        <InputOTPGroup>
+                          <InputOTPSlot index={ 0 } />
+                          <InputOTPSlot index={ 1 } />
+                          <InputOTPSlot index={ 2 } />
+                          <InputOTPSlot index={ 3 } />
+                          <InputOTPSlot index={ 4 } />
+                          <InputOTPSlot index={ 5 } />
+                        </InputOTPGroup>
+                      </InputOTP>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )
               }
             />
+
             <Button
               type="submit"
               className="w-full"
-              disabled={ isLoading }
+              disabled={ form.formState.isSubmitting }
             >
-              { isLoading ? "Verifying..." : "Verify" }
+              {
+                form.formState.isSubmitting ? "Verifying..." : "Verify Code"
+              }
             </Button>
           </form>
         </Form>
