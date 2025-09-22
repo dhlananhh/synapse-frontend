@@ -133,7 +133,9 @@ export default function PostFeed() {
         </div>
       )
     }
-    return <PostFeedSkeleton />;
+    return (
+      <PostFeedSkeleton />
+    )
   };
 
   return (
