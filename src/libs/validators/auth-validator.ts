@@ -33,28 +33,3 @@ export const RegisterFormSchema = z.object({
   }),
 })
 export type TRegisterFormSchema = z.infer<typeof RegisterFormSchema>;
-
-
-// Forgot password schema
-export const ForgotPasswordSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
-});
-export type TForgotPasswordSchema = z.infer<typeof ForgotPasswordSchema>;
-
-export const ResetPasswordSchema = z.object({
-  email: z.string().email(),
-  code: z.string().min(6, "The reset code must be 6 digits."),
-  password: z.string().min(8, "Password must be at least 8 characters long."),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
-  path: [ "confirmPassword" ],
-});
-export type TResetPasswordSchema = z.infer<typeof ResetPasswordSchema>;
-
-
-// Verify code schema
-export const VerifyCodeSchema = z.object({
-  code: z.string().min(6, { message: "Your code must be 6 digits." }),
-});
-export type TVerifyCodeSchema = z.infer<typeof VerifyCodeSchema>;
