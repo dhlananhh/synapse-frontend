@@ -8,9 +8,13 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+
 import { authService } from "@/modules/services/auth-service";
 import { LoginPayload } from "@/types/services/auth";
+import {
+  LoginSchema,
+  TLoginSchema
+} from "@/libs/validators/auth-validator";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -22,23 +26,30 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { BrainCircuit } from "lucide-react";
-
-
-const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
-});
+import {
+  BrainCircuit,
+  Loader2
+} from "lucide-react";
 
 
 export default function LoginForm() {
   const router = useRouter();
+
+  const form = useForm<TLoginSchema>({
+    resolver: zodResolver(LoginSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  })
+
+  const { isSubmitting } = form.formState;
+
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting }
   } = useForm<LoginPayload>({
-    resolver: zodResolver(loginSchema)
+    resolver: zodResolver(LoginSchema)
   });
 
 
@@ -58,6 +69,7 @@ export default function LoginForm() {
     }
   };
 
+
   return (
     <Card className="mx-auto max-w-lg w-full">
       <CardHeader className="items-center">
@@ -68,6 +80,9 @@ export default function LoginForm() {
           <BrainCircuit className="h-10 w-10 text-primary" />
           <CardTitle className="text-2xl">Synapse</CardTitle>
         </Link>
+        <CardTitle className="mt-5 text-2xl uppercase">
+          Log In
+        </CardTitle>
         <CardDescription>
           Enter your email and password below to log in to your account.
         </CardDescription>
@@ -116,7 +131,11 @@ export default function LoginForm() {
             className="w-full"
             disabled={ isSubmitting }
           >
-            { isSubmitting ? "Logging in..." : "Log In" }
+            {
+              isSubmitting
+                ? <Loader2 className="animate-spin" />
+                : "Log In"
+            }
           </Button>
 
           <Button
