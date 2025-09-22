@@ -10,11 +10,13 @@ import React, {
 } from "react";
 import {
   AuthUser,
-  LoginPayload
+  LoginPayload,
+  RegisterPayload
 } from "@/types/services/auth";
 import { UserProfile } from "@/types/services/user";
 import { authService } from "@/modules/services/auth-service";
 import { userService } from "@/modules/services/user-service";
+import { register } from "module";
 
 
 type CurrentUser = AuthUser & UserProfile;
@@ -25,7 +27,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (credentials: LoginPayload) => Promise<void>;
   logout: () => Promise<void>;
-  // You can add register function if needed
+  register: (payload: RegisterPayload) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -65,8 +67,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    await authService.logout();
-    setUser(null);
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setUser(null);
+      window.location.href = "/login";
+    }
+  };
+
+  const register = async (payload: RegisterPayload) => {
+    await authService.register(payload);
   };
 
   const value = {
@@ -74,6 +86,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     isLoading,
     login,
     logout,
+    register
   };
 
   return (
