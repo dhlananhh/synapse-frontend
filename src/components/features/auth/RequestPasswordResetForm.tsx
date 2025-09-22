@@ -1,24 +1,24 @@
 "use client";
 
 
-import React, { useState } from "react";
+import React from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
 import { authService } from "@/modules/services/auth-service";
-import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Card,
-  CardContent,
-  CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
+  CardDescription,
+  CardContent,
 } from "@/components/ui/card";
 import {
   Form,
@@ -36,32 +36,28 @@ const formSchema = z.object({
 });
 
 
-interface RequestResetFormProps {
+interface RequestCodeFormProps {
   onSuccess: (email: string) => void;
 }
 
 
-export function RequestPasswordResetForm({ onSuccess }: RequestResetFormProps) {
-  const [ isLoading, setIsLoading ] = useState(false);
+export function RequestPasswordResetForm({ onSuccess }: RequestCodeFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "" },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsLoading(true);
     try {
       await authService.requestPasswordReset({ email: values.email });
-      toast.success("Password reset code sent!", {
-        description: "Please check your email inbox."
+      toast.success("Code Sent", {
+        description: "A password reset code has been sent to your email."
       });
       onSuccess(values.email);
-    } catch (error: any) {
-      toast.error("Failed to send reset code", {
-        description: error.response?.data?.message || error.message
+    } catch (error) {
+      toast.error("Error", {
+        description: "Failed to send reset code. Please check the email and try again.",
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -75,11 +71,12 @@ export function RequestPasswordResetForm({ onSuccess }: RequestResetFormProps) {
           <BrainCircuit className="h-10 w-10 text-primary" />
           <CardTitle className="text-2xl">Synapse</CardTitle>
         </Link>
-        <CardTitle className="text-2xl mt-5 uppercase">
+
+        <CardTitle className="mt-5 text-2xl uppercase">
           Reset Your Password
         </CardTitle>
         <CardDescription>
-          Enter your email to receive a password reset code.
+          Enter your email to receive a verification code.
         </CardDescription>
       </CardHeader>
 
@@ -91,6 +88,7 @@ export function RequestPasswordResetForm({ onSuccess }: RequestResetFormProps) {
             onSubmit={ form.handleSubmit(onSubmit) }
             className="space-y-4"
           >
+
             <FormField
               control={ form.control }
               name="email"
@@ -109,16 +107,21 @@ export function RequestPasswordResetForm({ onSuccess }: RequestResetFormProps) {
                 )
               }
             />
+
             <Button
               type="submit"
               className="w-full"
-              disabled={ isLoading }
+              disabled={ form.formState.isSubmitting }
             >
-              { isLoading ? "Sending..." : "Send Code" }
+              {
+                form.formState.isSubmitting
+                  ? "Sending..."
+                  : "Send Code"
+              }
             </Button>
           </form>
         </Form>
       </CardContent>
-    </Card>
+    </Card >
   );
 }
