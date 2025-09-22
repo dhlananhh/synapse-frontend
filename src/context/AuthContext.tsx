@@ -6,121 +6,83 @@ import React, {
   useContext,
   useState,
   useEffect,
-  ReactNode,
-  useCallback
+  ReactNode
 } from "react";
+import {
+  AuthUser,
+  LoginPayload
+} from "@/types/services/auth";
+import { UserProfile } from "@/types/services/user";
 import { authService } from "@/modules/services/auth-service";
 import { userService } from "@/modules/services/user-service";
-import { LoginPayload } from "@/types/services/auth";
-import { UserProfile } from "@/types/services/user";
-import { toast } from "sonner";
+
+
+type CurrentUser = AuthUser & UserProfile;
 
 
 interface AuthContextType {
-  user: UserProfile | null;
-  followingIds: Set<string>;
-  isAuthenticated: boolean;
+  user: CurrentUser | null;
   isLoading: boolean;
-  login: (payload: LoginPayload) => Promise<void>;
-  logout: () => void;
-  updateFollowing: (targetUserId: string, action: "follow" | "unfollow") => void;
+  login: (credentials: LoginPayload) => Promise<void>;
+  logout: () => Promise<void>;
+  // You can add register function if needed
 }
-
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [ user, setUser ] = useState<UserProfile | null>(null);
-  const [ followingIds, setFollowingIds ] = useState<Set<string>>(new Set());
+  const [ user, setUser ] = useState<CurrentUser | null>(null);
   const [ isLoading, setIsLoading ] = useState(true);
-
-  const fetchUserAndFollowing = useCallback(async (userId: string) => {
-    try {
-      const [ userProfile, followingList ] = await Promise.all([
-        userService.getUserProfile(userId),
-        userService.getFollowing(userId, 1, 100)
-      ]);
-
-      setUser(userProfile);
-
-      const newFollowingIds = new Set(followingList.map(item => item.following.id));
-      setFollowingIds(newFollowingIds);
-      return userProfile;
-
-    } catch (error) {
-      console.error("Failed to fetch user data:", error);
-      setUser(null);
-      setFollowingIds(new Set());
-      return null;
-    }
-  }, []);
-
 
   useEffect(() => {
     const checkUserSession = async () => {
-      setIsLoading(true);
       try {
-        const refreshResponse = await authService.refreshToken();
-        if (refreshResponse && refreshResponse.user) {
-          await fetchUserAndFollowing(refreshResponse.user.id);
-        }
+        const userProfile = await userService.getMe();
+
+        const authInfo: AuthUser = {
+          id: userProfile.accountId,
+          email: "user@email.com",
+          role: "USER"
+        };
+
+        setUser({ ...userProfile, ...authInfo });
+
       } catch (error) {
         console.log("No active session found.");
         setUser(null);
-        setFollowingIds(new Set());
       } finally {
         setIsLoading(false);
       }
     };
-    checkUserSession();
-  }, [ fetchUserAndFollowing ]);
 
-  const login = async (payload: LoginPayload) => {
-    const loginResponse = await authService.login(payload);
-    if (loginResponse && loginResponse.user) {
-      await fetchUserAndFollowing(loginResponse.user.id);
-      toast.success("Welcome back!");
-    }
+    checkUserSession();
+  }, []);
+
+  const login = async (credentials: LoginPayload) => {
+    const { user: authUser } = await authService.login(credentials);
+    const userProfile = await userService.getUserProfile(authUser.id);
+    setUser({ ...userProfile, ...authUser });
   };
 
   const logout = async () => {
     await authService.logout();
     setUser(null);
-    setFollowingIds(new Set());
-    toast.info("You have been logged out.");
-    window.location.href = "/login";
-  };
-
-  const updateFollowing = (targetUserId: string, action: "follow" | "unfollow") => {
-    setFollowingIds(prev => {
-      const newSet = new Set(prev);
-      if (action === "follow") {
-        newSet.add(targetUserId);
-      } else {
-        newSet.delete(targetUserId);
-      }
-      return newSet;
-    });
   };
 
   const value = {
     user,
-    isAuthenticated: !!user,
     isLoading,
     login,
     logout,
-    followingIds,
-    updateFollowing
-  }
+  };
 
   return (
     <AuthContext.Provider
       value={ value }
     >
-      { !isLoading && children }
+      { children }
     </AuthContext.Provider>
-  );
+  )
 };
 
 
