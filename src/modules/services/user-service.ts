@@ -16,6 +16,11 @@ const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || "http://192
 
 
 export const userService = {
+
+  // =================================
+  // User Profile & Preferences
+  // =================================
+
   getMe: (): Promise<UserProfile> => {
     return userApiClient.get(`${USER_SERVICE_URL}/me`).then(res => res.data);
   },
@@ -44,6 +49,10 @@ export const userService = {
     return userApiClient.patch(`${USER_SERVICE_URL}/${userId}/privacy`).then(res => res.data);
   },
 
+  // =================================
+  // Social Interactions (Following)
+  // =================================
+
   followUser: (userId: string): Promise<FollowResponse> => {
     return userApiClient.post(`${USER_SERVICE_URL}/${userId}/follow`).then(res => res.data);
   },
@@ -52,11 +61,32 @@ export const userService = {
     return userApiClient.delete(`${USER_SERVICE_URL}/${userId}/follow`).then(res => res.data);
   },
 
+  acceptFollowRequest: (followerId: string): Promise<void> => {
+    return userApiClient.patch(`${USER_SERVICE_URL}/${followerId}/follow/accept`).then(res => res.data);
+  },
+
+  rejectFollowRequest: (followerId: string): Promise<void> => {
+    return userApiClient.patch(`${USER_SERVICE_URL}/${followerId}/follow/reject`).then(res => res.data);
+  },
+
+  cancelFollowRequest: (followingId: string): Promise<void> => {
+    return userApiClient.delete(`${USER_SERVICE_URL}/${followingId}/follow/cancel`).then(res => res.data);
+  },
+
+  // =================================
+  // Social Lists
+  // =================================
+
   getFollowers: (userId: string, page = 1, limit = 20): Promise<FollowerResponse[]> => {
-    return userApiClient.get(`${USER_SERVICE_URL}/${userId}/followers`, { params: { page, limit } }).then(res => res.data);
+    return userApiClient.get(`${USER_SERVICE_URL}/${userId}/followers`, {
+      params: { page, limit }
+    }).then(res => res.data);
   },
 
   getFollowing: (userId: string, page = 1, limit = 20): Promise<FollowingResponse[]> => {
-    return userApiClient.get(`${USER_SERVICE_URL}/${userId}/following`, { params: { page, limit } }).then(res => res.data);
+    return userApiClient.get(`${USER_SERVICE_URL}/${userId}/following`, {
+      params: { page, limit }
+    }).then(res => res.data);
   },
+
 };
