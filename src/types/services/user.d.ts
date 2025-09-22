@@ -33,14 +33,13 @@ export interface UpdateUserPreferencesPayload {
 // Responses from API
 // =================================
 
-export type UserGender = "MALE" | "FEMALE";
-
 export interface UserProfile {
   id: string;
   accountId: string;
   username: string;
   firstName: string;
   lastName: string;
+  email?: string;
   gender: "MALE" | "FEMALE";
   bio: string | null;
   location: string | null;
