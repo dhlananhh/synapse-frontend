@@ -3,6 +3,15 @@
 Synapse is the client-side implementation of a feature-rich, modern discussion forum inspired by platforms like Reddit. It is built with a cutting-edge technology stack and designed for a highly interactive and responsive user experience. This project serves as a comprehensive thesis demonstrating advanced concepts in frontend engineering.
 
 <div align="center">
+  <img
+    src="https://img.shields.io/badge/Project%20Status-In%20Development-blue?style=for-the-badge"
+    alt="Project Status: In Development"
+  />
+</div>
+
+<br>
+
+<div align="center">
   <a href="https://synapse-discussion-forum.vercel.app/" target="_blank">
     <img
       src="https://img.shields.io/website?label=Live%20Demo&style=for-the-badge&url=https%3A%2F%2Fsynapse-discussion-forum.vercel.app%2F&up_color=06B6D4"
@@ -39,6 +48,8 @@ Synapse is the client-side implementation of a feature-rich, modern discussion f
     />
   </a>
 </div>
+
+<br>
 
 <div align="center">
   <a 
