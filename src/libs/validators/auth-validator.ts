@@ -33,3 +33,10 @@ export const RegisterFormSchema = z.object({
   }),
 })
 export type TRegisterFormSchema = z.infer<typeof RegisterFormSchema>;
+
+
+// Verify code schema
+export const VerifyEmailSchema = z.object({
+  code: z.string().min(6, { message: "Your code must be 6 digits." }),
+});
+export type TVerifyEmailSchema = z.infer<typeof VerifyEmailSchema>;
