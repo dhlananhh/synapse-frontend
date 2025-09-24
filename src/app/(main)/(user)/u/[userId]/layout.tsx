@@ -3,7 +3,7 @@ import React from "react";
 
 
 type Props = {
-  params: Promise<{ username: string }>;
+  params: { userId: string };
   children: React.ReactNode;
 };
 
@@ -13,11 +13,11 @@ export async function generateMetadata(
   parent: ResolvingMetadata
 ): Promise<Metadata> {
   const params = await props.params;
-  const username = decodeURIComponent(params.username);
+  const userId = decodeURIComponent(params.userId);
 
   return {
-    title: `Profile of @${username} | Synapse`,
-    description: `View the profile, posts, and activity of ${username} on the Synapse discussion forum.`,
+    title: `Profile of @${userId} | Synapse`,
+    description: `View the profile, posts, and activity of ${userId} on the Synapse discussion forum.`,
   };
 }
 
