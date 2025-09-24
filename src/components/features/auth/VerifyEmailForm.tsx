@@ -17,8 +17,8 @@ import { toast } from "sonner";
 
 import { authService } from "@/modules/services/auth-service";
 import {
-  VerifyCodeSchema,
-  TVerifyCodeSchema
+  VerifyEmailSchema,
+  TVerifyEmailSchema
 } from "@/libs/validators/auth-validator";
 
 import VerifyEmailSkeleton from "@/components/features/auth/VerifyEmailSkeleton"
@@ -62,14 +62,14 @@ export default function VerifyEmailForm() {
     setIsClient(true);
   }, []);
 
-  const form = useForm<TVerifyCodeSchema>({
-    resolver: zodResolver(VerifyCodeSchema),
+  const form = useForm<TVerifyEmailSchema>({
+    resolver: zodResolver(VerifyEmailSchema),
     defaultValues: { code: "" },
   });
 
   const { isSubmitting } = form.formState;
 
-  const onSubmit = async (data: TVerifyCodeSchema) => {
+  const onSubmit = async (data: TVerifyEmailSchema) => {
     if (!email) return;
 
     try {
