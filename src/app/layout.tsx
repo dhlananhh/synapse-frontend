@@ -60,7 +60,6 @@ export default function RootLayout({
               richColors
               position="top-right"
               theme="system"
-              duration={ 5000 }
             />
           </ThemeProvider>
         </I18nProvider>
