@@ -2,7 +2,7 @@
   "lockfileVersion": 1,
   "workspaces": {
     "": {
-      "name": "synapse-client",
+      "name": "synapse-frontend",
       "dependencies": {
         "@hookform/resolvers": "^5.2.1",
         "@next/codemod": "^15.5.2",
