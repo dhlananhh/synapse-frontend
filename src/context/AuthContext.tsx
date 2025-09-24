@@ -39,18 +39,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     const checkUserSession = async () => {
       try {
-        const userProfile = await userService.getMe();
+        const { user: refreshedAuthUser } = await authService.refreshToken();
 
-        const authInfo: AuthUser = {
-          id: userProfile.accountId,
-          email: "user@email.com",
-          role: "USER"
-        };
+        if (refreshedAuthUser && refreshedAuthUser.id) {
+          const userProfile = await userService.getUserProfile(refreshedAuthUser.id);
 
-        setUser({ ...userProfile, ...authInfo });
-
+          setUser({ ...userProfile, ...refreshedAuthUser });
+        } else {
+          throw new Error("No user info returned from token refresh.");
+        }
       } catch (error) {
-        console.log("No active session found.");
+        console.log("No active session found. User is not logged in.");
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -70,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await authService.logout();
     } catch (error) {
-      console.error("Logout failed:", error);
+      console.error("Logout failed: ", error);
     } finally {
       setUser(null);
       window.location.href = "/login";
