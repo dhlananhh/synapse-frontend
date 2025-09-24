@@ -9,6 +9,7 @@ import { toast } from "sonner";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import { useAuth } from "@/context/AuthContext";
 import { authService } from "@/modules/services/auth-service";
 import { LoginPayload } from "@/types/services/auth";
 import {
@@ -34,6 +35,7 @@ import {
 
 export default function LoginForm() {
   const router = useRouter();
+  const { login } = useAuth();
 
   const form = useForm<TLoginSchema>({
     resolver: zodResolver(LoginSchema),
@@ -53,18 +55,20 @@ export default function LoginForm() {
   });
 
 
-  const onSubmit = async (data: LoginPayload) => {
+  const onSubmit = async (values: TLoginSchema) => {
     try {
-      const response = await authService.login(data);
-      console.log("Login successful!", response.user);
-
-      toast.success("Login successful! Redirecting...");
+      await login(values);
+      toast.success("Login successful!", {
+        description: "Redirecting to your feed...",
+        duration: 2000,
+      });
 
       router.push("/feed");
-
+      router.refresh();
     } catch (error: any) {
       toast.error("Failed to login", {
-        description: error.response?.data?.message || "Invalid credentials."
+        description: error.response?.data?.message || "Invalid credentials.",
+        duration: 2000,
       });
     }
   };
@@ -137,13 +141,6 @@ export default function LoginForm() {
                 : "Log In"
             }
           </Button>
-
-          <Button
-            variant="outline"
-            className="w-full"
-          >
-            Login with Google
-          </Button>
         </form>
 
         <div className="mt-4 text-center text-sm">
@@ -151,8 +148,9 @@ export default function LoginForm() {
           <Link
             href="/register"
             className="ml-auto inline-block text-sm text-muted-foreground hover:text-primary hover:underline"
+            passHref
           >
-            Sign up
+            Register now!
           </Link>
         </div>
       </CardContent>
