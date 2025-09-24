@@ -3,15 +3,16 @@ import React from "react";
 
 
 type Props = {
-  params: { username: string };
+  params: Promise<{ username: string }>;
   children: React.ReactNode;
 };
 
 
 export async function generateMetadata(
-  { params }: Props,
+  props: Props,
   parent: ResolvingMetadata
 ): Promise<Metadata> {
+  const params = await props.params;
   const username = decodeURIComponent(params.username);
 
   return {
