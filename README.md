@@ -301,3 +301,33 @@ This final project structure is a complete and accurate representation of the so
     ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+
+## 📸 Screenshots
+
+### Register Page
+
+<div align="center">
+  <img
+    src="https://github.com/dhlananhh/synapse-frontend/blob/main/public/screenshots/RegisterPage.png"
+    alt="Screenshot of Register Page"
+  />
+</div>
+
+### Log In Page
+
+<div align="center">
+  <img
+    src="https://github.com/dhlananhh/synapse-frontend/blob/main/public/screenshots/LogInPage.png"
+    alt="Screenshot of Log In Page"
+  />
+</div>
+
+### Reset Password Page
+
+<div align="center">
+  <img
+    src="https://github.com/dhlananhh/synapse-frontend/blob/main/public/screenshots/ResetPasswordPage.png"
+    alt="Screenshot of Reset Password Page"
+  />
+</div>
