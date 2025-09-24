@@ -11,7 +11,7 @@ import {
 import Cookies from "js-cookie";
 
 
-const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://192.168.1.5:4000/api/auth";
+const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || "http://localhost:4000/api/auth";
 const RESET_TOKEN_KEY = "reset_token";
 
 

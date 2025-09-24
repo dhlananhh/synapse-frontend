@@ -12,7 +12,7 @@ import {
 } from "@/types/services/user";
 
 
-const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || "http://192.168.1.5:4002/api/users";
+const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || "http://localhost:4002/api/users";
 
 
 export const userService = {
