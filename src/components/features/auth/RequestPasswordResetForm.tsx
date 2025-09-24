@@ -63,7 +63,7 @@ export function RequestPasswordResetForm({ onSuccess }: RequestCodeFormProps) {
 
   return (
     <Card className="mx-auto max-w-lg w-full">
-      <CardHeader className="items-center">
+      <CardHeader className="items-center text-center">
         <Link
           href="/"
           className="flex flex-col items-center gap-2 mb-2"
