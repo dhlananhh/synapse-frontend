@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 import { UserNav } from "./UserNav";
 import { BrainCircuit } from "lucide-react";
+import MobileNav from "@/components/shared/MobileNav";
 
 
 export function Navbar() {
@@ -46,17 +47,24 @@ export function Navbar() {
 
   return (
     <header
-      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur 
-      supports-[backdrop-filter]:bg-background/60"
+      className="fixed top-0 inset-x-0 h-16 z-50 border-b bg-background/80 backdrop-blur-lg"
     >
-      <div className="container flex h-16 items-center">
-        <div className="mr-4 flex">
+      <div className="container h-full max-w-7xl mx-auto flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2">
+          <div className="md:hidden">
+            <MobileNav />
+          </div>
+
           <Link
             href="/"
-            className="flex flex-col items-center gap-2 mb-2"
+            className="hidden md:flex items-center gap-2"
           >
-            <BrainCircuit className="h-10 w-10 text-primary" />
-            <span className="font-bold">Synapse</span>
+            <BrainCircuit
+              className="h-8 w-8 text-primary"
+            />
+            <p className="hidden lg:block text-xl font-bold text-foreground">
+              Synapse
+            </p>
           </Link>
         </div>
 
