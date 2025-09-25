@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useParams } from "next/navigation";
 
+import { useAuth } from "@/context/AuthContext";
 import {
   FollowerResponse,
   FollowingResponse,
@@ -16,7 +17,9 @@ import { userService } from "@/modules/services/user-service";
 
 import { UserProfileHeader } from "@/components/features/user/UserProfileHeader";
 import { UserProfileTabs } from "@/components/features/user/UserProfileTabs";
+import { PrivateProfileView } from './PrivateProfileView';
 import UserProfileSkeleton from "@/components/features/user/UserProfileSkeleton";
+
 
 
 interface Counts {
@@ -27,6 +30,7 @@ interface Counts {
 
 export function UserProfileInterface() {
   const params = useParams();
+  const { user: currentUser } = useAuth();
   const userId = params.userId as string;
 
   const [ user, setUser ] = useState<UserProfile | null>(null);
@@ -66,6 +70,11 @@ export function UserProfileInterface() {
     }
   }, [ userId ]);
 
+  const handleProfileUpdate = (updatedUser: UserProfile) => {
+    setUser(updatedUser);
+  };
+
+
   if (loading) {
     return (
       <UserProfileSkeleton />
@@ -85,17 +94,48 @@ export function UserProfileInterface() {
     );
   }
 
+  const isOwnProfile = currentUser?.id === user.id;
+  const isFollowing = false;
+  const isPending = false;
+  const canViewProfile = !user.isPrivate || isOwnProfile || isFollowing;
+
+  if (canViewProfile) {
+    return (
+      <div className="w-full space-y-8">
+        <UserProfileHeader
+          user={ user }
+          counts={ counts }
+          onProfileUpdate={ handleProfileUpdate }
+        />
+        <UserProfileTabs
+          userId={ user.id }
+          followers={ followers }
+          following={ following }
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="container mx-auto max-w-4xl py-8 space-y-8">
-      <UserProfileHeader
-        user={ user }
-        counts={ counts }
-      />
-      <UserProfileTabs
-        userId={ user.id }
-        followers={ followers }
-        following={ following }
-      />
-    </div>
+    // <div className="container mx-auto max-w-4xl py-8 space-y-8">
+    //   <UserProfileHeader
+    //     user={ user }
+    //     counts={ counts }
+    //     onProfileUpdate={ handleProfileUpdate }
+    //   />
+
+    //   <UserProfileTabs
+    //     userId={ user.id }
+    //     followers={ followers }
+    //     following={ following }
+    //   />
+    // </div>
+
+    <PrivateProfileView
+      user={ user }
+      counts={ counts }
+      isFollowing={ isFollowing }
+      isPending={ isPending }
+    />
   );
 }

@@ -2,16 +2,20 @@
 
 
 import React, { useState } from "react";
-import { UserProfile } from "@/types/services/user";
+import { toast } from "sonner";
+
 import { useAuth } from "@/context/AuthContext";
+import { UserProfile } from "@/types/services/user";
+import { userService } from "@/modules/services/user-service";
+
+import { UpdateProfileDialog } from "./UpdateProfileDialog";
+
 import {
   Avatar,
   AvatarFallback,
   AvatarImage
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { userService } from "@/modules/services/user-service";
-import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
@@ -27,10 +31,15 @@ interface UserProfileHeaderProps {
     followers: number;
     following: number;
   };
+  onProfileUpdate: (updatedUser: UserProfile) => void;
 }
 
 
-export function UserProfileHeader({ user, counts }: UserProfileHeaderProps) {
+export function UserProfileHeader({
+  user,
+  counts,
+  onProfileUpdate
+}: UserProfileHeaderProps) {
   const { user: currentUser } = useAuth();
   const isOwnProfile = currentUser?.id === user.id;
 
@@ -126,7 +135,12 @@ export function UserProfileHeader({ user, counts }: UserProfileHeaderProps) {
         }
       </div>
       {
-        !isOwnProfile && (
+        isOwnProfile ? (
+          <UpdateProfileDialog
+            user={ user }
+            onProfileUpdate={ onProfileUpdate }
+          />
+        ) : (
           <Button
             onClick={ handleFollow }
             variant={ isFollowing ? "secondary" : "default" }
@@ -136,13 +150,6 @@ export function UserProfileHeader({ user, counts }: UserProfileHeaderProps) {
           </Button>
         )
       }
-      {
-        isOwnProfile && (
-          <Button variant="outline">
-            Edit Profile
-          </Button>
-        )
-      }
-    </div>
+    </div >
   );
 }
