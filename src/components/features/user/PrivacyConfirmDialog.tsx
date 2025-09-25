@@ -13,6 +13,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+
 interface PrivacyConfirmDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,6 +28,7 @@ export function PrivacyConfirmDialog({
   onConfirm,
   isMakingPrivate,
 }: PrivacyConfirmDialogProps) {
+
   const title = isMakingPrivate
     ? "Make Account Private?" : "Make Account Public?";
 
@@ -50,7 +52,9 @@ export function PrivacyConfirmDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel>
+            Cancel
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={ onConfirm }
           >
