@@ -1,10 +1,14 @@
 "use client";
 
 
-import React, { useState } from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
 import Link from "next/link";
 
 import { useAuth } from "@/context/AuthContext";
+import { userService } from "@/modules/services/user-service";
 import {
   FollowerResponse,
   FollowingResponse
@@ -26,14 +30,38 @@ import {
 
 
 interface FollowListProps {
-  list: (FollowerResponse | FollowingResponse)[];
+  userId: string;
   type: "followers" | "following";
 }
 
 
-export function FollowList({ list, type }: FollowListProps) {
+export function FollowList({ userId, type }: FollowListProps) {
   const { user: currentUser, isLoading: isAuthLoading } = useAuth();
-  const [ loading ] = useState(true);
+  const [ list, setList ] = useState<(FollowerResponse | FollowingResponse)[]>([]);
+  const [ loading, setLoading ] = useState(true);
+
+  useEffect(() => {
+    const fetchList = async () => {
+      if (!isAuthLoading && currentUser) {
+        try {
+          setLoading(true);
+          const data = type === "followers"
+            ? await userService.getFollowers(userId)
+            : await userService.getFollowing(userId);
+          setList(data);
+        } catch (error) {
+          console.error(`Failed to fetch ${type}:`, error);
+        } finally {
+          setLoading(false);
+        }
+      } else if (!isAuthLoading && !currentUser) {
+        setLoading(false);
+      }
+    };
+
+    fetchList();
+  }, [ userId, type, currentUser, isAuthLoading ]);
+
 
   if (isAuthLoading || loading) {
     return (
