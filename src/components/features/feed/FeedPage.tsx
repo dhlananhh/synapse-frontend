@@ -17,7 +17,7 @@ export default function FeedPage() {
         <CreatePostWidget />
         {/* <PostFeed /> */ }
       </div>
-      <aside className="hidden md:block">
+      <aside className="hidden md:block mt-12">
         <div className="sticky top-20 space-y-4">
           <TopCommunitiesWidget />
         </div>
