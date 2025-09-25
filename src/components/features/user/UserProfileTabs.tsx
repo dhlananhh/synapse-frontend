@@ -9,16 +9,30 @@ import {
   TabsTrigger
 } from "@/components/ui/tabs";
 import { FollowList } from "./FollowList";
+import {
+  FollowerResponse,
+  FollowingResponse
+} from "@/types/services/user";
 
 
 interface UserProfileTabsProps {
   userId: string;
+  followers: FollowerResponse[];
+  following: FollowingResponse[];
 }
 
 
-export function UserProfileTabs({ userId }: UserProfileTabsProps) {
+export function UserProfileTabs({
+  userId,
+  followers,
+  following
+}: UserProfileTabsProps) {
+
   return (
-    <Tabs defaultValue="posts" className="w-full">
+    <Tabs
+      defaultValue="posts"
+      className="w-full"
+    >
       <TabsList className="grid w-full grid-cols-3">
         <TabsTrigger value="posts">Posts</TabsTrigger>
         <TabsTrigger value="followers">Followers</TabsTrigger>
@@ -33,14 +47,14 @@ export function UserProfileTabs({ userId }: UserProfileTabsProps) {
 
       <TabsContent value="followers">
         <FollowList
-          userId={ userId }
+          list={ followers }
           type="followers"
         />
       </TabsContent>
 
       <TabsContent value="following">
         <FollowList
-          userId={ userId }
+          list={ following }
           type="following"
         />
       </TabsContent>
