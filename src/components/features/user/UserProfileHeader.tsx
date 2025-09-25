@@ -23,10 +23,14 @@ import {
 
 interface UserProfileHeaderProps {
   user: UserProfile;
+  counts: {
+    followers: number;
+    following: number;
+  };
 }
 
 
-export function UserProfileHeader({ user }: UserProfileHeaderProps) {
+export function UserProfileHeader({ user, counts }: UserProfileHeaderProps) {
   const { user: currentUser } = useAuth();
   const isOwnProfile = currentUser?.id === user.id;
 
@@ -85,10 +89,10 @@ export function UserProfileHeader({ user }: UserProfileHeaderProps) {
         </p>
         <div className="flex gap-4 my-3 justify-center md:justify-start">
           <span className="font-semibold">
-            { user._count?.followers || 0 } Followers
+            { counts.followers } Followers
           </span>
           <span className="font-semibold">
-            { user._count?.following || 0 } Following
+            { counts.following } Following
           </span>
         </div>
         {
