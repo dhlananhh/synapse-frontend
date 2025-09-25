@@ -73,6 +73,7 @@ export interface RegisterResponse {
 export interface LoginResponse {
   accessToken: string;
   tokenType: "Bearer";
+  refreshToken?: string;
   expiresIn: number;
   user: AuthUser;
 }
