@@ -13,11 +13,11 @@ export default function FeedPage() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-6 py-6">
       <Navbar />
 
-      <div className="md:col-span-2 mt-12">
+      <div className="md:col-span-2">
         <CreatePostWidget />
         {/* <PostFeed /> */ }
       </div>
-      <aside className="hidden md:block mt-12">
+      <aside className="hidden md:block">
         <div className="sticky top-20 space-y-4">
           <TopCommunitiesWidget />
         </div>

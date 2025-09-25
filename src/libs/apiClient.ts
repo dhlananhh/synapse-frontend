@@ -3,10 +3,7 @@ import axios, {
   InternalAxiosRequestConfig
 } from "axios";
 import { authService } from "@/modules/services/auth-service";
-import {
-  getToken,
-  setToken
-} from "@/libs/tokenManager";
+import { cookieManager } from "@/libs/cookieManager";
 
 
 const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://192.168.1.5:4000/api/auth";
@@ -49,15 +46,14 @@ const processQueue = (error: AxiosError | null) => {
 const setupInterceptors = (client: typeof authApiClient) => {
   client.interceptors.request.use(
     (config) => {
-      const token = getToken();
-      if (token) {
+      const token = cookieManager.getAccessToken(); // <-- SỬA
+      if (token && !config.headers.Authorization) {
         config.headers.Authorization = `Bearer ${token}`;
       }
       return config;
     },
     (error) => Promise.reject(error)
   );
-
 
   client.interceptors.response.use(
     (response) => response,
@@ -73,30 +69,40 @@ const setupInterceptors = (client: typeof authApiClient) => {
         originalRequest._retry = true;
         isRefreshing = true;
 
-        try {
-          const refreshResponse = await authService.refreshToken();
+        const storedRefreshToken = cookieManager.getRefreshToken();
 
-          const newAccessToken = refreshResponse.access_token;
-          setToken(newAccessToken);
+        if (storedRefreshToken) {
+          try {
+            const response = await authService.refreshToken(storedRefreshToken);
+            const { accessToken: newAccessToken } = response;
 
-          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            cookieManager.setAccessToken(newAccessToken);
+            if (response.refreshToken) {
+              cookieManager.setRefreshToken(response.refreshToken);
+            }
 
-          processQueue(null);
-          return client(originalRequest);
+            processQueue(null);
+            return client(originalRequest);
 
-        } catch (refreshError) {
-          setToken(null);
-          processQueue(refreshError as AxiosError);
-          window.location.href = '/login';
-          return Promise.reject(refreshError);
-        } finally {
-          isRefreshing = false;
+          } catch (refreshError) {
+            cookieManager.removeAccessToken();
+            cookieManager.removeRefreshToken();
+            processQueue(refreshError as AxiosError);
+            window.location.href = "/login";
+            return Promise.reject(refreshError);
+          } finally {
+            isRefreshing = false;
+          }
+        } else {
+          window.location.href = "/login";
+          return Promise.reject(error);
         }
       }
       return Promise.reject(error);
     }
   );
 }
+
 
 
 setupInterceptors(authApiClient);

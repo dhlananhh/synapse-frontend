@@ -29,8 +29,10 @@ export const authService = {
     return authApiClient.post(`${AUTH_SERVICE_URL}/logout`).then(res => res.data);
   },
 
-  refreshToken: (): Promise<RefreshTokenResponse> => {
-    return authApiClient.post(`${AUTH_SERVICE_URL}/refresh`).then(res => res.data);
+  refreshToken: (token: string): Promise<LoginResponse> => {
+    return authApiClient.post(`${AUTH_SERVICE_URL}/refresh`, {
+      refresh_token: token
+    }).then(res => res.data);
   },
 
   changePassword: (payload: ChangePasswordPayload): Promise<GenericMessageResponse> => {
