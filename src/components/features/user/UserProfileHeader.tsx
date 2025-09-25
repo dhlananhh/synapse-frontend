@@ -27,8 +27,8 @@ interface UserProfileHeaderProps {
 
 
 export function UserProfileHeader({ user }: UserProfileHeaderProps) {
-  const { user: user } = useAuth();
-  const isOwnProfile = user?.id === user.id;
+  const { user: currentUser } = useAuth();
+  const isOwnProfile = currentUser?.id === user.id;
 
   const [ isFollowing, setIsFollowing ] = useState(false);
 
@@ -50,7 +50,8 @@ export function UserProfileHeader({ user }: UserProfileHeaderProps) {
       toast.success(`Your profile is now ${isPrivate ? "private" : "public"}.`);
     } catch (error: any) {
       toast.error("Failed to update privacy settings.", {
-        description: error.response?.data?.message
+        description: error.response?.data?.message,
+        duration: 2000,
       });
     }
   }
