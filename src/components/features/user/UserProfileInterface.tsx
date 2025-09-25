@@ -101,12 +101,13 @@ export function UserProfileInterface() {
 
   if (canViewProfile) {
     return (
-      <div className="w-full space-y-8">
+      <div className="container mx-auto max-w-4xl py-8 space-y-8">
         <UserProfileHeader
           user={ user }
           counts={ counts }
           onProfileUpdate={ handleProfileUpdate }
         />
+
         <UserProfileTabs
           userId={ user.id }
           followers={ followers }
@@ -117,20 +118,6 @@ export function UserProfileInterface() {
   }
 
   return (
-    // <div className="container mx-auto max-w-4xl py-8 space-y-8">
-    //   <UserProfileHeader
-    //     user={ user }
-    //     counts={ counts }
-    //     onProfileUpdate={ handleProfileUpdate }
-    //   />
-
-    //   <UserProfileTabs
-    //     userId={ user.id }
-    //     followers={ followers }
-    //     following={ following }
-    //   />
-    // </div>
-
     <PrivateProfileView
       user={ user }
       counts={ counts }
