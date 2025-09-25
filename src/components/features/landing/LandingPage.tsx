@@ -26,14 +26,30 @@ export default function LandingPage() {
           </p>
 
           <div className="mt-8 flex justify-center gap-4">
-            <Button asChild size="lg">
+            <Button
+              asChild
+              size="lg"
+            >
               <Link href="/feed">
                 Explore Feed
               </Link>
             </Button>
-            <Button asChild size="lg" variant="outline">
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+            >
               <Link href="/register">
                 Sign Up
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="secondary"
+            >
+              <Link href="/login">
+                Sign In
               </Link>
             </Button>
           </div>
