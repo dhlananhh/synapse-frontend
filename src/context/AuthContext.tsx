@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (credentials: LoginPayload) => {
     const response = await authService.login(credentials);
-    setToken(response.access_token);
+    setToken(response.accessToken);
     const userProfile = await userService.getUserProfile(response.user.id);
     setUser({ ...userProfile, ...response.user });
   };
