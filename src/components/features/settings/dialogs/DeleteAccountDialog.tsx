@@ -32,12 +32,12 @@ export default function DeleteAccountDialog({
   onOpenChange
 }: DeleteAccountDialogProps) {
 
-  const { currentUser, logout } = useAuth();
+  const { user, logout } = useAuth();
   const router = useRouter();
   const [ confirmationText, setConfirmationText ] = useState("");
   const [ isDeleting, setIsDeleting ] = useState(false);
 
-  const isConfirmationMatched = confirmationText === currentUser?.username;
+  const isConfirmationMatched = confirmationText === user?.username;
 
   const handleDeleteAccount = async () => {
     if (!isConfirmationMatched) {
@@ -48,7 +48,7 @@ export default function DeleteAccountDialog({
     setIsDeleting(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
 
-    console.log("Account deleted for user:", currentUser?.username);
+    console.log("Account deleted for user:", user?.username);
     toast.success("Account deleted successfully.", {
       description: "We're sad to see you go."
     });
@@ -78,7 +78,7 @@ export default function DeleteAccountDialog({
 
         <div className="space-y-2 py-2">
           <Label htmlFor="delete-confirm">
-            Please type <strong className="text-foreground">{ currentUser?.username }</strong> to confirm.
+            Please type <strong className="text-foreground">{ user?.username }</strong> to confirm.
           </Label>
           <Input
             id="delete-confirm"

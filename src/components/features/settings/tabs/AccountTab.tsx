@@ -21,7 +21,7 @@ import { ChevronRight } from "lucide-react";
 
 
 export default function AccountTab() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const [ isEmailDialogOpen, setIsEmailDialogOpen ] = useState(false);
   const [ isGenderDialogOpen, setIsGenderDialogOpen ] = useState(false);
   const [ isDeleteDialogOpen, setIsDeleteDialogOpen ] = useState(false);
@@ -29,8 +29,8 @@ export default function AccountTab() {
 
   const userEmail = "youremail@gmail.com";
 
-  const birthdayDisplay = currentUser?.birthday
-    ? format(new Date(currentUser.birthday), "MMMM d, yyyy")
+  const birthdayDisplay = user?.birthday
+    ? format(new Date(user.birthday), "MMMM d, yyyy")
     : "Not set";
 
   return (
@@ -126,7 +126,7 @@ export default function AccountTab() {
       <UpdateGenderDialog
         isOpen={ isGenderDialogOpen }
         onOpenChange={ setIsGenderDialogOpen }
-        currentGender={ currentUser?.gender }
+        currentGender={ user?.gender }
       />
 
       <DeleteAccountDialog

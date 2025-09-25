@@ -14,13 +14,13 @@ import { cn } from "@/libs/utils";
 import { format } from "date-fns";
 
 
-function ChatMessage({ message, conversation, currentUser }: {
+function ChatMessage({ message, conversation, user }: {
   message: Message,
   conversation: Conversation,
-  currentUser: any
+  user: any
 }) {
-  const isSender = message.senderId === currentUser.id;
-  const author = isSender ? currentUser : conversation.contact;
+  const isSender = message.senderId === user.id;
+  const author = isSender ? user : conversation.contact;
 
   if (message.senderId === "system") {
     return <p className="text-xs text-center text-muted-foreground my-2">{ message.text }</p>
@@ -55,7 +55,7 @@ function ChatMessage({ message, conversation, currentUser }: {
 
 
 export default function ChatWidget() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const { isWidgetOpen, activeConversationId, conversations, closeChat, sendMessage } = useChatStore();
   const messageEndRef = useRef<HTMLDivElement>(null);
   const [ messageText, setMessageText ] = useState("");
@@ -68,8 +68,8 @@ export default function ChatWidget() {
 
   const handleSendMessage = (e: React.FormEvent) => {
     e.preventDefault();
-    if (messageText.trim() && currentUser) {
-      sendMessage(messageText.trim(), currentUser);
+    if (messageText.trim() && user) {
+      sendMessage(messageText.trim(), user);
       setMessageText("");
     }
   };
@@ -98,7 +98,7 @@ export default function ChatWidget() {
       <CardContent className="p-3 flex-grow overflow-y-auto">
         <div className="space-y-4">
           { activeConversation.messages.map(msg => (
-            <ChatMessage key={ msg.id } message={ msg } conversation={ activeConversation } currentUser={ currentUser } />
+            <ChatMessage key={ msg.id } message={ msg } conversation={ activeConversation } user={ user } />
           )) }
           <div ref={ messageEndRef } />
         </div>

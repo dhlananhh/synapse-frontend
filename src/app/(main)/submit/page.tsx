@@ -19,18 +19,18 @@ export const dynamic = "force-dynamic";
 
 
 export default function SubmitPage() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (currentUser === undefined) return;
+    if (user === undefined) return;
 
-    if (currentUser === null) {
+    if (user === null) {
       router.push("/login?from=/submit");
     }
-  }, [ currentUser, router ]);
+  }, [ user, router ]);
 
-  if (currentUser === undefined) {
+  if (user === undefined) {
     return (
       <div className="flex justify-center items-center h-64">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

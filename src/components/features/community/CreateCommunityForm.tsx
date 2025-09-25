@@ -28,7 +28,7 @@ import { Loader2 } from "lucide-react";
 
 export default function CreateCommunityForm() {
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   const {
     register,
@@ -39,10 +39,10 @@ export default function CreateCommunityForm() {
   });
 
   const onSubmit = async (data: TCreateCommunitySchema) => {
-    if (!currentUser) return;
+    if (!user) return;
 
     try {
-      const newCommunity = await createCommunity(data, currentUser.email);
+      const newCommunity = await createCommunity(data, user.email);
       toast.success(`Community c/${newCommunity.slug} created successfully!`, {
         description: "You are now the owner of this community."
       });

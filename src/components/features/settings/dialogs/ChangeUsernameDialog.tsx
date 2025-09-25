@@ -33,7 +33,7 @@ export default function ChangeUsernameDialog({
   onOpenChange
 }: ChangeUsernameDialogProps) {
 
-  const { currentUser, updateUserProfile } = useAuth();
+  const { user, updateUserProfile } = useAuth();
 
   const {
     register,
@@ -41,7 +41,7 @@ export default function ChangeUsernameDialog({
     formState: { errors, isSubmitting, isDirty }
   } = useForm<TUserProfileSchema>({
     resolver: zodResolver(UserProfileSchema),
-    defaultValues: { username: currentUser?.username || "" }
+    defaultValues: { username: user?.username || "" }
   });
 
   const onSubmit = async (data: TUserProfileSchema) => {
@@ -62,7 +62,7 @@ export default function ChangeUsernameDialog({
           <DialogTitle>Change username</DialogTitle>
           <DialogDescription className="">
             You'll be able to change your username back to { " " }
-            <span className="font-semibold">{ currentUser?.username }</span>
+            <span className="font-semibold">{ user?.username }</span>
             { " " } for another 14 days.
           </DialogDescription>
         </DialogHeader>

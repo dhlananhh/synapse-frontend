@@ -32,7 +32,7 @@ export default function EditProfileImagesDialog({
   isOpen,
   onOpenChange
 }: EditProfileImagesDialogProps) {
-  const { currentUser, updateUserProfile } = useAuth();
+  const { user, updateUserProfile } = useAuth();
 
   const [ avatarPreview, setAvatarPreview ] = useState<string | null>(null);
   const [ bannerPreview, setBannerPreview ] = useState<string | null>(null);
@@ -110,8 +110,8 @@ export default function EditProfileImagesDialog({
             <div className="flex items-center gap-4">
               <UserAvatar
                 user={ {
-                  ...(currentUser || { username: "" }),
-                  avatarUrl: avatarPreview || currentUser?.avatarUrl,
+                  ...(user || { username: "" }),
+                  avatarUrl: avatarPreview || user?.avatarUrl,
                 } as User }
                 className="h-20 w-20 text-3xl"
               />
@@ -138,15 +138,15 @@ export default function EditProfileImagesDialog({
               onClick={ () => bannerInputRef.current?.click() }
               className={
                 cn("relative h-40 w-full rounded-md border-2 border-dashed flex items-center justify-center text-muted-foreground hover:border-primary hover:text-primary cursor-pointer transition-colors",
-                  bannerPreview || currentUser?.bannerUrl ? "border-solid" : "border-dashed"
+                  bannerPreview || user?.bannerUrl ? "border-solid" : "border-dashed"
                 )
               }
             >
               {
-                (bannerPreview || currentUser?.bannerUrl)
+                (bannerPreview || user?.bannerUrl)
                   ? (
                     <Image
-                      src={ bannerPreview || currentUser?.bannerUrl || "" }
+                      src={ bannerPreview || user?.bannerUrl || "" }
                       alt="Banner preview"
                       fill
                       style={ { objectFit: "cover" } }

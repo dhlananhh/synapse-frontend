@@ -28,8 +28,8 @@ interface AboutCommunityWidgetProps {
 
 
 export default function AboutCommunityWidget({ community }: AboutCommunityWidgetProps) {
-  const { currentUser } = useAuth();
-  const isOwner = currentUser?.id === community.ownerId;
+  const { user } = useAuth();
+  const isOwner = user?.id === community.ownerId;
 
   const [ isEditDialogOpen, setIsEditDialogOpen ] = useState(false);
 

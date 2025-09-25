@@ -28,7 +28,7 @@ const VIEW_MODE_STORAGE_KEY = "synapse-view-mode";
 
 
 interface AuthContextType {
-  currentUser: User | null;
+  user: User | null;
   login: (username: string) => void;
   logout: () => void;
   register: (data: any) => void;
@@ -72,7 +72,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const { i18n } = useTranslation();
 
-  const [ currentUser, setCurrentUser ] = useState<User | null>(null);
+  const [ user, setCurrentUser ] = useState<User | null>(null);
   const [ subscribedCommunityIds, setSubscribedCommunityIds ] = useState<string[]>([]);
   const [ isOnboardingModalOpen, setIsOnboardingModalOpen ] = useState(false);
   const [ userVotes, setUserVotes ] = useState<UserVotes>({});
@@ -168,9 +168,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const updateUserProfile = (data: Partial<User>) => {
-    if (currentUser) {
+    if (user) {
       const updatedUser: User = {
-        ...currentUser,
+        ...user,
         ...data,
       };
       setCurrentUser(updatedUser);
@@ -283,7 +283,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 
   const value = {
-    currentUser,
+    user,
     login,
     logout,
     register,

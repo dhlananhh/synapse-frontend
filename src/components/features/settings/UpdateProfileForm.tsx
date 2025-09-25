@@ -24,7 +24,7 @@ import { Loader2 } from "lucide-react";
 
 
 export default function UpdateProfileForm() {
-  const { currentUser, updateUserProfile } = useAuth();
+  const { user, updateUserProfile } = useAuth();
   const [ successMessage, setSuccessMessage ] = useState<string>("");
 
   const {
@@ -34,7 +34,7 @@ export default function UpdateProfileForm() {
   } = useForm<TUserProfileSchema>({
     resolver: zodResolver(UserProfileSchema),
     defaultValues: {
-      username: currentUser?.username || "",
+      username: user?.username || "",
     }
   });
 
@@ -48,7 +48,7 @@ export default function UpdateProfileForm() {
     });
   }
 
-  if (!currentUser) {
+  if (!user) {
     return <p>Loading user data...</p>;
   }
 

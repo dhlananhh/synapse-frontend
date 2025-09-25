@@ -15,12 +15,12 @@ interface SavePostButtonProps {
 
 
 export default function SavePostButton({ postId }: SavePostButtonProps) {
-  const { currentUser, isPostSaved, toggleSavePost } = useAuth();
+  const { user, isPostSaved, toggleSavePost } = useAuth();
   const saved = isPostSaved(postId);
 
   const handleToggleSave = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (!currentUser) {
+    if (!user) {
       toast.error("Please log in to save posts.");
       return;
     }

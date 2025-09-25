@@ -36,14 +36,14 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   closeChat: () => set({ isWidgetOpen: false }),
 
-  sendMessage: (text, currentUser) => {
+  sendMessage: (text, user) => {
     const activeId = get().activeConversationId;
     if (!activeId) return;
 
     const newMessage: Message = {
       id: `msg_sent_${Date.now()}`,
       text,
-      senderId: currentUser.id,
+      senderId: user.id,
       timestamp: new Date().toISOString()
     };
 

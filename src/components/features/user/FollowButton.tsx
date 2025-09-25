@@ -21,21 +21,21 @@ interface FollowButtonProps {
 
 
 export function FollowButton({ targetUser }: FollowButtonProps) {
-  const { user: currentUser, followingIds, isAuthenticated, updateFollowing } = useAuth();
+  const { user: user, followingIds, isAuthenticated, updateFollowing } = useAuth();
   const [ followState, setFollowState ] = useState<FollowState>("FOLLOW");
   const [ isLoading, setIsLoading ] = useState(false);
 
   useEffect(() => {
     if (!isAuthenticated) {
       setFollowState("NOT_LOGGED_IN");
-    } else if (currentUser?.id === targetUser.id) {
+    } else if (user?.id === targetUser.id) {
       setFollowState("OWN_PROFILE");
     } else if (followingIds.has(targetUser.id)) {
       setFollowState("FOLLOWING");
     } else {
       setFollowState("FOLLOW");
     }
-  }, [ followingIds, currentUser, targetUser, isAuthenticated ]);
+  }, [ followingIds, user, targetUser, isAuthenticated ]);
 
 
   const handleFollow = async () => {

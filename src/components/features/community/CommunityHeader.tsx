@@ -32,7 +32,7 @@ interface CommunityHeaderProps {
 
 export default function CommunityHeader({ community }: CommunityHeaderProps) {
   const {
-    currentUser,
+    user,
     isSubscribed,
     subscribeToCommunity,
     unsubscribeFromCommunity,
@@ -97,7 +97,7 @@ export default function CommunityHeader({ community }: CommunityHeaderProps) {
           </div>
           <div className="flex items-center gap-1">
             {
-              currentUser && (
+              user && (
                 <Button onClick={ handleSubscription }>
                   { subscribed ? "Leave" : "Join" }
                 </Button>

@@ -19,7 +19,7 @@ import SearchBar from "./SearchBar";
 
 export default function MobileNav() {
   const [ isOpen, setIsOpen ] = useState(false);
-  const { currentUser, logout } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <Sheet open={ isOpen } onOpenChange={ setIsOpen }>
@@ -63,12 +63,12 @@ export default function MobileNav() {
           <Separator className="my-2" />
 
           {
-            currentUser ? (
+            user ? (
               <>
                 <div className="p-2">
                   <h4 className="font-semibold mb-2">My Stuff</h4>
                   <Link
-                    href={ `/u/${currentUser.email}` }
+                    href={ `/u/${user.email}` }
                     className="flex items-center p-2 rounded-md hover:bg-secondary"
                     onClick={ () => setIsOpen(false) }
                   >

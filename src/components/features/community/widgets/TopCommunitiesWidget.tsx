@@ -29,7 +29,7 @@ const getTopCommunities = (): Community[] => {
 
 export default function TopCommunitiesWidget() {
   const topCommunities = getTopCommunities();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   return (
     <Card>
@@ -78,7 +78,7 @@ export default function TopCommunitiesWidget() {
           </Button>
 
           {
-            currentUser && (
+            user && (
               <Button
                 className="w-full"
                 asChild

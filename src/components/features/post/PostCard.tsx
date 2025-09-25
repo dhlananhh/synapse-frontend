@@ -40,11 +40,11 @@ const PostCard = React.forwardRef<HTMLDivElement, PostCardProps>(
   ({ post }, ref) => {
     const [ isAwardDialogOpen, setIsAwardDialogOpen ] = useState(false);
     const { spendCoins } = useUserStore();
-    const { currentUser } = useAuth();
+    const { user } = useAuth();
     const [ livePost, setLivePost ] = useState(post);
 
     const handleGiveAward = async (award: Award) => {
-      if (!currentUser) return;
+      if (!user) return;
 
       if (!spendCoins(award.cost)) {
         toast.error("Not enough coins", {
@@ -155,7 +155,7 @@ const PostCard = React.forwardRef<HTMLDivElement, PostCardProps>(
             <Button
               onClick={
                 () => (
-                  currentUser
+                  user
                     ? setIsAwardDialogOpen(true)
                     : toast.error("Please log in to give awards.")
                 )

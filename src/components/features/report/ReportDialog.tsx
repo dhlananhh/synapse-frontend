@@ -44,7 +44,7 @@ export default function ReportDialog({
   itemType
 }: ReportDialogProps) {
 
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   const {
     control,
@@ -56,10 +56,10 @@ export default function ReportDialog({
   });
 
   const onSubmit = async (data: TReportSchema) => {
-    if (!currentUser) return;
+    if (!user) return;
 
     try {
-      await reportContent(itemId, itemType, data.reason, currentUser.id);
+      await reportContent(itemId, itemType, data.reason, user.id);
       toast.success("Report submitted successfully.", {
         description: "Our moderators will review the content shortly. Thank you for helping keep Synapse safe."
       });

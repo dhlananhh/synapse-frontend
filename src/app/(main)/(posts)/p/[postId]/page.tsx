@@ -49,9 +49,9 @@ import {
 
 
 function PostView({ post }: { post: Post }) {
-  const { currentUser, logPostView } = useAuth();
+  const { user, logPostView } = useAuth();
   const router = useRouter();
-  const isAuthor = currentUser?.id === post.author.id;
+  const isAuthor = user?.id === post.author.id;
 
   const [ isDeleting, setIsDeleting ] = useState(false);
   const [ isDeleteDialogOpen, setIsDeleteDialogOpen ] = useState(false);
@@ -136,7 +136,7 @@ function PostView({ post }: { post: Post }) {
                       </DropdownMenuItem>
                     </>
                   ) : (
-                    currentUser && (
+                    user && (
                       <DropdownMenuItem onClick={ () => setIsReportDialogOpen(true) }>
                         <Flag className="mr-2 h-4 w-4" />
                         Report

@@ -57,8 +57,8 @@ export default function CommentItem({
   onCommentDeleted,
   onCommentUpdated
 }: CommentItemProps) {
-  const { currentUser } = useAuth();
-  const isAuthor = currentUser?.id === comment.author.id;
+  const { user } = useAuth();
+  const isAuthor = user?.id === comment.author.id;
 
   const [ isReportDialogOpen, setIsReportDialogOpen ] = useState(false);
   const [ isEditing, setIsEditing ] = useState(false);
@@ -125,7 +125,7 @@ export default function CommentItem({
           </div>
 
           {
-            currentUser && !isEditing && (
+            user && !isEditing && (
               <div className="ml-auto">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

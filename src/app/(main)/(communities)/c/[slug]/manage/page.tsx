@@ -24,15 +24,15 @@ export const dynamic = "force-dynamic";
 export default function ManageCommunityPage() {
   const params = useParams();
   const slug = typeof params.slug === "string" ? params.slug : "";
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   const community = mockCommunities.find(c => c.slug === slug);
 
-  if (currentUser === undefined || !community) {
+  if (user === undefined || !community) {
     return <Skeleton className="h-48 w-full" />;
   }
 
-  const isOwner = currentUser?.id === community.ownerId;
+  const isOwner = user?.id === community.ownerId;
 
   if (!isOwner) {
     return <ForbiddenDisplay

@@ -22,7 +22,7 @@ export default function CommentSection({
   initialComments
 }: CommentSectionProps) {
   const {
-    currentUser,
+    user,
     isBlocked
   } = useAuth();
   const [ comments, setComments ] = useState<Comment[]>(initialComments);
@@ -31,7 +31,7 @@ export default function CommentSection({
     const newComment: Comment = {
       id: `c${Date.now()}`,
       text,
-      author: currentUser as User,
+      author: user as User,
       createdAt: new Date().toISOString(),
       votes: 1,
       replies: [],
@@ -77,12 +77,12 @@ export default function CommentSection({
     <div className="mt-8">
       <hr className="my-6" />
       {
-        currentUser ? (
+        user ? (
           <div>
             <p className="text-sm mb-2">
               Comment as { " " }
               <span className="font-semibold text-primary">
-                { currentUser.username }
+                { user.username }
               </span>
             </p>
             <CommentForm onCommentSubmit={ handleAddComment } />

@@ -27,8 +27,8 @@ interface UserProfileHeaderProps {
 
 
 export function UserProfileHeader({ user }: UserProfileHeaderProps) {
-  const { user: currentUser } = useAuth();
-  const isOwnProfile = currentUser?.id === user.id;
+  const { user: user } = useAuth();
+  const isOwnProfile = user?.id === user.id;
 
   const [ isFollowing, setIsFollowing ] = useState(false);
 

@@ -33,7 +33,7 @@ function EditPageSkeleton() {
 
 export default function EditPostPage(props: { params: Promise<{ postId: string }> }) {
   const params = use(props.params);
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
   const [ post, setPost ] = useState<Post | null>(null);
   const [ isLoading, setIsLoading ] = useState(true);
@@ -44,7 +44,7 @@ export default function EditPostPage(props: { params: Promise<{ postId: string }
       try {
         const fetchedPost = await fetchPostById(params.postId);
 
-        if (!currentUser || currentUser.id !== fetchedPost.author.id) {
+        if (!user || user.id !== fetchedPost.author.id) {
           return router.push(`/p/${params.postId}`);
         }
 
@@ -60,13 +60,13 @@ export default function EditPostPage(props: { params: Promise<{ postId: string }
       }
     };
 
-    if (currentUser !== undefined) {
+    if (user !== undefined) {
       loadPostForEdit();
     }
 
-  }, [ params.postId, currentUser, router ]);
+  }, [ params.postId, user, router ]);
 
-  if (isLoading || currentUser === undefined) {
+  if (isLoading || user === undefined) {
     return <EditPageSkeleton />;
   }
 

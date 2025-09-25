@@ -10,7 +10,7 @@ import { Image, LinkIcon } from "lucide-react";
 
 export default function CreatePostWidget() {
   const router = useRouter();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   const goToSubmitPage = () => router.push("/submit");
 
@@ -18,7 +18,7 @@ export default function CreatePostWidget() {
     <div className="mb-8 p-3 rounded-md bg-card flex items-center gap-4 border">
       {/*
         {
-          currentUser && <UserAvatar user={ currentUser } />
+          user && <UserAvatar user={ user } />
         }
       */}
 

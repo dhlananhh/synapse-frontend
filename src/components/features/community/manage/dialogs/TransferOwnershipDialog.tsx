@@ -46,7 +46,7 @@ export default function TransferOwnershipDialog({
   onOpenChange,
   community
 }: TransferOwnershipDialogProps) {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const router = useRouter();
 
   const [ selectedUser, setSelectedUser ] = useState<User | null>(null);
@@ -54,7 +54,7 @@ export default function TransferOwnershipDialog({
   const [ isTransferring, setIsTransferring ] = useState(false);
   const [ isComboboxOpen, setIsComboboxOpen ] = useState(false);
 
-  const eligibleMembers = allMockUsers.filter(u => u.id !== currentUser?.id);
+  const eligibleMembers = allMockUsers.filter(u => u.id !== user?.id);
 
   const isConfirmationMatched = confirmationText === selectedUser?.username;
 

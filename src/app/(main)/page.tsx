@@ -9,7 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 
 export default function HomeFeed() {
-  const { currentUser, isLoading } = useAuth();
+  const { user, isLoading } = useAuth();
 
   if (isLoading) {
     return (
@@ -19,7 +19,7 @@ export default function HomeFeed() {
     );
   }
 
-  if (currentUser) {
+  if (user) {
     return (
       <FeedPage />
     )

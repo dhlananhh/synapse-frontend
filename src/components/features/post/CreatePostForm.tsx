@@ -75,7 +75,7 @@ import { FormProvider } from "react-hook-form";
 export default function CreatePostForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
 
   const [ flairs, setFlairs ] = useState<Flair[]>([]);
   const [ isLoadingFlairs, setIsLoadingFlairs ] = useState(false);
@@ -127,13 +127,13 @@ export default function CreatePostForm() {
 
 
   const onSubmit = async (data: TPostSchema) => {
-    if (!currentUser) {
+    if (!user) {
       toast.error("You must be logged in to create a post.");
       return;
     }
 
     try {
-      const newPost = await createPost(data, currentUser as User);
+      const newPost = await createPost(data, user as User);
       toast.success("Post created successfully!");
       router.push(PATHS.post(newPost.id));
     } catch (error: any) {

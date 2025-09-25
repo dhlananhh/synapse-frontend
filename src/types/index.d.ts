@@ -144,7 +144,7 @@ export interface ChatState {
   isWidgetOpen: boolean;
   openChat: (contact: User) => void;
   closeChat: () => void;
-  sendMessage: (text: string, currentUser: User) => void;
+  sendMessage: (text: string, user: User) => void;
   _receiveSimulatedReply: (contactId: string, originalText: string) => void;
 };
 

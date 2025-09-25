@@ -13,7 +13,7 @@ interface VoteClientProps {
 }
 
 export default function VoteClient({ itemId, initialVotes }: VoteClientProps) {
-  const { currentUser, getVoteStatus, handleVote } = useAuth();
+  const { user, getVoteStatus, handleVote } = useAuth();
 
   const [ voteCount, setVoteCount ] = useState(initialVotes);
   const initialVote = getVoteStatus(itemId);
@@ -24,7 +24,7 @@ export default function VoteClient({ itemId, initialVotes }: VoteClientProps) {
   }, [ getVoteStatus, itemId ]);
 
   const performVote = (newVote: "UP" | "DOWN") => {
-    if (!currentUser) {
+    if (!user) {
       toast.error("Please log in to vote.");
       return;
     }

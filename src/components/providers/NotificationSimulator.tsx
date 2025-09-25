@@ -54,19 +54,19 @@ const generateRandomNotification = (): Notification => {
 
 
 export default function NotificationSimulator() {
-  const { currentUser } = useAuth();
+  const { user } = useAuth();
   const { addNotification } = useNotificationStore();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
-    if (currentUser && !intervalRef.current) {
+    if (user && !intervalRef.current) {
       intervalRef.current = setInterval(() => {
         const newNotif = generateRandomNotification();
         addNotification(newNotif);
       }, 15000);
     }
 
-    if (!currentUser && intervalRef.current) {
+    if (!user && intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
     }
@@ -76,7 +76,7 @@ export default function NotificationSimulator() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [ currentUser, addNotification ]);
+  }, [ user, addNotification ]);
 
   return null;
 }

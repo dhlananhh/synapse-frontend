@@ -53,14 +53,14 @@ export default function UpdateBirthdayDialog({
 }: UpdateBirthdayDialogProps) {
 
   const {
-    currentUser,
+    user,
     updateUserProfile
   } = useAuth();
 
   const form = useForm<TUpdateBirthdaySchema>({
     resolver: zodResolver(UpdateBirthdaySchema),
     defaultValues: {
-      birthday: currentUser?.birthday ? new Date(currentUser.birthday) : undefined,
+      birthday: user?.birthday ? new Date(user.birthday) : undefined,
     }
   });
 

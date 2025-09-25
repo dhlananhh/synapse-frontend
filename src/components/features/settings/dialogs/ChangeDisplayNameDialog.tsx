@@ -33,7 +33,7 @@ export default function ChangeDisplayNameDialog({
   onOpenChange
 }: ChangeDisplayNameDialogProps) {
 
-  const { currentUser, updateUserProfile } = useAuth();
+  const { user, updateUserProfile } = useAuth();
 
   const {
     register,
@@ -42,7 +42,7 @@ export default function ChangeDisplayNameDialog({
   } = useForm<TUpdateDisplayNameSchema>({
     resolver: zodResolver(UpdateDisplayNameSchema),
     defaultValues: {
-      displayName: currentUser?.displayName || ""
+      displayName: user?.displayName || ""
     }
   });
 
