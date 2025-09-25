@@ -3,6 +3,10 @@ import axios, {
   InternalAxiosRequestConfig
 } from "axios";
 import { authService } from "@/modules/services/auth-service";
+import {
+  getToken,
+  setToken
+} from "@/libs/tokenManager";
 
 
 const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://192.168.1.5:4000/api/auth";
@@ -42,12 +46,23 @@ const processQueue = (error: AxiosError | null) => {
 };
 
 
-const setupResponseInterceptor = (client: typeof authApiClient) => {
+const setupInterceptors = (client: typeof authApiClient) => {
+  client.interceptors.request.use(
+    (config) => {
+      const token = getToken();
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+
+
   client.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {
       const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-
       if (error.response?.status === 401 && !originalRequest._retry) {
         if (isRefreshing) {
           return new Promise((resolve, reject) => {
@@ -59,13 +74,20 @@ const setupResponseInterceptor = (client: typeof authApiClient) => {
         isRefreshing = true;
 
         try {
-          await authService.refreshToken();
+          const refreshResponse = await authService.refreshToken();
+
+          const newAccessToken = refreshResponse.access_token;
+          setToken(newAccessToken);
+
+          originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
           processQueue(null);
           return client(originalRequest);
+
         } catch (refreshError) {
+          setToken(null);
           processQueue(refreshError as AxiosError);
-          await authService.logout();
-          window.location.href = "/login";
+          window.location.href = '/login';
           return Promise.reject(refreshError);
         } finally {
           isRefreshing = false;
@@ -76,8 +98,9 @@ const setupResponseInterceptor = (client: typeof authApiClient) => {
   );
 }
 
-setupResponseInterceptor(authApiClient);
-setupResponseInterceptor(userApiClient);
+
+setupInterceptors(authApiClient);
+setupInterceptors(userApiClient);
 
 
 export { authApiClient, userApiClient };
