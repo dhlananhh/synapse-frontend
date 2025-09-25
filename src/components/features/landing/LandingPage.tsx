@@ -46,7 +46,7 @@ export default function LandingPage() {
             <Button
               asChild
               size="lg"
-              variant="secondary"
+              variant="outline"
             >
               <Link href="/login">
                 Sign In
