@@ -1,132 +1,92 @@
 "use client";
 
 
-import React, { useState } from "react";
-import Link from "next/link";
-import { useAuth } from "@/context/MockAuthContext";
+import React from "react";
+import { useAuth } from "@/context/AuthContext";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage
+} from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button";
-import { UserAvatar } from "./UserAvatar";
-import ConfirmDialog from "./ConfirmDialog";
+} from "@/components/ui/dropdown-menu";
+import Link from "next/link";
 import {
-  Bookmark,
-  Clock,
-  UserRound,
-  Settings,
-  LogOut
+  LogOut,
+  User as UserIcon
 } from "lucide-react";
+import { UserProfile } from "@/types/services/user";
 
 
-export default function UserNav() {
-  const { currentUser, logout } = useAuth();
-  const [ isLogoutDialogOpen, setIsLogoutDialogOpen ] = useState(false);
-  const [ isLoggingOut, setIsLoggingOut ] = useState(false);
+interface UserNavProps {
+  user: UserProfile;
+}
 
-  if (!currentUser)
-    return null;
 
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    logout();
-    setIsLoggingOut(false);
-    setIsLogoutDialogOpen(false);
-  }
+export function UserNav({ user }: UserNavProps) {
+  const { logout } = useAuth();
 
   return (
-    <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="relative h-8 w-8 rounded-full"
-            aria-label="Open user menu"
-          >
-            <UserAvatar user={ currentUser } />
-          </Button>
-        </DropdownMenuTrigger>
-
-        <DropdownMenuContent
-          className="w-56"
-          align="end"
-          forceMount
+    <DropdownMenu>
+      <DropdownMenuTrigger
+        asChild>
+        <Button
+          variant="ghost"
+          className="relative h-10 w-10 rounded-full"
         >
-          <DropdownMenuLabel className="font-normal">
-            <div className="flex flex-col space-y-1">
-              <p className="text-sm font-medium leading-none">
-                { currentUser.username }
-              </p>
-              <p className="text-xs leading-none text-muted-foreground">
-                { currentUser.id }@synapse.io
-              </p>
-            </div>
-          </DropdownMenuLabel>
-
-          <DropdownMenuSeparator />
-
+          <Avatar className="h-10 w-10">
+            <AvatarImage
+              src={ user.avatarUrl || "" }
+              alt={ `@${user.username}` }
+            />
+            <AvatarFallback>
+              { user.username.charAt(0).toUpperCase() }
+            </AvatarFallback>
+          </Avatar>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className="w-56"
+        align="end"
+        forceMount
+      >
+        <DropdownMenuLabel className="font-normal">
+          <div className="flex flex-col space-y-1">
+            <p className="text-sm font-medium leading-none">
+              { `${user.firstName} ${user.lastName}` }
+            </p>
+            <p className="text-xs leading-none text-muted-foreground">
+              @{ user.username }
+            </p>
+          </div>
+        </DropdownMenuLabel>
+        <DropdownMenuSeparator />
+        <DropdownMenuGroup>
           <DropdownMenuItem asChild>
             <Link
-              href={ `/u/${currentUser.username}` }
+              href={ `/u/${user.id}` }
             >
-              <UserRound className="mr-2 h-4 w-4" />
-              Profile
+              <UserIcon className="mr-2 h-4 w-4" />
+              <span>Profile</span>
             </Link>
           </DropdownMenuItem>
-
-          <DropdownMenuItem asChild>
-            <Link
-              href="/saved"
-            >
-              <Bookmark className="mr-2 h-4 w-4" />
-              Saved
-            </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem asChild>
-            <Link href="/history">
-              <Clock className="mr-2 h-4 w-4" />
-              History
-            </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuItem asChild>
-            <Link
-              href="/settings"
-            >
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-            </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          <DropdownMenuItem
-            onClick={ () => setIsLogoutDialogOpen(true) }
-            className="cursor-pointer"
-          >
-            <LogOut className="mr-2 h-4 w-4" />
-            Log out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-
-      <ConfirmDialog
-        open={ isLogoutDialogOpen }
-        onOpenChange={ setIsLogoutDialogOpen }
-        onConfirm={ handleLogout }
-        title="Are you sure you want to log out?"
-        description="You will be returned to the login page."
-        confirmText="Log Out"
-        isConfirming={ isLoggingOut }
-      />
-    </>
-  )
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem
+          onClick={ logout }
+        >
+          <LogOut className="mr-2 h-4 w-4" />
+          <span>Log out</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }
