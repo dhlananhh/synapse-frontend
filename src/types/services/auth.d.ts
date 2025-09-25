@@ -71,10 +71,9 @@ export interface RegisterResponse {
 }
 
 export interface LoginResponse {
-  access_token: string;
-  token_type: "Bearer";
-  expires_in: number;
-  refresh_token: string;
+  accessToken: string;
+  tokenType: "Bearer";
+  expiresIn: number;
   user: AuthUser;
 }
 
