@@ -16,8 +16,7 @@ import {
 import { UserProfile } from "@/types/services/user";
 import { authService } from "@/modules/services/auth-service";
 import { userService } from "@/modules/services/user-service";
-import { register } from "module";
-import { setToken } from "@/libs/tokenManager";
+import { cookieManager } from "@/libs/cookieManager";
 
 
 type CurrentUser = AuthUser & UserProfile;
@@ -33,48 +32,46 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [ user, setUser ] = useState<CurrentUser | null>(null);
   const [ isLoading, setIsLoading ] = useState(true);
 
   useEffect(() => {
     const checkUserSession = async () => {
-      try {
-        const { access_token, user: refreshedAuthUser } = await authService.refreshToken();
-        setToken(access_token);
+      const refreshToken = cookieManager.getRefreshToken();
+      if (refreshToken) {
+        try {
+          const response = await authService.refreshToken(refreshToken);
+          cookieManager.setAccessToken(response.accessToken);
+          if (response.refreshToken)
+            cookieManager.setRefreshToken(response.refreshToken);
 
-        if (refreshedAuthUser?.id) {
-          const userProfile = await userService.getUserProfile(refreshedAuthUser.id);
-          setUser({ ...userProfile, ...refreshedAuthUser });
-        } else { throw new Error("Invalid session"); }
-      } catch (error) {
-        setToken(null);
-        setUser(null);
-      } finally {
-        setIsLoading(false);
+          const userProfile = await userService.getUserProfile(response.user.id);
+          setUser({ ...userProfile, ...response.user });
+        } catch (error) {
+          cookieManager.removeAccessToken();
+          cookieManager.removeRefreshToken();
+          setUser(null);
+        }
       }
+      setIsLoading(false);
     };
     checkUserSession();
   }, []);
 
-  const login = async (credentials: LoginPayload) => {
+  const login = async (credentials) => {
     const response = await authService.login(credentials);
-    setToken(response.accessToken);
+    cookieManager.setAccessToken(response.accessToken);
     const userProfile = await userService.getUserProfile(response.user.id);
     setUser({ ...userProfile, ...response.user });
   };
 
   const logout = async () => {
-    try {
-      await authService.logout();
-    } catch (error) {
-      console.error("Logout API failed:", error);
-    }
-    finally {
-      setToken(null);
-      setUser(null);
-      window.location.href = "/login";
-    }
+    cookieManager.removeAccessToken();
+    cookieManager.removeRefreshToken();
+    setUser(null);
+    window.location.href = "/login";
   };
 
   const register = async (payload: RegisterPayload) => {
