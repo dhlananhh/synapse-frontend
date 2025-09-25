@@ -5,18 +5,28 @@ import React, {
   useEffect,
   useState
 } from "react";
+import Link from "next/link";
+
+import { useAuth } from "@/context/AuthContext";
 import { userService } from "@/modules/services/user-service";
 import {
   FollowerResponse,
   FollowingResponse
 } from "@/types/services/user";
+
+import { FollowCard } from "@/components/features/user/FollowCard";
+import FollowListSkeleton from "@/components/features/user/FollowListSkeleton";
+
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent
 } from "@/components/ui/card";
-import { FollowCard } from "./FollowCard";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Users } from "lucide-react";
+
+import {
+  Users,
+  Lock
+} from "lucide-react";
 
 
 interface FollowListProps {
@@ -26,30 +36,44 @@ interface FollowListProps {
 
 
 export function FollowList({ userId, type }: FollowListProps) {
+  const { user: currentUser, isLoading: isAuthLoading } = useAuth();
   const [ list, setList ] = useState<(FollowerResponse | FollowingResponse)[]>([]);
   const [ loading, setLoading ] = useState(true);
 
   useEffect(() => {
     const fetchList = async () => {
-      try {
-        setLoading(true);
-        const data = type === "followers"
-          ? await userService.getFollowers(userId)
-          : await userService.getFollowing(userId);
-        setList(data);
-      } catch (error) {
-        console.error(`Failed to fetch ${type}:`, error);
-      } finally {
+      if (!isAuthLoading && currentUser) {
+        try {
+          setLoading(true);
+          const data = type === "followers"
+            ? await userService.getFollowers(userId)
+            : await userService.getFollowing(userId);
+          setList(data);
+        } catch (error) {
+          console.error(`Failed to fetch ${type}:`, error);
+        } finally {
+          setLoading(false);
+        }
+      } else if (!isAuthLoading && !currentUser) {
         setLoading(false);
       }
     };
 
     fetchList();
-  }, [ userId, type ]);
+  }, [ userId, type, currentUser, isAuthLoading ]);
 
-  if (loading) {
+
+  if (isAuthLoading || loading) {
     return (
       <FollowListSkeleton />
+    )
+  }
+
+  if (!currentUser) {
+    return (
+      <LoginRequiredState
+        type={ type }
+      />
     )
   }
 
@@ -83,26 +107,6 @@ export function FollowList({ userId, type }: FollowListProps) {
 }
 
 
-const FollowListSkeleton = () => (
-  <div className="space-y-4 p-4">
-    {
-      [ ...Array(3) ].map((_, i) => (
-        <div
-          key={ i }
-          className="flex items-center space-x-4"
-        >
-          <Skeleton className="h-12 w-12 rounded-full" />
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[150px]" />
-            <Skeleton className="h-4 w-[100px]" />
-          </div>
-        </div>
-      ))
-    }
-  </div>
-);
-
-
 const EmptyState = ({ type }: { type: string }) => (
   <div className="text-center p-10 bg-secondary rounded-md">
     <Users className="mx-auto h-12 w-12 text-muted-foreground" />
@@ -116,5 +120,21 @@ const EmptyState = ({ type }: { type: string }) => (
           : "This user isn't following anyone at the moment."
       }
     </p>
+  </div>
+);
+
+
+const LoginRequiredState = ({ type }: { type: string }) => (
+  <div className="text-center p-10 bg-secondary rounded-md">
+    <Lock className="mx-auto h-12 w-12 text-muted-foreground" />
+    <h3 className="mt-4 text-lg font-semibold">
+      Login to see { type }
+    </h3>
+    <p className="mt-2 text-sm text-muted-foreground">
+      You need to be logged in to view this list.
+    </p>
+    <Button asChild className="mt-4">
+      <Link href="/login">Log In</Link>
+    </Button>
   </div>
 );
