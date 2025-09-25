@@ -11,15 +11,12 @@ import {
   FollowingResponse
 } from "@/types/services/user";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage
-} from "@/components/ui/avatar";
-import {
   Card,
   CardContent
 } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { FollowCard } from "./FollowCard";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Users } from "lucide-react";
 
 
 interface FollowListProps {
@@ -41,72 +38,83 @@ export function FollowList({ userId, type }: FollowListProps) {
           : await userService.getFollowing(userId);
         setList(data);
       } catch (error) {
-        console.error(`Failed to fetch ${type}`, error);
+        console.error(`Failed to fetch ${type}:`, error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchList();
   }, [ userId, type ]);
 
-  if (loading)
+  if (loading) {
     return (
-      <div>Loading...</div>
+      <FollowListSkeleton />
     )
+  }
+
+  if (list.length === 0) {
+    return (
+      <EmptyState
+        type={ type }
+      />
+    )
+  }
 
   return (
-    <Card className="mx-auto max-w-lg w-full">
+    <Card>
       <CardContent className="p-4">
-        <div className="space-y-4">
+        <div className="space-y-2">
           {
-            list.map(
-              (item) => {
-                const user = "follower" in item ? item.follower : item.following;
-                return (
-                  <div
-                    key={ user.id }
-                    className="flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage
-                          src={ user.avatarUrl || undefined }
-                        />
-                        <AvatarFallback>
-                          { user.username.charAt(0).toUpperCase() }
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-semibold">
-                          {
-                            `${user.firstName} ${user.lastName}`
-                          }
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          @{ user.username }
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                    >
-                      View
-                    </Button>
-                  </div>
-                )
-              }
-            )
-          }
-          {
-            list.length === 0 && (
-              <p className="text-center text-muted-foreground">
-                No { type } found.
-              </p>
-            )
+            list.map((item) => {
+              const user = "follower" in item ? item.follower : item.following;
+              return (
+                <FollowCard
+                  key={ user.id }
+                  user={ user }
+                />
+              )
+            })
           }
         </div>
       </CardContent>
     </Card>
   );
 }
+
+
+const FollowListSkeleton = () => (
+  <div className="space-y-4 p-4">
+    {
+      [ ...Array(3) ].map((_, i) => (
+        <div
+          key={ i }
+          className="flex items-center space-x-4"
+        >
+          <Skeleton className="h-12 w-12 rounded-full" />
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[150px]" />
+            <Skeleton className="h-4 w-[100px]" />
+          </div>
+        </div>
+      ))
+    }
+  </div>
+);
+
+
+const EmptyState = ({ type }: { type: string }) => (
+  <div className="text-center p-10 bg-secondary rounded-md">
+    <Users className="mx-auto h-12 w-12 text-muted-foreground" />
+    <h3 className="mt-4 text-lg font-semibold">
+      No { type } yet
+    </h3>
+    <p className="mt-2 text-sm text-muted-foreground">
+      {
+        type === "followers"
+          ? "This user doesn't have any followers at the moment."
+          : "This user isn't following anyone at the moment."
+      }
+    </p>
+  </div>
+);
