@@ -119,6 +119,7 @@ export function UserProfileHeader({
             </div>
           )
         }
+        {/*
         {
           isOwnProfile && (
             <div className="flex items-center space-x-2 mt-4 justify-center md:justify-start">
@@ -133,6 +134,7 @@ export function UserProfileHeader({
             </div>
           )
         }
+        */}
       </div>
       {
         isOwnProfile ? (
