@@ -1,74 +1,73 @@
 "use client";
 
 
-import React, { Suspense } from "react";
+import React from "react";
 import Link from "next/link";
-import { useTranslation } from "react-i18next";
+
 import { useAuth } from "@/context/AuthContext";
+
 import { Button } from "@/components/ui/button";
-import UserNav from "./UserNav";
-import MobileNav from "./MobileNav";
-import { ThemeToggle } from "./ThemeToggle";
-import SearchBar from "./SearchBar";
-import NotificationBell from "@/components/features/notifications/NotificationBell";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import { UserNav } from "./UserNav";
 import { BrainCircuit } from "lucide-react";
 
 
-const Navbar = () => {
-  const { t } = useTranslation();
-  const { currentUser } = useAuth();
+export function Navbar() {
+  const { user, isLoading } = useAuth();
+
+  const renderAuthSection = () => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center gap-2">
+          <Skeleton className="h-10 w-20 rounded-md" />
+          <Skeleton className="h-10 w-24 rounded-md" />
+        </div>
+      );
+    }
+
+    if (user) {
+      return (
+        <UserNav user={ user } />
+      )
+    }
+
+    return (
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" asChild>
+          <Link href="/login">Log In</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/register">Sign Up</Link>
+        </Button>
+      </div>
+    );
+  };
 
   return (
-    <header className="fixed top-0 inset-x-0 h-16 z-50 border-b bg-background/80 backdrop-blur-lg">
-      <div className="container h-full max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <div className="md:hidden">
-            <MobileNav />
-          </div>
-
-          <Link href="/" className="hidden md:flex items-center gap-2">
-            <BrainCircuit className="h-8 w-8 text-primary" />
-            <p className="hidden lg:block text-xl font-bold text-foreground">Synapse</p>
+    <header
+      className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur 
+      supports-[backdrop-filter]:bg-background/60"
+    >
+      <div className="container flex h-16 items-center">
+        <div className="mr-4 flex">
+          <Link
+            href="/"
+            className="flex flex-col items-center gap-2 mb-2"
+          >
+            <BrainCircuit className="h-10 w-10 text-primary" />
+            <span className="font-bold">Synapse</span>
           </Link>
         </div>
 
-        <div className="hidden md:flex flex-1 justify-center">
-          <Suspense fallback={
-            <div className="text-center text-muted-foreground mt-10">
-              Searching...
-            </div>
-          }>
-            <SearchBar />
-          </Suspense>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-
-          {
-            currentUser ? (
-              <>
-                <NotificationBell />
-                <UserNav />
-              </>
-            ) : (
-              <div className="hidden sm:flex items-center gap-2">
-                <Button asChild variant="ghost">
-                  <Link href="/login">
-                    { t('navbar.login') }
-                  </Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/register">
-                    { t('navbar.signup') }
-                  </Link>
-                </Button>
-              </div>
-            )
-          }
+        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
+          <div className="w-full flex-1 md:w-auto md:flex-none">
+          </div>
+          <nav className="flex items-center">
+            { renderAuthSection() }
+          </nav>
         </div>
       </div>
     </header>
-  )
+  );
 }
-export default Navbar;
