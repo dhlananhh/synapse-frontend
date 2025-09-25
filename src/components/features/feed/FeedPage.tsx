@@ -13,7 +13,7 @@ export default function FeedPage() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-6 py-6">
       <Navbar />
 
-      <div className="md:col-span-2 mt-10">
+      <div className="md:col-span-2 mt-12">
         <CreatePostWidget />
         {/* <PostFeed /> */ }
       </div>
