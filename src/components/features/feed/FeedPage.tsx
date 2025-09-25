@@ -13,10 +13,11 @@ export default function FeedPage() {
     <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-6 py-6">
       <div className="relative flex min-h-screen flex-col">
         <Navbar />
-      </div>
-      <div className="md:col-span-2">
-        <CreatePostWidget />
-        {/* <PostFeed /> */ }
+
+        <div className="md:col-span-2">
+          <CreatePostWidget />
+          {/* <PostFeed /> */ }
+        </div>
       </div>
       <aside className="hidden md:block">
         <div className="sticky top-20 space-y-4">
