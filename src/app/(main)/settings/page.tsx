@@ -72,7 +72,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="mt-5">
+      <div className="mt-8">
         <h1 className="text-2xl font-bold tracking-tight">
           Settings
         </h1>
