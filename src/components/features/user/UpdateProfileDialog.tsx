@@ -87,22 +87,6 @@ export function UpdateProfileDialog({ user, onProfileUpdate }: UpdateProfileDial
               isSubmitting={ isSubmitting }
             />
           </div>
-
-          <DialogFooter className="flex-col items-start border-t pt-4">
-            <Label className="font-semibold">
-              Privacy Settings
-            </Label>
-            <div className="flex items-center space-x-2 mt-2 w-full justify-between">
-              <Label htmlFor="privacy-mode">
-                Private Account
-              </Label>
-              <Switch
-                id="privacy-mode"
-                checked={ isPrivate }
-                onCheckedChange={ () => setIsConfirmingPrivacy(true) }
-              />
-            </div>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
 
