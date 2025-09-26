@@ -1,4 +1,4 @@
-import { userApiClient } from "@/libs/apiClient";
+import { authApiClient, userApiClient } from "@/libs/apiClient";
 import {
   UserProfile,
   UpdateUserProfilePayload,
@@ -18,11 +18,8 @@ export const userService = {
   // User Profile & Preferences
   // =================================
 
-  getMe: (): Promise<UserProfile> => (
-    userApiClient.get(`/me`).then(res => res.data)
-  ),
-
   getUserProfile: (userId: string): Promise<UserProfile> => (
+    
     userApiClient.get(`/${userId}`).then(res => res.data)
   ),
 

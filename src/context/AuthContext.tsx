@@ -19,11 +19,9 @@ import { userService } from "@/modules/services/user-service";
 import { cookieManager } from "@/libs/cookieManager";
 
 
-type CurrentUser = AuthUser & UserProfile;
-
 
 interface AuthContextType {
-  user: CurrentUser | null;
+  user: AuthUser | null;
   isLoading: boolean;
   login: (credentials: LoginPayload) => Promise<void>;
   logout: () => Promise<void>;
@@ -34,28 +32,21 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [ user, setUser ] = useState<CurrentUser | null>(null);
+  const [ user, setUser ] = useState<AuthUser | null>(null);
   const [ isLoading, setIsLoading ] = useState(true);
+
 
   useEffect(() => {
     const checkUserSession = async () => {
-      const refreshToken = cookieManager.getRefreshToken();
-      if (refreshToken) {
-        try {
-          const response = await authService.refreshToken(refreshToken);
-          cookieManager.setAccessToken(response.accessToken);
-          if (response.refreshToken)
-            cookieManager.setRefreshToken(response.refreshToken);
-
-          const userProfile = await userService.getUserProfile(response.user.id);
-          setUser({ ...userProfile, ...response.user });
-        } catch (error) {
-          cookieManager.removeAccessToken();
-          cookieManager.removeRefreshToken();
-          setUser(null);
-        }
+      try {
+        const getMeUser = await authService.getMe(); // backend validates cookie/session
+        console.log('get me user', getMeUser)
+        setUser(getMeUser);
+      } catch (error) {
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
     checkUserSession();
   }, []);
@@ -63,11 +54,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const login = async (credentials) => {
     const response = await authService.login(credentials);
     cookieManager.setAccessToken(response.accessToken);
-    const userProfile = await userService.getUserProfile(response.user.id);
-    setUser({ ...userProfile, ...response.user });
+    const user = response.user
+    setUser(user);
+    console.log('auth context user', user)
   };
 
   const logout = async () => {
+    await authService.logout();
     cookieManager.removeAccessToken();
     cookieManager.removeRefreshToken();
     setUser(null);

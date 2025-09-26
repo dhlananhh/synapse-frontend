@@ -9,6 +9,8 @@ import {
   GenericMessageResponse
 } from "@/types/services/auth";
 import Cookies from "js-cookie";
+import { AuthUser } from "@/types/services/auth";
+
 
 
 const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || "http://localhost:4000/api/auth";
@@ -23,6 +25,10 @@ export const authService = {
 
   login: (payload: LoginPayload): Promise<LoginResponse> => {
     return authApiClient.post(`${AUTH_SERVICE_URL}/login`, payload).then(res => res.data);
+  },
+
+  getMe: (): Promise<AuthUser> => {
+    return authApiClient.get(`${AUTH_SERVICE_URL}/me`).then(res => res.data);
   },
 
   logout: (): Promise<GenericMessageResponse> => {

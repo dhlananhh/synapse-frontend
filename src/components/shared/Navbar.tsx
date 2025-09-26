@@ -1,10 +1,11 @@
 "use client";
 
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { useAuth } from "@/context/AuthContext";
+import { userService } from "@/modules/services/user-service";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,10 +13,20 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserNav } from "./UserNav";
 import { BrainCircuit } from "lucide-react";
 import MobileNav from "@/components/shared/MobileNav";
+import { UserProfile } from "@/types/services/user";
 
 
 export function Navbar() {
   const { user, isLoading } = useAuth();
+  const [ profile, setProfile ] = useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      userService.getUserProfile(user.id).then(setProfile);
+    } else {
+      setProfile(null);
+    }
+  }, [ user?.id ]);
 
   const renderAuthSection = () => {
     if (isLoading) {
@@ -27,10 +38,10 @@ export function Navbar() {
       );
     }
 
-    if (user) {
+    if (user && profile) {
       return (
-        <UserNav user={ user } />
-      )
+        <UserNav user={ profile } />
+      );
     }
 
     return (

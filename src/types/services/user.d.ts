@@ -35,7 +35,7 @@ export interface UpdateUserPreferencesPayload {
 
 export interface UserProfile {
   id: string;
-  accountId: string;
+  accountId?: string; // made optional since not present in response
   username: string;
   firstName: string;
   lastName: string;
@@ -45,11 +45,15 @@ export interface UserProfile {
   location: string | null;
   avatarUrl: string | null;
   isPrivate: boolean;
-  createdAt: string;
-  updatedAt: string;
-  _count?: {
-    followers: number;
-    following: number;
+  createdAt?: string; // made optional since not present in response
+  updatedAt?: string; // made optional since not present in response
+  followerCount?: number;
+  followingCount?: number;
+  relationshipStatus?: {
+    isFollowing: boolean;
+    isRequested: boolean;
+    followsYou: boolean;
+    requestsYou: boolean;
   };
 }
 

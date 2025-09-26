@@ -42,6 +42,7 @@ export function UserProfileHeader({
 }: UserProfileHeaderProps) {
   const { user: currentUser } = useAuth();
   const isOwnProfile = currentUser?.id === user.id;
+  console.log('is own profile', isOwnProfile)
 
   const [ isFollowing, setIsFollowing ] = useState(false);
 
