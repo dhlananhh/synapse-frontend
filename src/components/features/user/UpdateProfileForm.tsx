@@ -7,7 +7,10 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 
-import { UserProfile } from "@/types/services/user";
+import {
+  UserProfile,
+  UpdateUserProfilePayload
+} from "@/types/services/user";
 
 import {
   Form,
@@ -23,11 +26,28 @@ import { Button } from "@/components/ui/button";
 
 
 const formSchema = z.object({
-  firstName: z.string().min(1, "First name is required").max(50),
-  lastName: z.string().min(1, "Last name is required").max(50),
-  username: z.string().min(3, "Username must be at least 3 characters").max(50),
-  bio: z.string().max(255, "Bio must not exceed 255 characters").optional(),
-  location: z.string().max(100, "Location must not exceed 100 characters").optional(),
+  firstName: z
+    .string()
+    .min(1, "First name is required")
+    .max(50),
+  lastName: z
+    .string()
+    .min(1, "Last name is required")
+    .max(50),
+  username: z
+    .string()
+    .min(3, "Username must be at least 3 characters")
+    .max(50),
+  bio: z
+    .string()
+    .max(255, "Bio must not exceed 255 characters")
+    .optional()
+    .nullable(),
+  location: z.
+    string()
+    .max(100, "Location must not exceed 100 characters")
+    .optional()
+    .nullable(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -139,6 +159,7 @@ export function UpdateProfileForm({
                     placeholder="Tell us a little bit about yourself"
                     className="resize-none"
                     { ...field }
+                    value={ field.value ?? "" }
                   />
                 </FormControl>
                 <FormMessage />
@@ -159,6 +180,7 @@ export function UpdateProfileForm({
                   <Input
                     placeholder="e.g., Earth"
                     { ...field }
+                    value={ field.value ?? "" }
                   />
                 </FormControl>
                 <FormMessage />

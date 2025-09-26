@@ -4,11 +4,14 @@
 import React, { useState } from "react";
 import { toast } from "sonner";
 
-import { UserProfile } from "@/types/services/user";
+import {
+  UserProfile,
+  UpdateUserProfilePayload
+} from "@/types/services/user";
+import { userService } from "@/modules/services/user-service";
 
 import { UpdateProfileForm } from "./UpdateProfileForm";
 import { PrivacyConfirmDialog } from "./PrivacyConfirmDialog";
-import { userService } from "@/modules/services/user-service";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -17,10 +20,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
+  DialogDescription
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
 
 
 interface UpdateProfileDialogProps {
@@ -36,7 +38,7 @@ export function UpdateProfileDialog({ user, onProfileUpdate }: UpdateProfileDial
 
   const [ isPrivate, setIsPrivate ] = useState(user.isPrivate);
 
-  const handleFormSubmit = async (data: any) => {
+  const handleFormSubmit = async (data: UpdateUserProfilePayload) => {
     setIsSubmitting(true);
     try {
       const updatedUser = await userService.updateUserProfile(user.id, data);
@@ -45,7 +47,7 @@ export function UpdateProfileDialog({ user, onProfileUpdate }: UpdateProfileDial
       setIsOpen(false);
     } catch (error: any) {
       toast.error("Failed to update profile.", {
-        description: error.response?.data?.message
+        description: error.response?.data?.error || "An unexpected error occurred.",
       });
     } finally {
       setIsSubmitting(false);
@@ -78,6 +80,9 @@ export function UpdateProfileDialog({ user, onProfileUpdate }: UpdateProfileDial
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <DialogTitle>Edit Your Profile</DialogTitle>
+            <DialogDescription>
+              Make changes to your profile here. Click save when you're done.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="py-4">

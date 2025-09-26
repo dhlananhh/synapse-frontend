@@ -15,8 +15,8 @@ export interface UpdateUserProfilePayload {
   firstName?: string;
   lastName?: string;
   gender?: "MALE" | "FEMALE";
-  bio?: string;
-  location?: string;
+  bio?: string | null;
+  location?: string | null;
   avatarUrl?: string | null;
 }
 
@@ -35,7 +35,7 @@ export interface UpdateUserPreferencesPayload {
 
 export interface UserProfile {
   id: string;
-  accountId?: string; // made optional since not present in response
+  accountId?: string;
   username: string;
   firstName: string;
   lastName: string;
@@ -45,8 +45,8 @@ export interface UserProfile {
   location: string | null;
   avatarUrl: string | null;
   isPrivate: boolean;
-  createdAt?: string; // made optional since not present in response
-  updatedAt?: string; // made optional since not present in response
+  createdAt?: string;
+  updatedAt?: string;
   followerCount?: number;
   followingCount?: number;
   relationshipStatus?: {
