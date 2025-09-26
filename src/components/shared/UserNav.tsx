@@ -21,7 +21,8 @@ import {
 import Link from "next/link";
 import {
   LogOut,
-  User as UserIcon
+  Settings,
+  UserRound
 } from "lucide-react";
 import { UserProfile } from "@/types/services/user";
 
@@ -74,8 +75,16 @@ export function UserNav({ user }: UserNavProps) {
             <Link
               href={ `/u/${user.id}` }
             >
-              <UserIcon className="mr-2 h-4 w-4" />
+              <UserRound className="mr-2 h-4 w-4" />
               <span>Profile</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link
+              href={ `/settings` }
+            >
+              <Settings className="mr-2 h-4 w-4" />
+              <span>Preferences</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>

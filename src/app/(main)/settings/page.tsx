@@ -1,57 +1,91 @@
 "use client";
 
-import React from "react";
+
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
+
+import { userService } from "@/modules/services/user-service";
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger
-} from "@/components/ui/tabs";
-import AccountTab from "@/components/features/settings/tabs/AccountTab";
-import ProfileTab from "@/components/features/settings/tabs/ProfileTab";
-import NotificationsTab from "@/components/features/settings/tabs/NotificationsTab";
-import EmailTab from "@/components/features/settings/tabs/EmailTab";
-import PreferencesTab from "@/components/features/settings/tabs/PreferencesTab";
-import PrivacyTab from "@/components/features/settings/tabs/PrivacyTab";
+  UserPreferences,
+  UpdateUserPreferencesPayload
+} from "@/types/services/user";
 
-
-export const dynamic = "force-dynamic";
+import SettingsPageSkeleton from "@/components/features/settings/SettingsPageSkeleton";
+import { PreferencesForm } from "@/components/features/settings/PreferencesForm";
 
 
 export default function SettingsPage() {
+  const { user: currentUser } = useAuth();
+  const [ preferences, setPreferences ] = useState<UserPreferences | null>(null);
+  const [ isLoading, setIsLoading ] = useState(true);
+
+  useEffect(() => {
+    if (currentUser) {
+      const fetchPreferences = async () => {
+        setIsLoading(true);
+        try {
+          const data = await userService.getUserPreferences(currentUser.id);
+          setPreferences(data);
+        } catch (error) {
+          console.error("Failed to fetch user preferences:", error);
+          toast.error("Could not load your settings. Please try again later.");
+        } finally {
+          setIsLoading(false);
+        }
+      };
+      fetchPreferences();
+    }
+  }, [ currentUser ]);
+
+  const handleUpdatePreferences = async (data: UpdateUserPreferencesPayload) => {
+    if (!currentUser) return;
+
+    try {
+      const updatedPreferences = await userService.updateUserPreferences(currentUser.id, data);
+      setPreferences(updatedPreferences);
+      toast.success("Settings updated successfully!");
+    } catch (error) {
+      console.error("Failed to update preferences:", error);
+      toast.error("Failed to save settings. Please try again.");
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <SettingsPageSkeleton />
+    )
+  }
+
+  if (!preferences) {
+    return (
+      <div className="text-center py-10">
+        <h2 className="text-xl font-semibold">
+          Preferences not found.
+        </h2>
+        <p className="text-muted-foreground">
+          Could not load settings. Please log in to configure your preferences.
+        </p>
+      </div>
+    )
+  }
+
   return (
-    <div className="mt-10 mb-10">
-      <h1 className="text-3xl font-bold mb-6">Settings</h1>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Settings
+        </h1>
+        <p className="text-muted-foreground">
+          Manage your account settings and preferences.
+        </p>
+      </div>
+      <div className="w-full border-t border-border"></div>
 
-      <Tabs defaultValue="account" className="w-full">
-        <TabsList className="grid w-full grid-cols-6 mb-6">
-          <TabsTrigger value="account">Account</TabsTrigger>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="privacy">Privacy</TabsTrigger>
-          <TabsTrigger value="preferences">Preferences</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="email">Email</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="account">
-          <AccountTab />
-        </TabsContent>
-        <TabsContent value="profile">
-          <ProfileTab />
-        </TabsContent>
-        <TabsContent value="privacy">
-          <PrivacyTab />
-        </TabsContent>
-        <TabsContent value="preferences">
-          <PreferencesTab />
-        </TabsContent>
-        <TabsContent value="notifications">
-          <NotificationsTab />
-        </TabsContent>
-        <TabsContent value="email">
-          <EmailTab />
-        </TabsContent>
-      </Tabs>
+      <PreferencesForm
+        initialData={ preferences }
+        onSave={ handleUpdatePreferences }
+      />
     </div>
   );
 }
