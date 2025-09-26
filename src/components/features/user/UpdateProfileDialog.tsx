@@ -23,6 +23,9 @@ import {
   DialogFooter,
   DialogDescription
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 
 
 interface UpdateProfileDialogProps {
@@ -34,8 +37,8 @@ interface UpdateProfileDialogProps {
 export function UpdateProfileDialog({ user, onProfileUpdate }: UpdateProfileDialogProps) {
   const [ isOpen, setIsOpen ] = useState(false);
   const [ isSubmitting, setIsSubmitting ] = useState(false);
-  const [ isConfirmingPrivacy, setIsConfirmingPrivacy ] = useState(false);
 
+  const [ isPrivacyConfirmOpen, setIsPrivacyConfirmOpen ] = useState(false);
   const [ isPrivate, setIsPrivate ] = useState(user.isPrivate);
 
   const handleFormSubmit = async (data: UpdateUserProfilePayload) => {
@@ -54,17 +57,23 @@ export function UpdateProfileDialog({ user, onProfileUpdate }: UpdateProfileDial
     }
   };
 
-  const handleConfirmPrivacy = async () => {
+  const handleConfirmPrivacyChange = async () => {
     try {
-      await userService.togglePrivacy(user.id);
-      const newPrivacyState = !isPrivate;
-      setIsPrivate(newPrivacyState);
-      onProfileUpdate({ ...user, isPrivate: newPrivacyState });
-      toast.success(`Your profile is now ${newPrivacyState ? "private" : "public"}.`);
+      const response = await userService.togglePrivacy(user.id);
+      setIsPrivate(response.isPrivate);
+      onProfileUpdate({ ...user, isPrivate: response.isPrivate });
+      toast.success(`Your profile is now ${response.isPrivate ? "private" : "public"}.`);
+
     } catch (error: any) {
-      toast.error("Failed to update privacy setting.");
+      toast.error("Failed to update privacy setting.", {
+        description: error.response?.data?.error || "Please try again.",
+      });
     }
-  }
+  };
+
+  const handleSwitchClick = () => {
+    setIsPrivacyConfirmOpen(true);
+  };
 
   return (
     <>
@@ -92,14 +101,31 @@ export function UpdateProfileDialog({ user, onProfileUpdate }: UpdateProfileDial
               isSubmitting={ isSubmitting }
             />
           </div>
+
+          <Separator className="my-4" />
+
+          <div className="space-y-2">
+            <Label className="font-semibold">
+              Privacy Settings
+            </Label>
+            <div className="flex items-center justify-between rounded-lg border p-3">
+              <p className="text-sm">
+                Private Account
+              </p>
+              <Switch
+                checked={ isPrivate }
+                onCheckedChange={ handleSwitchClick }
+              />
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
 
       <PrivacyConfirmDialog
-        isOpen={ isConfirmingPrivacy }
-        onOpenChange={ setIsConfirmingPrivacy }
-        onConfirm={ handleConfirmPrivacy }
+        isOpen={ isPrivacyConfirmOpen }
+        onOpenChange={ setIsPrivacyConfirmOpen }
+        onConfirm={ handleConfirmPrivacyChange }
         isMakingPrivate={ !isPrivate }
       />
     </>
