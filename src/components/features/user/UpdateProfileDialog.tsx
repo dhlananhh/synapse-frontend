@@ -102,7 +102,7 @@ export function UpdateProfileDialog({ user, onProfileUpdate }: UpdateProfileDial
             />
           </div>
 
-          <Separator className="my-4" />
+          <Separator />
 
           <div className="space-y-2">
             <Label className="font-semibold">
