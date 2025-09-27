@@ -66,15 +66,10 @@ export const authService = {
   },
 
   setNewPassword: (payload: SetNewPasswordPayload): Promise<GenericMessageResponse> => {
-    const resetToken = Cookies.get(RESET_TOKEN_KEY);
-    if (!resetToken) {
-      return Promise.reject(new Error("Reset token not found or expired."));
-    }
-    Cookies.remove(RESET_TOKEN_KEY);
     return authApiClient.post(
       `${AUTH_SERVICE_URL}/set-new-password`,
       payload,
-      { headers: { Authorization: `Bearer ${resetToken}` } }
+      { withCredentials: true }
     ).then(res => res.data);
   },
 };
