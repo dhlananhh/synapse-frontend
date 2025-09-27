@@ -3,8 +3,8 @@
 
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { useAuth } from "@/context/AuthContext";
 
+import { useAuth } from "@/context/AuthContext";
 import { userService } from "@/modules/services/user-service";
 import {
   UserPreferences,
@@ -13,6 +13,9 @@ import {
 
 import SettingsPageSkeleton from "@/components/features/settings/SettingsPageSkeleton";
 import { PreferencesForm } from "@/components/features/settings/PreferencesForm";
+import { ChangePasswordForm } from "@/components/features/settings/ChangePasswordForm";
+
+import { Separator } from "@/components/ui/separator";
 
 
 export default function SettingsPage() {
@@ -77,7 +80,7 @@ export default function SettingsPage() {
           Settings
         </h1>
         <p className="text-muted-foreground">
-          Manage your account settings and preferences.
+          Manage your account settings, preferences, and password.
         </p>
       </div>
       <div className="w-full border-t border-border"></div>
@@ -86,6 +89,10 @@ export default function SettingsPage() {
         initialData={ preferences }
         onSave={ handleUpdatePreferences }
       />
+
+      <Separator />
+
+      <ChangePasswordForm />
     </div>
   );
 }
