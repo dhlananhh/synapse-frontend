@@ -22,12 +22,6 @@ import { PrivateProfileView } from './PrivateProfileView';
 import UserProfileSkeleton from "@/components/features/user/UserProfileSkeleton";
 
 
-interface Counts {
-  followers: number;
-  following: number;
-}
-
-
 export function UserProfileInterface() {
   const params = useParams();
   const {
