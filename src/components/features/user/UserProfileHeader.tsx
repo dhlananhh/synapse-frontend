@@ -5,7 +5,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 
 import { useAuth } from "@/context/AuthContext";
-import { UserProfile } from "@/types/services/user";
+import { RelationshipStatus, UserProfile } from "@/types/services/user";
 import { userService } from "@/modules/services/user-service";
 
 import { UpdateProfileDialog } from "./UpdateProfileDialog";
@@ -15,60 +15,243 @@ import {
   AvatarFallback,
   AvatarImage
 } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import {
   MapPin,
   UserCheck,
-  Lock
+  Lock,
+  UserPlus
 } from "lucide-react";
 
 
 interface UserProfileHeaderProps {
   user: UserProfile;
-  counts: {
-    followers: number;
-    following: number;
-  };
   onProfileUpdate: (updatedUser: UserProfile) => void;
+  onRelationshipUpdate: (newStatus: RelationshipStatus) => void;
 }
 
 
 export function UserProfileHeader({
   user,
-  counts,
-  onProfileUpdate
+  onProfileUpdate,
+  onRelationshipUpdate
 }: UserProfileHeaderProps) {
   const { user: currentUser } = useAuth();
   const isOwnProfile = currentUser?.id === user.id;
-  console.log('is own profile', isOwnProfile)
+  console.log("is own profile", isOwnProfile)
 
-  const [ isFollowing, setIsFollowing ] = useState(false);
+  const [ isProcessing, setIsProcessing ] = useState(false);
 
   const handleFollow = async () => {
+    setIsProcessing(true);
     try {
-      await userService.followUser(user.id);
-      setIsFollowing(true);
-      toast.success(`You are now following ${user.username}`);
-    } catch (error: any) {
-      toast.error("Failed to follow user.", {
-        description: error.response?.data?.message
+      const response = await userService.followUser(user.id);
+      onRelationshipUpdate({
+        ...user.relationshipStatus!,
+        isFollowing: response.status === "ACCEPTED",
+        isRequested: response.status === "PENDING",
       });
+      toast.success(response.message);
+    } catch (error: any) {
+      toast.error("Follow action failed.");
+    }
+    finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleTogglePrivacy = async (isPrivate: boolean) => {
+  const handleUnfollow = async () => {
+    setIsProcessing(true);
     try {
-      await userService.togglePrivacy(user.id);
-      toast.success(`Your profile is now ${isPrivate ? "private" : "public"}.`);
-    } catch (error: any) {
-      toast.error("Failed to update privacy settings.", {
-        description: error.response?.data?.message,
-        duration: 2000,
+      await userService.unfollowUser(user.id);
+      onRelationshipUpdate({
+        ...user.relationshipStatus!,
+        isFollowing: false
       });
+      toast.success(`You have unfollowed ${user.username}`);
+    } catch (error: any) {
+      toast.error("Unfollow action failed.");
     }
-  }
+    finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleCancelRequest = async () => {
+    setIsProcessing(true);
+    try {
+      await userService.cancelFollowRequest(user.id);
+      onRelationshipUpdate({
+        ...user.relationshipStatus!,
+        isRequested: false
+      });
+      toast.success("Follow request cancelled.");
+    } catch (error: any) {
+      toast.error("Action failed.");
+    }
+    finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleAcceptRequest = async () => {
+    setIsProcessing(true);
+    try {
+      await userService.acceptFollowRequest(user.id);
+
+      onRelationshipUpdate({
+        ...user.relationshipStatus!,
+        requestsYou: false,
+        followsYou: true,
+      });
+
+      toast.success(`You have accepted ${user.username}'s follow request.`);
+
+    } catch (error: any) {
+      toast.error("Failed to accept request.", {
+        description: error.response?.data?.message || "Please try again.",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleRejectRequest = async () => {
+    setIsProcessing(true);
+    try {
+      await userService.rejectFollowRequest(user.id);
+
+      onRelationshipUpdate({
+        ...user.relationshipStatus!,
+        requestsYou: false,
+      });
+
+      toast.success("Follow request rejected.");
+
+    } catch (error: any) {
+      toast.error("Failed to reject request.", {
+        description: error.response?.data?.message || "Please try again.",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+
+  const renderActionButton = () => {
+    if (isOwnProfile) {
+      return (
+        <UpdateProfileDialog
+          user={ user }
+          onProfileUpdate={ onProfileUpdate }
+        />
+      )
+    }
+
+    if (!user.relationshipStatus) {
+      return (
+        <Button
+          onClick={ () => window.location.href = '/login' }
+        >
+          <UserPlus className="mr-2 h-4 w-4" />
+          Follow
+        </Button>
+      );
+    }
+
+    const { isFollowing, isRequested, followsYou, requestsYou } = user.relationshipStatus;
+
+    if (requestsYou) {
+      return (
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={ handleAcceptRequest }
+            disabled={ isProcessing }
+            size="sm"
+          >
+            Accept
+          </Button>
+          <Button
+            onClick={ handleRejectRequest }
+            disabled={ isProcessing }
+            size="sm"
+            variant="secondary"
+          >
+            Reject
+          </Button>
+        </div>
+      );
+    }
+
+    if (isFollowing) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            asChild
+          >
+            <Button
+              variant="secondary"
+              disabled={ isProcessing }
+            >
+              <UserCheck className="mr-2 h-4 w-4" />
+              Following
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              className="text-red-600"
+              onClick={ handleUnfollow }
+            >
+              Unfollow
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
+    if (isRequested) {
+      return (
+        <Button
+          variant="secondary"
+          onClick={ handleCancelRequest }
+          disabled={ isProcessing }
+        >
+          Requested
+        </Button>
+      );
+    }
+
+    if (followsYou && !isFollowing) {
+      return (
+        <Button
+          onClick={ handleFollow }
+          disabled={ isProcessing }
+        >
+          <UserPlus className="mr-2 h-4 w-4" />
+          Follow Back
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        onClick={ handleFollow }
+        disabled={ isProcessing }
+      >
+        <UserPlus className="mr-2 h-4 w-4" />
+        Follow
+      </Button>
+    );
+  };
+
 
   return (
     <div className="flex flex-col md:flex-row items-center md:items-start gap-6 p-6 bg-card border rounded-lg">
@@ -99,10 +282,10 @@ export function UserProfileHeader({
         </p>
         <div className="flex gap-4 my-3 justify-center md:justify-start">
           <span className="font-semibold">
-            { counts.followers } Followers
+            { user.followerCount } Followers
           </span>
           <span className="font-semibold">
-            { counts.following } Following
+            { user.followingCount } Following
           </span>
         </div>
         {
@@ -120,39 +303,10 @@ export function UserProfileHeader({
             </div>
           )
         }
-        {/*
-        {
-          isOwnProfile && (
-            <div className="flex items-center space-x-2 mt-4 justify-center md:justify-start">
-              <Switch
-                id="privacy-mode"
-                onCheckedChange={ handleTogglePrivacy }
-                defaultChecked={ user.isPrivate }
-              />
-              <Label htmlFor="privacy-mode">
-                Private Account
-              </Label>
-            </div>
-          )
-        }
-        */}
+        <div className="shrink-0">
+          { renderActionButton() }
+        </div>
       </div>
-      {
-        isOwnProfile ? (
-          <UpdateProfileDialog
-            user={ user }
-            onProfileUpdate={ onProfileUpdate }
-          />
-        ) : (
-          <Button
-            onClick={ handleFollow }
-            variant={ isFollowing ? "secondary" : "default" }
-          >
-            <UserCheck className="mr-2 h-4 w-4" />
-            { isFollowing ? "Following" : "Follow" }
-          </Button>
-        )
-      }
     </div >
   );
 }

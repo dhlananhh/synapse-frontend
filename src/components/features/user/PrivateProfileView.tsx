@@ -18,7 +18,6 @@ import { Lock } from "lucide-react";
 
 interface PrivateProfileViewProps {
   user: UserProfile;
-  counts: { followers: number; following: number; };
   isFollowing: boolean;
   isPending: boolean;
 }
@@ -26,7 +25,6 @@ interface PrivateProfileViewProps {
 
 export function PrivateProfileView({
   user,
-  counts,
   isFollowing,
   isPending
 }: PrivateProfileViewProps) {
@@ -53,10 +51,10 @@ export function PrivateProfileView({
           </p>
           <div className="flex gap-4 my-3 justify-center md:justify-start">
             <span className="font-semibold">
-              { counts.followers } Followers
+              { user.followerCount } Followers
             </span>
             <span className="font-semibold">
-              { counts.following } Following
+              { user.followingCount } Following
             </span>
           </div>
         </div>
@@ -75,7 +73,7 @@ export function PrivateProfileView({
           This Account is Private
         </h3>
         <p className="mt-2 text-sm text-muted-foreground">
-          Follow this account to see their posts and activity.
+          Follow this account to see their posts and activities.
         </p>
         {
           !currentUser && (

@@ -1,8 +1,13 @@
 "use client";
 
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+
 import { useAuth } from "@/context/AuthContext";
+import { UserProfile } from "@/types/services/user";
+import { authService } from "@/modules/services/auth-service";
+
 import {
   Avatar,
   AvatarFallback,
@@ -18,13 +23,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import Link from "next/link";
+
 import {
   LogOut,
   Settings,
   UserRound
 } from "lucide-react";
-import { UserProfile } from "@/types/services/user";
 
 
 interface UserNavProps {
@@ -33,12 +37,31 @@ interface UserNavProps {
 
 
 export function UserNav({ user }: UserNavProps) {
-  const { logout } = useAuth();
+  const { user: authUser, logout } = useAuth();
+  const [ userId, setUserId ] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserId = async () => {
+      if (authUser?.id) {
+        try {
+          const profile = await authService.getMe();
+          setUserId(profile.id);
+        } catch (error) {
+          console.error("Failed to fetch user ID for UserNav", error);
+        }
+      }
+    };
+    fetchUserId();
+  }, [ authUser ]);
+
+  if (!authUser)
+    return null;
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        asChild>
+        asChild
+      >
         <Button
           variant="ghost"
           className="relative h-10 w-10 rounded-full"
@@ -54,6 +77,7 @@ export function UserNav({ user }: UserNavProps) {
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
+
       <DropdownMenuContent
         className="w-56"
         align="end"
@@ -69,16 +93,22 @@ export function UserNav({ user }: UserNavProps) {
             </p>
           </div>
         </DropdownMenuLabel>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link
-              href={ `/u/${user.id}` }
-            >
-              <UserRound className="mr-2 h-4 w-4" />
-              <span>Profile</span>
-            </Link>
-          </DropdownMenuItem>
+          {
+            userId && (
+              <DropdownMenuItem asChild>
+                <Link
+                  href={ `/u/${userId}` }
+                >
+                  <UserRound className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </Link>
+              </DropdownMenuItem>
+            )
+          }
           <DropdownMenuItem asChild>
             <Link
               href={ `/settings` }
@@ -88,7 +118,9 @@ export function UserNav({ user }: UserNavProps) {
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>
+
         <DropdownMenuSeparator />
+
         <DropdownMenuItem
           onClick={ logout }
         >

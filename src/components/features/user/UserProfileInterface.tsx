@@ -11,7 +11,8 @@ import { useAuth } from "@/context/AuthContext";
 import {
   FollowerResponse,
   FollowingResponse,
-  UserProfile
+  UserProfile,
+  RelationshipStatus
 } from "@/types/services/user";
 import { userService } from "@/modules/services/user-service";
 
@@ -19,7 +20,6 @@ import { UserProfileHeader } from "@/components/features/user/UserProfileHeader"
 import { UserProfileTabs } from "@/components/features/user/UserProfileTabs";
 import { PrivateProfileView } from './PrivateProfileView';
 import UserProfileSkeleton from "@/components/features/user/UserProfileSkeleton";
-
 
 
 interface Counts {
@@ -30,7 +30,10 @@ interface Counts {
 
 export function UserProfileInterface() {
   const params = useParams();
-  const { user: currentUser } = useAuth();
+  const {
+    user: currentUser,
+    isLoading: isAuthLoading
+  } = useAuth();
   const userId = params.userId as string;
 
   const [ user, setUser ] = useState<UserProfile | null>(null);
@@ -38,11 +41,10 @@ export function UserProfileInterface() {
 
   const [ followers, setFollowers ] = useState<FollowerResponse[]>([]);
   const [ following, setFollowing ] = useState<FollowingResponse[]>([]);
-  const [ counts, setCounts ] = useState<Counts>({ followers: 0, following: 0 });
 
   useEffect(() => {
     if (userId) {
-      const fetchUser = async () => {
+      const fetchUserProfile = async () => {
         try {
           setLoading(true);
 
@@ -55,10 +57,6 @@ export function UserProfileInterface() {
           setUser(userData);
           setFollowers(followersData);
           setFollowing(followingData);
-          setCounts({
-            followers: followersData.length,
-            following: followingData.length
-          });
         } catch (error) {
           console.error(`Failed to fetch profile data for user ${userId}:`, error);
           setUser(null);
@@ -66,7 +64,7 @@ export function UserProfileInterface() {
           setLoading(false);
         }
       };
-      fetchUser();
+      fetchUserProfile();
     }
   }, [ userId ]);
 
@@ -74,8 +72,24 @@ export function UserProfileInterface() {
     setUser(updatedUser);
   };
 
+  const handleRelationshipUpdate = (newStatus: RelationshipStatus | null) => {
+    if (user) {
+      setUser(prevProfile => {
+        if (!prevProfile) return null;
+        const newFollowerCount = newStatus?.isFollowing
+          ? prevProfile.followerCount + 1
+          : prevProfile.followerCount - 1;
 
-  if (loading) {
+        return {
+          ...prevProfile,
+          relationshipStatus: newStatus,
+          followerCount: newFollowerCount < 0 ? 0 : newFollowerCount,
+        };
+      });
+    }
+  }
+
+  if (isAuthLoading || loading) {
     return (
       <UserProfileSkeleton />
     )
@@ -94,9 +108,12 @@ export function UserProfileInterface() {
     );
   }
 
-  const isOwnProfile = currentUser?.id === user.id;
-  const isFollowing = false;
-  const isPending = false;
+  const isOwnProfile = currentUser?.id === userId;
+  console.log("current user id: ", currentUser?.id)
+  console.log("user.id: ", user.id)
+  console.log("userId: ", userId)
+  const isFollowing = user.relationshipStatus?.isFollowing ?? false;
+  const isPending = user.relationshipStatus?.isRequested ?? false;
   const canViewProfile = !user.isPrivate || isOwnProfile || isFollowing;
 
   if (canViewProfile) {
@@ -104,8 +121,8 @@ export function UserProfileInterface() {
       <div className="container mx-auto max-w-4xl py-8 space-y-8">
         <UserProfileHeader
           user={ user }
-          counts={ counts }
           onProfileUpdate={ handleProfileUpdate }
+          onRelationshipUpdate={ handleRelationshipUpdate }
         />
 
         <UserProfileTabs
@@ -120,7 +137,6 @@ export function UserProfileInterface() {
   return (
     <PrivateProfileView
       user={ user }
-      counts={ counts }
       isFollowing={ isFollowing }
       isPending={ isPending }
     />

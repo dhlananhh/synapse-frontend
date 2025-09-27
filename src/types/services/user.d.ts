@@ -47,17 +47,17 @@ export interface UserProfile {
   isPrivate: boolean;
   createdAt?: string;
   updatedAt?: string;
-  followerCount?: number;
-  followingCount?: number;
-  relationshipStatus: RelationshipType | null;
+  followerCount: number;
+  followingCount: number;
+  relationshipStatus: RelationshipStatus | null;
 }
 
-export type RelationshipType =
-  | "FOLLOWING"
-  | "REQUESTED"
-  | "FOLLOWED_BY"
-  | "NONE"
-  | "MUTUAL";
+export interface RelationshipStatus {
+  isFollowing: boolean;
+  isRequested: boolean;
+  followsYou: boolean;
+  requestsYou: boolean;
+}
 
 export interface UserPreferences {
   theme: "light" | "dark";
