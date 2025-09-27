@@ -49,13 +49,15 @@ export interface UserProfile {
   updatedAt?: string;
   followerCount?: number;
   followingCount?: number;
-  relationshipStatus?: {
-    isFollowing: boolean;
-    isRequested: boolean;
-    followsYou: boolean;
-    requestsYou: boolean;
-  };
+  relationshipStatus: RelationshipType | null;
 }
+
+export type RelationshipType =
+  | "FOLLOWING"
+  | "REQUESTED"
+  | "FOLLOWED_BY"
+  | "NONE"
+  | "MUTUAL";
 
 export interface UserPreferences {
   theme: "light" | "dark";
