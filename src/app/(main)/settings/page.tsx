@@ -85,14 +85,18 @@ export default function SettingsPage() {
       </div>
       <div className="w-full border-t border-border"></div>
 
-      <PreferencesForm
-        initialData={ preferences }
-        onSave={ handleUpdatePreferences }
-      />
+      <div className="space-y-8 lg:grid lg:grid-cols-2 lg:gap-8 lg:space-y-0">
+        <div className="flex flex-col">
+          <PreferencesForm
+            initialData={ preferences }
+            onSave={ handleUpdatePreferences }
+          />
+        </div>
 
-      <Separator />
-
-      <ChangePasswordForm />
+        <div className="flex flex-col">
+          <ChangePasswordForm />
+        </div>
+      </div>
     </div>
   );
 }

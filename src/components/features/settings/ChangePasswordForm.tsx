@@ -33,10 +33,6 @@ import {
 const formSchema = z.object({
   current_password: z.string().min(1, "Current password is required."),
   new_password: z.string().min(8, "New password must be at least 8 characters."),
-  confirm_password: z.string()
-}).refine(data => data.new_password === data.confirm_password, {
-  message: "New passwords don't match",
-  path: [ "confirm_password" ],
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -50,7 +46,6 @@ export function ChangePasswordForm() {
     defaultValues: {
       current_password: "",
       new_password: "",
-      confirm_password: "",
     },
   });
 
@@ -58,8 +53,8 @@ export function ChangePasswordForm() {
     setIsSubmitting(true);
     try {
       await authService.changePassword({
-        current_password: data.current_password,
-        new_password: data.new_password,
+        currentPassword: data.current_password,
+        newPassword: data.new_password,
       });
 
       toast.success("Password changed successfully!", {
@@ -124,24 +119,6 @@ export function ChangePasswordForm() {
                       />
                     </FormControl>
                     <FormDescription>Must be at least 8 characters long.</FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )
-              }
-            />
-            <FormField
-              control={ form.control }
-              name="confirm_password"
-              render={
-                ({ field }) => (
-                  <FormItem>
-                    <FormLabel>Confirm New Password</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="password"
-                        { ...field }
-                      />
-                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )
