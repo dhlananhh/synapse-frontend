@@ -1,5 +1,9 @@
 import { communityApiClient } from "@/libs/apiClient";
-import { CreateCommunityPayload, GenericMessageResponse } from "@/types/services/community";
+import {
+  CreateCommunityPayload,
+  GenericMessageResponse
+} from "@/types/services/community";
+
 
 export const communityService = {
   createCommunity: (payload: CreateCommunityPayload): Promise<GenericMessageResponse> => {

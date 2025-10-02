@@ -6,9 +6,12 @@ import { authService } from "@/modules/services/auth-service";
 import { cookieManager } from "@/libs/cookieManager";
 
 
-const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000/api/auth";
-const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || "http://localhost:4002/api/users";
-const COMMUNITY_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || "http://localhost:4003/api/communities";
+const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_API_BASE_URL
+  || "http://localhost:4000/api/auth";
+const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL
+  || "http://localhost:4002/api/users";
+const COMMUNITY_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL
+  || "http://localhost:4003/api/communities";
 
 
 const createApiClient = (baseURL: string) => {
@@ -56,6 +59,7 @@ const setupInterceptors = (client: typeof authApiClient) => {
     },
     (error) => Promise.reject(error)
   );
+
 
   client.interceptors.response.use(
     (response) => response,
@@ -106,10 +110,13 @@ const setupInterceptors = (client: typeof authApiClient) => {
 }
 
 
-
 setupInterceptors(authApiClient);
 setupInterceptors(userApiClient);
 setupInterceptors(communityApiClient);
 
 
-export { authApiClient, userApiClient, communityApiClient };
+export {
+  authApiClient,
+  userApiClient,
+  communityApiClient
+};

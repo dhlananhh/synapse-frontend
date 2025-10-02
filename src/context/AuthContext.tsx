@@ -51,7 +51,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     checkUserSession();
   }, []);
 
-  const login = async (credentials) => {
+  const login = async (credentials: LoginPayload) => {
     const response = await authService.login(credentials);
     cookieManager.setAccessToken(response.accessToken);
     const user = response.user
