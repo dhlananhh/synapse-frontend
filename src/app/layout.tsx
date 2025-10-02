@@ -8,9 +8,6 @@ import { AuthProvider } from "@/context/AuthContext";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import TopProgressBar from "@/components/providers/TopProgressBar";
-// import ChatWidget from "@/components/features/chat/ChatWidget";
-import NotificationSimulator from "@/components/providers/NotificationSimulator";
-import { CommandMenuProvider } from "@/context/CommandMenuContext";
 
 
 const lexend = Lexend({
@@ -47,15 +44,9 @@ export default function RootLayout({
             disableTransitionOnChange
           >
             <TopProgressBar />
-
-            <CommandMenuProvider>
-              <AuthProvider>
-                <NotificationSimulator />
-                { children }
-                {/* <ChatWidget /> */ }
-              </AuthProvider>
-            </CommandMenuProvider>
-
+            <AuthProvider>
+              { children }
+            </AuthProvider>
             <Toaster
               richColors
               position="top-right"

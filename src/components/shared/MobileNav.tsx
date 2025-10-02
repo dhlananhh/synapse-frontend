@@ -13,8 +13,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { BrainCircuit, Home, LogIn, Menu, UserPlus } from "lucide-react";
-import UserNav from "./UserNav";
-import SearchBar from "./SearchBar";
 
 
 export default function MobileNav() {
@@ -44,8 +42,10 @@ export default function MobileNav() {
         </SheetHeader>
 
         <div className="p-4">
-          <Suspense fallback={ <div className="text-center text-muted-foreground mt-10">Searching...</div> }>
-            <SearchBar />
+          <Suspense fallback={
+            <div className="text-center text-muted-foreground mt-10">
+              Searching...</div>
+          }>
           </Suspense>
         </div>
         <Separator />

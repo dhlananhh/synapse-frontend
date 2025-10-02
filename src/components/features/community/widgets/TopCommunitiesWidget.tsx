@@ -4,7 +4,6 @@
 import React from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
-import { mockCommunities } from "@/libs/mock-data";
 import { Community } from "@/types";
 import {
   Card,
@@ -22,13 +21,13 @@ import { Button } from "@/components/ui/button";
 import { PATHS } from "@/libs/paths";
 
 
-const getTopCommunities = (): Community[] => {
-  return [ ...mockCommunities ].sort((a, b) => b.memberCount - a.memberCount).slice(0, 5);
-}
+// const getTopCommunities = (): Community[] => {
+//   return [ ...mockCommunities ].sort((a, b) => b.memberCount - a.memberCount).slice(0, 5);
+// }
 
 
 export default function TopCommunitiesWidget() {
-  const topCommunities = getTopCommunities();
+  // const topCommunities = getTopCommunities();
   const { user } = useAuth();
 
   return (
@@ -38,7 +37,7 @@ export default function TopCommunitiesWidget() {
       </CardHeader>
       <CardContent>
         <ul className="space-y-3">
-          {
+          {/* {
             topCommunities.map((community, index) => (
               <li key={ community.id }>
                 <Link
@@ -65,7 +64,7 @@ export default function TopCommunitiesWidget() {
                 </Link>
               </li>
             ))
-          }
+          } */}
         </ul>
 
         <div className="mt-6 flex flex-col gap-2">
@@ -90,6 +89,18 @@ export default function TopCommunitiesWidget() {
               </Button>
             )
           }
+        </div>
+
+        <div className="mt-6 flex flex-col gap-2">
+          <Button
+            className="w-full mt-6"
+            variant="outline"
+            asChild
+          >
+            <Link href={ `/c/create` }>
+              Create your own community
+            </Link>
+          </Button>
         </div>
       </CardContent>
     </Card>
