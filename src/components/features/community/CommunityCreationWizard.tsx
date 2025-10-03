@@ -4,11 +4,11 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { CommunityInfoForm } from "./CommunityInfoForm";
-import { TCreateCommunitySchema } from "@/libs/validators/community-validator"
-import { CommunityImageForm } from "./CommunityImageForm";
 import { Community } from "@/types/services/community";
 import { communityService } from "@/modules/services/community-service";
+import { TCreateCommunitySchema } from "@/libs/validators/community-validator";
+import { CommunityInfoForm } from "./CommunityInfoForm";
+import { CommunityImageForm } from "./CommunityImageForm";
 
 
 type WizardStep = "info" | "images";

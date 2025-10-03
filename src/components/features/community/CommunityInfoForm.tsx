@@ -10,7 +10,10 @@ import {
 } from "@/libs/validators/community-validator"
 import {
   Card,
-  CardContent
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,13 +49,19 @@ export function CommunityInfoForm({
     defaultValues: {
       name: "",
       description: "",
-      status: "PUBLIC",
-      isNSFW: false
+      isPrivate: false,
+      isNSFW: false,
     },
   });
 
   return (
     <Card>
+      <CardHeader className="pt-2">
+        <CardTitle>Community Information</CardTitle>
+        <CardDescription>
+          This is the first step to building your own community on Synapse.
+        </CardDescription>
+      </CardHeader>
       <CardContent className="pt-2">
         <Form
           { ...form }
@@ -102,32 +111,22 @@ export function CommunityInfoForm({
             />
             <FormField
               control={ form.control }
-              name="status"
+              name="isPrivate"
               render={
                 ({ field }) => (
-                  <FormItem className="space-y-3">
-                    <FormLabel>Community Type</FormLabel>
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                    <div className="space-y-0.5">
+                      <FormLabel>Private Community</FormLabel>
+                      <FormDescription>
+                        If turned on, only members you approve can view and post.
+                      </FormDescription>
+                    </div>
                     <FormControl>
-                      <RadioGroup
-                        onValueChange={ field.onChange }
-                        defaultValue={ field.value }
-                        className="flex flex-col space-y-1"
-                      >
-                        <FormItem className="flex items-center space-x-3">
-                          <FormControl>
-                            <RadioGroupItem value="PUBLIC" />
-                          </FormControl>
-                          <FormLabel className="font-normal">Public</FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center space-x-3">
-                          <FormControl>
-                            <RadioGroupItem value="PRIVATE" />
-                          </FormControl>
-                          <FormLabel className="font-normal">Private</FormLabel>
-                        </FormItem>
-                      </RadioGroup>
+                      <Switch
+                        checked={ field.value }
+                        onCheckedChange={ field.onChange }
+                      />
                     </FormControl>
-                    <FormMessage />
                   </FormItem>
                 )
               }
