@@ -4,6 +4,7 @@
 import React from "react";
 import CreatePostWidget from "@/components/shared/CreatePostWidget";
 import { Navbar } from "@/components/shared/Navbar";
+import TopCommunitiesWidget from "@/components/features/community/TopCommunitiesWidget";
 
 
 export default function FeedPage() {
@@ -16,6 +17,7 @@ export default function FeedPage() {
       </div>
       <aside className="hidden md:block">
         <div className="sticky top-20 space-y-4">
+          <TopCommunitiesWidget />
         </div>
       </aside>
     </div>
