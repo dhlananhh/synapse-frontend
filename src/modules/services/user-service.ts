@@ -19,7 +19,6 @@ export const userService = {
   // =================================
 
   getUserProfile: (userId: string): Promise<UserProfile> => (
-
     userApiClient.get(`/${userId}`).then(res => res.data)
   ),
 
