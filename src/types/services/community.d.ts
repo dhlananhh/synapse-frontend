@@ -17,6 +17,18 @@ export interface UpdateCommunityPayload {
   moderationMode?: boolean;
 }
 
+export interface CreateFlairPayload {
+  name: string;
+  color?: string;
+  description?: string;
+}
+
+export interface UpdateFlairPayload {
+  name?: string;
+  color?: string;
+  description?: string;
+}
+
 
 // =================================
 // Responses from API
@@ -39,6 +51,14 @@ export interface Community {
   updatedAt: string;
 }
 
+export interface CommunityFlair {
+  id: string;
+  name: string;
+  color: string | null;
+  description: string | null;
+}
+
+
 export interface GenericMessageResponse {
   success: boolean;
   message: string;
@@ -51,4 +71,16 @@ export interface GetCommunitiesResponse {
     hasMore: boolean;
     nextCursor: string | null;
   };
+}
+
+export interface GetFlairsResponse {
+  success: boolean;
+  message: string;
+  data: CommunityFlair[];
+}
+
+export interface FlairResponse {
+  success: boolean;
+  message: string;
+  data: CommunityFlair;
 }

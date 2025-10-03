@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import { Community } from "@/types/services/community";
 import { UpdateCommunityDialog } from "@/components/features/community/UpdateCommunityDialog";
+import { ManageCommunityFlairDialog } from "@/components/features/community/ManageCommunityFlairDialog";
 
 
 const mockCommunityData: Community = {
@@ -57,18 +58,18 @@ export default function TestCommunityUpdatePage() {
           <h2 className="text-xl font-semibold border-b pb-2">Current Community Data</h2>
           <div>
             <p>
-              <strong>Name:</strong>
+              <strong>Name:</strong> { " " }
               { communityData.name }
             </p>
           </div>
           <div>
             <p>
-              <strong>Description:</strong>
+              <strong>Description:</strong> { " " }
               { communityData.description }
             </p>
           </div>
           <div>
-            <p><strong>Is Private:</strong>
+            <p><strong>Is Private:</strong> { " " }
               <span
                 className={ communityData.isPrivate ? "font-bold text-red-500" : "" }
               >
@@ -77,7 +78,7 @@ export default function TestCommunityUpdatePage() {
           </div>
           <div>
             <p>
-              <strong>Is NSFW:</strong>
+              <strong>Is NSFW:</strong> { " " }
               <span
                 className={ communityData.isNSFW ? "font-bold text-red-500" : "" }
               >
@@ -87,7 +88,7 @@ export default function TestCommunityUpdatePage() {
           </div>
           <div>
             <p>
-              <strong>Moderation Mode:</strong>
+              <strong>Moderation Mode:</strong> { " " }
               <span
                 className={ communityData.moderationMode ? "font-bold text-red-500" : "" }
               >
@@ -96,7 +97,7 @@ export default function TestCommunityUpdatePage() {
           </div>
           <div>
             <p>
-              <strong>Owner ID:</strong>
+              <strong>Owner ID:</strong> { " " }
               { communityData.ownerId }
             </p>
           </div>
@@ -108,10 +109,15 @@ export default function TestCommunityUpdatePage() {
         <div className="border-t pt-6 text-center">
           <h3 className="text-lg font-medium mb-4">Action Panel</h3>
           { isOwner ? (
-            <UpdateCommunityDialog
-              community={ communityData }
-              onUpdate={ handleCommunityUpdate }
-            />
+            <div className="flex gap-2">
+              <UpdateCommunityDialog
+                community={ communityData }
+                onUpdate={ handleCommunityUpdate }
+              />
+              <ManageCommunityFlairDialog
+                community={ communityData }
+              />
+            </div>
           ) : (
             <p className="text-red-500 font-semibold">
               The "Update" button would not be visible because you are not the owner.
