@@ -143,7 +143,7 @@ export default function TopCommunitiesWidget() {
                 <Link
                   href={ `/c/create` }
                 >
-                  <PlusCircle className="h-4 w-4 mr-2" />
+                  <PlusCircle className="h-4 w-4" />
                   Create your own community
                 </Link>
               </Button>

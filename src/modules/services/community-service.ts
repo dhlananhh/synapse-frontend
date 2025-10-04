@@ -2,16 +2,22 @@ import { communityApiClient } from "@/libs/apiClient";
 import {
   CreateCommunityPayload,
   CreateFlairPayload,
+  CreatePostPayload,
+  CreatePostResponse,
   FlairResponse,
   GenericMessageResponse,
   GetCommunitiesResponse,
   GetFlairsResponse,
   UpdateCommunityPayload,
-  UpdateFlairPayload
+  UpdateFlairPayload,
+  UploadMediaResponse
 } from "@/types/services/community";
 
 
 export const communityService = {
+  // =================================
+  // Community
+  // =================================
   createCommunity: (
     payload: CreateCommunityPayload
   ): Promise<GenericMessageResponse> => {
@@ -80,4 +86,8 @@ export const communityService = {
   ): Promise<void> => {
     return communityApiClient.delete(`/${communityId}/flairs/${flairId}`).then(res => res.data);
   },
+
+  // =================================
+  // Community Posts
+  // =================================
 }

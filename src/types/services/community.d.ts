@@ -29,6 +29,20 @@ export interface UpdateFlairPayload {
   description?: string;
 }
 
+export interface CreatePostPayload {
+  communityId: string;
+  title: string;
+  content?: string;
+  status?: "DRAFT" | "PENDING" | "PUBLISHED" | "REMOVED";
+  flairId?: string;
+  isPinned: boolean;
+  isLocked: boolean;
+  isNSFW: boolean;
+  isOC: boolean;
+  isSpoiler: boolean;
+  links: string;
+}
+
 
 // =================================
 // Responses from API
@@ -59,6 +73,25 @@ export interface CommunityFlair {
 }
 
 
+export interface Post {
+  id: string;
+  communityId: string;
+  authorId: string;
+  title: string;
+  content: string;
+  status: "DRAFT" | "PENDING" | "PUBLISHED" | "REMOVED";
+  createdAt: string;
+  updatedAt: string;
+  isPinned: boolean;
+  isLocked: boolean;
+  isNSFW: boolean;
+  isOC: boolean;
+  isSpoiler: boolean;
+  links: string;
+  userId: string;
+}
+
+
 export interface GenericMessageResponse {
   success: boolean;
   message: string;
@@ -83,4 +116,16 @@ export interface FlairResponse {
   success: boolean;
   message: string;
   data: CommunityFlair;
+}
+
+export interface CreatePostResponse {
+  success: boolean;
+  message: string;
+  data: Post;
+}
+
+export interface UploadMediaResponse {
+  success: boolean;
+  message: string;
+  data: Post;
 }
