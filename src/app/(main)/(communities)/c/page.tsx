@@ -6,6 +6,12 @@ import { toast } from "sonner";
 import { Community } from "@/types/services/community";
 import { UpdateCommunityDialog } from "@/components/features/community/UpdateCommunityDialog";
 import { ManageCommunityFlairDialog } from "@/components/features/community/ManageCommunityFlairDialog";
+import {
+  Camera,
+  Hash
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { UpdateCommunityImagesDialog } from "@/components/features/community/UpdateCommunityImagesDialog";
 
 
 const mockCommunityData: Community = {
@@ -35,7 +41,7 @@ export default function TestCommunityUpdatePage() {
   const [ communityData, setCommunityData ] = useState<Community>(mockCommunityData);
 
   const handleCommunityUpdate = (updatedCommunity: Community) => {
-    console.log("Parent page received updated data:", updatedCommunity);
+    console.log('Parent page received updated data:', updatedCommunity);
     setCommunityData(updatedCommunity);
     toast.info("Test page UI has been updated to reflect the changes.");
   };
@@ -45,17 +51,23 @@ export default function TestCommunityUpdatePage() {
   return (
     <div className="container mx-auto py-10">
       <div className="mb-8 p-4 bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-300 dark:border-yellow-700 rounded-lg">
-        <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200">Test Environment</h2>
+        <h2 className="text-lg font-semibold text-yellow-800 dark:text-yellow-200">
+          Test Environment
+        </h2>
         <p className="text-yellow-700 dark:text-yellow-400">
           This is a sandboxed page for testing the "Update Community" feature. The data below is mocked.
         </p>
       </div>
 
       <div className="space-y-6 max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold">Community Details (Live Preview)</h1>
+        <h1 className="text-3xl font-bold">
+          Live Preview of Community Data
+        </h1>
 
         <div className="p-6 border rounded-lg bg-card text-card-foreground space-y-4">
-          <h2 className="text-xl font-semibold border-b pb-2">Current Community Data</h2>
+          <h2 className="text-xl font-semibold border-b pb-2">
+            Current Community Data
+          </h2>
           <div>
             <p>
               <strong>Name:</strong> { " " }
@@ -71,16 +83,25 @@ export default function TestCommunityUpdatePage() {
           <div>
             <p><strong>Is Private:</strong> { " " }
               <span
-                className={ communityData.isPrivate ? "font-bold text-red-500" : "" }
+                className={
+                  communityData.isPrivate
+                    ? "font-bold text-red-500"
+                    : ""
+                }
               >
-                { String(communityData.isPrivate) }</span>
+                { String(communityData.isPrivate) }
+              </span>
             </p>
           </div>
           <div>
             <p>
               <strong>Is NSFW:</strong> { " " }
               <span
-                className={ communityData.isNSFW ? "font-bold text-red-500" : "" }
+                className={
+                  communityData.isNSFW
+                    ? "font-bold text-red-500"
+                    : ""
+                }
               >
                 { String(communityData.isNSFW) }
               </span>
@@ -90,9 +111,14 @@ export default function TestCommunityUpdatePage() {
             <p>
               <strong>Moderation Mode:</strong> { " " }
               <span
-                className={ communityData.moderationMode ? "font-bold text-red-500" : "" }
+                className={
+                  communityData.moderationMode
+                    ? "font-bold text-red-500"
+                    : ""
+                }
               >
-                { String(communityData.moderationMode) }</span>
+                { String(communityData.moderationMode) }
+              </span>
             </p>
           </div>
           <div>
@@ -108,21 +134,27 @@ export default function TestCommunityUpdatePage() {
 
         <div className="border-t pt-6 text-center">
           <h3 className="text-lg font-medium mb-4">Action Panel</h3>
-          { isOwner ? (
-            <div className="flex gap-2">
-              <UpdateCommunityDialog
-                community={ communityData }
-                onUpdate={ handleCommunityUpdate }
-              />
-              <ManageCommunityFlairDialog
-                community={ communityData }
-              />
-            </div>
-          ) : (
-            <p className="text-red-500 font-semibold">
-              The "Update" button would not be visible because you are not the owner.
-            </p>
-          ) }
+          {
+            isOwner ? (
+              <div className="flex gap-2">
+                <UpdateCommunityDialog
+                  community={ communityData }
+                  onUpdate={ handleCommunityUpdate }
+                />
+                <ManageCommunityFlairDialog
+                  community={ communityData }
+                />
+                <UpdateCommunityImagesDialog
+                  community={ communityData }
+                  onUpdate={ handleCommunityUpdate }
+                />
+              </div>
+            ) : (
+              <p className="text-red-500 font-semibold">
+                The "Update" button would not be visible because you are not the owner.
+              </p>
+            )
+          }
         </div>
       </div>
     </div>

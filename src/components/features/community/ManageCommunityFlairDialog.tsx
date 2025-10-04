@@ -35,7 +35,8 @@ import {
   Loader2,
   Plus,
   Edit,
-  Trash2
+  Trash2,
+  Hash
 } from "lucide-react";
 
 
@@ -104,8 +105,10 @@ export function ManageCommunityFlairDialog({ community }: ManageCommunityFlairDi
         asChild
       >
         <Button
+          size="sm"
           variant="outline"
         >
+          <Hash className="h-4 w-4" />
           Manage Flairs
         </Button>
       </DialogTrigger>
@@ -152,7 +155,9 @@ export function ManageCommunityFlairDialog({ community }: ManageCommunityFlairDi
                 ? <Loader2 className="animate-spin" />
                 : (
                   flairs.length === 0 ? (
-                    <p className="text-sm text-center py-4">No flairs created yet.</p>
+                    <p className="text-sm text-center py-4">
+                      No flairs created yet.
+                    </p>
                   ) : (
                     <ul className="space-y-2">
                       {
@@ -163,7 +168,10 @@ export function ManageCommunityFlairDialog({ community }: ManageCommunityFlairDi
                           >
                             <span
                               className="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold"
-                              style={ { backgroundColor: flair.color ?? "#ccc", color: "#fff" } }
+                              style={ {
+                                backgroundColor: flair.color ?? "#ccc",
+                                color: "#fff"
+                              } }
                             >
                               { flair.name }
                             </span>

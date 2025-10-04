@@ -59,8 +59,11 @@ export function UpdateCommunityDialog({
       onOpenChange={ setIsOpen }
     >
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Settings className="mr-2 h-4 w-4" />
+        <Button
+          variant="outline"
+          size="sm"
+        >
+          <Settings className="h-4 w-4" />
           Update this community
         </Button>
       </DialogTrigger>
