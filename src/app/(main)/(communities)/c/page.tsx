@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { Community } from "@/types/services/community";
 import { UpdateCommunityDialog } from "@/components/features/community/UpdateCommunityDialog";
 import { ManageCommunityFlairDialog } from "@/components/features/community/ManageCommunityFlairDialog";
+import { ManageRulesDialog } from "@/components/features/community/ManageRulesDialog";
 import {
   Camera,
   Hash
@@ -147,6 +148,9 @@ export default function TestCommunityUpdatePage() {
                 <UpdateCommunityImagesDialog
                   community={ communityData }
                   onUpdate={ handleCommunityUpdate }
+                />
+                <ManageRulesDialog
+                  community={ communityData }
                 />
               </div>
             ) : (
