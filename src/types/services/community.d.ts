@@ -33,7 +33,7 @@ export interface CreatePostPayload {
   communityId: string;
   title: string;
   content?: string;
-  status?: "DRAFT" | "PENDING" | "PUBLISHED" | "REMOVED";
+  status?: PostStatus;
   flairId?: string;
   isPinned: boolean;
   isLocked: boolean;
@@ -42,6 +42,25 @@ export interface CreatePostPayload {
   isSpoiler: boolean;
   links: string;
 }
+
+export interface CreateRulePayload {
+  title: string;
+  description?: string;
+}
+
+export interface UpdateRulePayload {
+  title?: string;
+  description?: string;
+}
+
+// =================================
+// Shared Types
+// =================================
+
+export type CommunityStatus = "ACTIVE" | "SUSPENDED" | "DELETED";
+export type PostStatus = "DRAFT" | "PENDING" | "PUBLISHED" | "REMOVED";
+export type MembershipRole = "MEMBER" | "MODERATOR" | "OWNER";
+export type MembershipStatus = "PENDING" | "ACTIVE" | "BANNED";
 
 
 // =================================
@@ -52,7 +71,7 @@ export interface Community {
   id: string;
   name: string;
   description: string | null;
-  status: "ACTIVE" | "SUSPENDED" | "DELETED";
+  status: CommunityStatus;
   ownerId: string;
   memberCount: number;
   postCount: number;
@@ -63,6 +82,7 @@ export interface Community {
   bannerKey: string | null;
   createdAt: string;
   updatedAt: string;
+  userMembership?: CommunityMember;
 }
 
 export interface CommunityFlair {
@@ -72,6 +92,12 @@ export interface CommunityFlair {
   description: string | null;
 }
 
+export interface CommunityRule {
+  id: string;
+  title: string;
+  description: string | null;
+  order: number;
+}
 
 export interface Post {
   id: string;
@@ -79,7 +105,7 @@ export interface Post {
   authorId: string;
   title: string;
   content: string;
-  status: "DRAFT" | "PENDING" | "PUBLISHED" | "REMOVED";
+  status: PostStatus;
   createdAt: string;
   updatedAt: string;
   isPinned: boolean;
@@ -91,6 +117,15 @@ export interface Post {
   userId: string;
 }
 
+export interface CommunityMember {
+  id: string;
+  userId: string;
+  username: string;
+  avatarUrl?: string;
+  role: MembershipRole;
+  status: MembershipStatus;
+  joinedAt: string;
+}
 
 export interface GenericMessageResponse {
   success: boolean;
@@ -128,4 +163,24 @@ export interface UploadMediaResponse {
   success: boolean;
   message: string;
   data: Post;
+}
+
+export interface GetMembersResponse {
+  members: CommunityMember[];
+  pagination: {
+    hasMore: boolean;
+    nextCursor: string | null;
+  };
+}
+
+export interface GetRulesResponse {
+  success: boolean;
+  message: string;
+  data: CommunityRule[];
+}
+
+export interface RuleResponse {
+  success: boolean;
+  message: string;
+  data: CommunityRule;
 }
