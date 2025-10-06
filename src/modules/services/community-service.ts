@@ -4,12 +4,17 @@ import {
   CreateFlairPayload,
   CreatePostPayload,
   CreatePostResponse,
+  CreateRulePayload,
   FlairResponse,
   GenericMessageResponse,
   GetCommunitiesResponse,
   GetFlairsResponse,
+  GetMembersResponse,
+  GetRulesResponse,
+  RuleResponse,
   UpdateCommunityPayload,
   UpdateFlairPayload,
+  UpdateRulePayload,
   UploadMediaResponse
 } from "@/types/services/community";
 
@@ -57,6 +62,15 @@ export const communityService = {
     return communityApiClient.get(`/${communityName}`).then(res => res.data);
   },
 
+  getCommunityMembers: (communityId: string, params: {
+    cursor?: string,
+    limit?: number,
+    q?: string
+  }): Promise<GetMembersResponse> => {
+    return communityApiClient.get(`/${communityId}/members`, { params }).then(res => res.data);
+  },
+
+
   // =================================
   // Community Flairs
   // =================================
@@ -90,4 +104,34 @@ export const communityService = {
   // =================================
   // Community Posts
   // =================================
+
+
+  // =================================
+  // Community Rules
+  // =================================
+
+  getCommunityRules: (communityId: string): Promise<GetRulesResponse> => {
+    return communityApiClient.get(`/${communityId}/rules`).then(res => res.data);
+  },
+
+  createCommunityRule: (
+    communityId: string, payload: CreateRulePayload)
+    : Promise<RuleResponse> => {
+    return communityApiClient.post(`/${communityId}/rules`, payload).then(res => res.data);
+  },
+
+  updateCommunityRule: (
+    communityId: string,
+    ruleId: string,
+    payload: UpdateRulePayload
+  ): Promise<RuleResponse> => {
+    return communityApiClient.put(`/${communityId}/rules/${ruleId}`, payload).then(res => res.data);
+  },
+
+  deleteCommunityRule: (
+    communityId: string,
+    ruleId: string
+  ): Promise<void> => {
+    return communityApiClient.delete(`/${communityId}/rules/${ruleId}`).then(res => res.data);
+  },
 }
