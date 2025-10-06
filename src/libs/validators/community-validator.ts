@@ -1,66 +1,56 @@
-import { z } from "zod";
+import * as z from 'zod'
 
-
-export const TransferOwnershipSchema = z.object({
-  newOwnerId: z.string().min(1, "You must select a new owner."),
-  password: z.string().min(6, "Your password is required to confirm this action."),
-});
-
-export type TTransferOwnershipSchema = z.infer<typeof TransferOwnershipSchema>;
-
-
+// create community
 export const CreateCommunitySchema = z.object({
-  name: z.string()
-    .min(3, {
-      message: "Community name must be at least 3 characters long."
-    })
-    .max(50, {
-      message: "Community name cannot exceed 50 characters."
-    }),
-  slug: z.string()
-    .min(3, {
-      message: "URL slug must be at least 3 characters long."
-    })
-    .max(30, {
-      message: "URL slug cannot exceed 30 characters."
-    })
-    .regex(/^[a-z0-9_]+$/, {
-      message: "URL slug can only contain lowercase letters, numbers, and underscores."
-    }),
-  description: z.string()
-    .max(250, {
-      message: "Description cannot exceed 250 characters."
-    })
-    .optional(),
-});
-
-export type TCreateCommunitySchema = z.infer<typeof CreateCommunitySchema>;
-
-
-export const EditCommunitySchema = z.object({
-  name: z.string()
-    .min(3, {
-      message: "Community name must be at least 3 characters long."
-    })
-    .max(50, {
-      message: "Community name cannot exceed 50 characters."
-    }
+  name: z
+    .string()
+    .min(3, 'Community name must be at least 3 characters long.')
+    .max(50, 'Community name cannot exceed 50 characters.')
+    .regex(
+      /^[a-zA-Z0-9_-]+$/,
+      'Community name can only contain letters, numbers, underscores, and hyphens.'
     ),
-  description: z.string()
-    .max(250, {
-      message: "Description cannot exceed 250 characters."
-    })
+  description: z
+    .string()
+    .min(10, 'Description must be at least 10 characters.')
+    .max(500, 'Description cannot exceed 500 characters.'),
+  isPrivate: z.boolean(),
+  isNSFW: z.boolean(),
+})
+
+export type TCreateCommunitySchema = z.infer<typeof CreateCommunitySchema>
+
+// update community details
+export const UpdateCommunityDetailsSchema = z.object({
+  name: z
+    .string()
+    .min(3, 'Community name must be at least 3 characters long.')
+    .max(50, 'Community name cannot exceed 50 characters.')
+    .regex(
+      /^[a-zA-Z0-9_-]+$/,
+      'Community name can only contain letters, numbers, underscores, and hyphens.'
+    ),
+  description: z
+    .string()
+    .min(10, 'Description must be at least 10 characters.')
+    .max(500, 'Description cannot exceed 500 characters.'),
+  isPrivate: z.boolean(),
+  isNSFW: z.boolean(),
+  moderationMode: z.boolean(),
+})
+
+export type TUpdateCommunityDetailsSchema = z.infer<typeof UpdateCommunityDetailsSchema>
+
+// community rule schema
+export const RuleSchema = z.object({
+  title: z
+    .string()
+    .min(3, 'Rule title must be at least 3 characters long.')
+    .max(100, 'Rule title must be at most 100 characters long.'),
+  description: z
+    .string()
+    .max(500, 'Rule description must be at most 500 characters long.')
     .optional(),
-});
+})
 
-export type TEditCommunitySchema = z.infer<typeof EditCommunitySchema>;
-
-
-export const FlairSchema = z.object({
-  name: z.string()
-    .min(1, "Flair text cannot be empty.")
-    .max(20, "Flair text cannot exceed 20 characters."),
-  color: z.string().regex(/^#[0-9a-fA-F]{6}$/, "Must be a valid hex color code."),
-});
-
-export type TFlairSchema = z.infer<typeof FlairSchema>;
+export type TRuleSchema = z.infer<typeof RuleSchema>

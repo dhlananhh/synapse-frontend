@@ -1,131 +1,157 @@
-"use client";
+'use client'
 
-
-import React, { useState } from "react";
-import Link from "next/link";
-import { useAuth } from "@/context/MockAuthContext";
-import { Community } from "@/types";
-import EditCommunityDialog from "../manage/dialogs/EditCommunityDialog";
-import ModeratorListWidget from "./ModeratorListWidget";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
+import React, { useMemo } from 'react'
+import Link from 'next/link'
+import { useAuth } from '@/context/AuthContext'
+import { useMembership } from '@/context/MembershipContext'
+import { useCommunity, useSetCommunity } from '@/context/CommunityContext'
+import { UpdateCommunityDialog } from '@/components/features/community/manage/dialogs/UpdateCommunityDialog'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { format } from 'date-fns'
 import {
   Cake,
   Users,
-  Settings
-} from "lucide-react";
+  Settings,
+  Globe,
+  Lock,
+  Info,
+  UserPlus,
+  FileText,
+  TriangleAlert,
+  ShieldCheck,
+} from 'lucide-react'
+import type { Community } from '@/types/services/community'
 
+export default function AboutCommunityWidget() {
+  const community = useCommunity()
+  const setCommunity = useSetCommunity()
+  const { user } = useAuth()
+  const membershipContext = useMembership()
+  const membership = membershipContext?.membership ?? null
 
-interface AboutCommunityWidgetProps {
-  community: Community;
-}
+  // don't render until community is available
+  if (!community) return null
 
+  // determine role/status from membership (use membership primarily)
+  const role = membership?.role ?? (user?.id === community.ownerId ? 'OWNER' : undefined)
+  const membershipStatus = membership?.status ?? undefined
 
-export default function AboutCommunityWidget({ community }: AboutCommunityWidgetProps) {
-  const { user } = useAuth();
-  const isOwner = user?.id === community.ownerId;
+  const isOwner = role === 'OWNER'
+  const isModerator = role === 'MODERATOR'
+  const canManage = membershipStatus === 'ACTIVE' && (isModerator || isOwner)
 
-  const [ isEditDialogOpen, setIsEditDialogOpen ] = useState(false);
+  const handleUpdate = (updated: Community) => {
+    setCommunity(updated)
+  }
+
+  // safe createdAt parsing
+  const createdAtDate = useMemo(() => {
+    if (!community?.createdAt) return null
+    const d = new Date(community.createdAt)
+    return Number.isNaN(d.getTime()) ? null : d
+  }, [community?.createdAt])
 
   return (
     <>
       <Card>
         <CardHeader>
           <CardTitle>
-            About c/{ community.slug }
+            <Info className='h-5 w-5 inline mr-2' />
+            <span>About c/{community.name}</span>
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            { community.description }
-          </p>
+        <CardContent className='space-y-4'>
+          <p className='text-sm text-muted-foreground'>{community.description}</p>
 
-          <div className="flex flex-col gap-3 text-sm">
-            <div className="flex items-center gap-2">
-              <Cake className="h-5 w-5" />
+          <div className='flex flex-col gap-3 text-sm'>
+            <div className='flex items-center gap-2'>
+              <Cake className='h-5 w-5' />
               <span>
-                Created { format(new Date(community.createdAt), "MMM d, yyyy") }
+                Created {createdAtDate ? format(createdAtDate, 'MMM d, yyyy') : 'Unknown'}
               </span>
+            </div>
+            <div className='flex items-center gap-2'>
+              {community.isPrivate ? (
+                <span className='inline-flex items-center gap-2 px-2 py-1 rounded bg-indigo-600 text-white text-sm font-semibold'>
+                  <Lock className='w-4 h-4 text-white' />
+                  Private
+                </span>
+              ) : (
+                <span className='inline-flex items-center gap-2 px-2 py-1 rounded bg-green-600 text-white text-sm font-semibold'>
+                  <Globe className='w-4 h-4 text-white' />
+                  Public
+                </span>
+              )}
+
+              {community.isNSFW && (
+                <span className='inline-flex items-center gap-1 px-2 py-1 rounded bg-purple-600 text-white text-xs font-bold'>
+                  <TriangleAlert className='w-4 h-4 text-white' />
+                  NSFW
+                </span>
+              )}
+
+              {community.moderationMode && (
+                <span className='inline-flex items-center gap-2 px-2 py-1 rounded bg-amber-600 text-white text-sm font-semibold'>
+                  <ShieldCheck className='w-4 h-4 text-white' />
+                  Moderated
+                </span>
+              )}
             </div>
             <hr />
 
             <Link
-              href={ `/c/${community.slug}/members` }
-              className="flex items-center gap-2 hover:text-primary"
+              href={`/c/${community.name}/members`}
+              className='flex items-center gap-2 hover:text-primary font-medium cursor-pointer'
             >
-              <Users className="h-5 w-5" />
-              <span>
-                { community.memberCount.toLocaleString() } members
-              </span>
+              <Users className='h-5 w-5' />
+              <span>{community.memberCount.toLocaleString()} members</span>
             </Link>
           </div>
 
-          <div>
-            <hr className="my-3" />
-            <h4 className="font-semibold text-sm mb-2">
-              Moderators
-            </h4>
-            <ModeratorListWidget community={ community } />
-          </div>
+          {/* Moderator / Owner actions (use membership role & status) */}
+          {(canManage || isOwner) && (
+            <>
+              <hr />
+              <div className='space-y-2'>
+                <h4 className='font-semibold text-sm'>
+                  {isOwner ? 'Owner Actions' : 'Moderator Actions'}
+                </h4>
 
-          <Button
-            asChild
-            className="w-full mt-2"
-          >
-            <Link href={ `/c/${community.slug}/members` }>
-              View All Members
-            </Link>
-          </Button>
-
-          {
-            isOwner && (
-              <>
-                <hr />
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-sm">
-                    Owner Actions
-                  </h4>
-                  <Button
-                    onClick={ () => setIsEditDialogOpen(true) }
-                    variant="secondary"
-                    className="w-full"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    Edit Community
-                  </Button>
-                  <Button
-                    asChild
-                    className="w-full"
-                    variant="outline"
-                  >
-                    <Link href={ `/c/${community.slug}/manage` }>
+                {/* Manage Members - available to moderators & owners (if active) */}
+                {canManage && (
+                  <Button asChild className='w-full' variant='outline'>
+                    <Link
+                      href={`/c/${community.name}/manage`}
+                      className='flex items-center justify-center gap-2 w-full'
+                    >
+                      <UserPlus className='h-4 w-4' />
                       Manage Members
                     </Link>
                   </Button>
-                </div>
-              </>
-            )
-          }
+                )}
+
+                {/* Manage Contents - available to moderators & owners (if active) */}
+                {canManage && (
+                  <Button asChild className='w-full' variant='outline'>
+                    <Link
+                      href={`/c/${community.name}/manage/contents`}
+                      className='flex items-center justify-center gap-2 w-full'
+                    >
+                      <FileText className='h-4 w-4' />
+                      Manage Contents
+                    </Link>
+                  </Button>
+                )}
+
+                {/* Edit Community - available only to owner */}
+                {isOwner && <UpdateCommunityDialog community={community} onUpdate={handleUpdate} />}
+              </div>
+            </>
+          )}
         </CardContent>
       </Card>
-
-
-      {
-        isOwner && (
-          <EditCommunityDialog
-            community={ community }
-            isOpen={ isEditDialogOpen }
-            onOpenChange={ setIsEditDialogOpen }
-          />
-        )
-      }
     </>
   )
 }
