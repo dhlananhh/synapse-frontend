@@ -58,8 +58,8 @@ export function ManageRulesDialog({ community }: ManageRulesDialogProps) {
   const fetchRules = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await communityService.getCommunityRules(community.id);
-      const sortedRules = response.data.sort((a, b) => a.order - b.order);
+      const response = await communityService.getRules(community.id);
+      const sortedRules = response.sort((a, b) => a.order - b.order);
       setRules(sortedRules);
     } catch (error) {
       toast.error("Could not fetch community rules.");
@@ -90,7 +90,7 @@ export function ManageRulesDialog({ community }: ManageRulesDialogProps) {
 
   const handleDeleteRule = async (ruleId: string) => {
     try {
-      await communityService.deleteCommunityRule(community.id, ruleId);
+      await communityService.deleteRule(community.id, ruleId);
       setRules(prev => prev.filter(r => r.id !== ruleId));
       toast.success("Rule deleted successfully.");
     } catch (error) {
