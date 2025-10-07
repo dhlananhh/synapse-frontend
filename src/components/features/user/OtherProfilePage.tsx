@@ -1,6 +1,11 @@
-'use client'
-import { OtherProfileHeader } from './OtherProfileHeader'
+"use client"
 
-export default function OtherProfilePage() {
-  return <OtherProfileHeader />
+import { OwnProfileHeader } from "./OwnProfileHeader"
+
+export default function OwnProfilePage() {
+  return (
+    <div className="space-y-8">
+      <OwnProfileHeader />
+    </div>
+  )
 }

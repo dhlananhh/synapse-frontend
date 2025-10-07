@@ -14,6 +14,11 @@ import {
 import { SearchCommunityResult } from '@/types/services/community'
 
 export const communityService = {
+
+  // ==============================
+  // Community
+  // ==============================
+
   // Search communities with cursor-based paging
   searchCommunities: (
     q: string,
@@ -79,6 +84,11 @@ export const communityService = {
   //   deleteCommunity: (id: string): Promise<void> =>
   //     communityApiClient.delete(`/${id}`).then((res) => res.data),
 
+
+  // =================================
+  // Membership Management
+  // =================================
+
   // Join community
   joinCommunity: (communityId: string): Promise<any> =>
     communityApiClient.post(`/${communityId}/members`).then((res) => res.data),
@@ -90,6 +100,41 @@ export const communityService = {
   // Leave community
   leaveCommunity: (communityId: string): Promise<any> =>
     communityApiClient.delete(`/${communityId}/members/me/leave`).then((res) => res.data),
+
+  // Get pending requests
+  // GET {communityId}/members/pending
+  getPendingRequests: (
+    communityId: string,
+    params?: {
+      cursor?: string | null;
+      limit?: number;
+    }
+  ): Promise<any> =>
+    communityApiClient.get(`${communityId}/members/pending`, { params }).then((res) => res.data),
+
+  // Get banned members
+  // GET {communityId}/members/banned
+  getBannedMembers: (
+    communityId: string,
+    params?: {
+      cursor?: string | null;
+      limit?: number;
+    }
+  ): Promise<any> => communityApiClient.get(`${communityId}/members/banned`, { params }).then((res) => res.data),
+
+  // Approve join request
+  // POST /{communityId}/members/{userId}/approve
+  approveJoinRequest: (communityId: string, userId: string): Promise<any> =>
+    communityApiClient.post(`/${communityId}/members/${userId}/approve`).then(res => res.data),
+
+  // Reject join request
+  // POST /{communityId}/members/{userId}/reject
+  rejectJoinRequest: (communityId: string, userId: string): Promise<any> =>
+    communityApiClient.post(`/${communityId}/members/${userId}/reject`).then(res => res.data),
+
+  // ==============================
+  // Community Flairs
+  // ==============================
 
   // Fetch flairs for a community
   getFlairs: (communityId: string): Promise<CommunityFlair[]> =>
@@ -136,6 +181,10 @@ export const communityService = {
       return data.rules
     }),
 
+  // ==============================
+  // Community Rules
+  // ==============================
+
   // Create a new rule for a community
   // POST /{communityId}/rules
   // payload: { title, description? }
@@ -175,4 +224,5 @@ export const communityService = {
     members: CommunityMember[]
     pagination?: { hasMore: boolean; nextCursor: string | null }
   }> => communityApiClient.get(`/${communityId}/members`, { params }).then((res) => res.data),
+
 }
