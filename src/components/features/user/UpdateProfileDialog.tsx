@@ -28,11 +28,11 @@ interface UpdateProfileDialogProps {
 }
 
 export function UpdateProfileDialog({ profile, onProfileUpdate }: UpdateProfileDialogProps) {
-  const [isOpen, setIsOpen] = useState(false)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [showConfirm, setShowConfirm] = useState(false)
+  const [ isOpen, setIsOpen ] = useState(false)
+  const [ isSubmitting, setIsSubmitting ] = useState(false)
+  const [ showConfirm, setShowConfirm ] = useState(false)
 
-  const [isPrivate, setIsPrivate] = useState(profile.isPrivate)
+  const [ isPrivate, setIsPrivate ] = useState(profile.isPrivate)
   const userId = profile.id
 
   const handleFormSubmit = async (data: any) => {
@@ -57,83 +57,59 @@ export function UpdateProfileDialog({ profile, onProfileUpdate }: UpdateProfileD
     } else {
       setIsOpen(open)
     }
-  };
-
-  const handleSwitchClick = () => {
-    setIsPrivacyConfirmOpen(true);
-  };
+  }
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <Dialog open={ isOpen } onOpenChange={ handleOpenChange }>
         <DialogTrigger asChild>
           <Button variant='outline'>Edit Profile</Button>
         </DialogTrigger>
         <DialogContent className='sm:max-w-[480px]'>
           <DialogHeader>
             <DialogTitle>Edit Your Profile</DialogTitle>
-            <DialogDescription>
-              Make changes to your profile here. Click save when you're done.
-            </DialogDescription>
           </DialogHeader>
 
           <AvatarUpload
-            currentAvatarUrl={profile.avatarUrl}
-            onUploaded={(newAvatarUrl) => {
+            currentAvatarUrl={ profile.avatarUrl }
+            onUploaded={ (newAvatarUrl) => {
               onProfileUpdate({ ...profile, avatarUrl: newAvatarUrl })
-            }}
+            } }
           />
 
           <div className='py-4'>
             <UpdateProfileForm
-              initialData={profile}
-              onSubmit={handleFormSubmit}
-              isSubmitting={isSubmitting}
+              initialData={ profile }
+              onSubmit={ handleFormSubmit }
+              isSubmitting={ isSubmitting }
             />
-          </div>
-
-          <Separator />
-
-          <div className="space-y-2">
-            <Label className="font-semibold">
-              Privacy Settings
-            </Label>
-            <div className="flex items-center justify-between rounded-lg border p-3">
-              <p className="text-sm">
-                Private Account
-              </p>
-              <Switch
-                checked={ isPrivate }
-                onCheckedChange={ handleSwitchClick }
-              />
-            </div>
           </div>
         </DialogContent>
       </Dialog>
-      {showConfirm && (
-        <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
+      { showConfirm && (
+        <Dialog open={ showConfirm } onOpenChange={ setShowConfirm }>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Discard changes?</DialogTitle>
             </DialogHeader>
             <div>You have unsaved changes. Are you sure you want to discard them?</div>
             <DialogFooter>
-              <Button variant='outline' onClick={() => setShowConfirm(false)}>
+              <Button variant='outline' onClick={ () => setShowConfirm(false) }>
                 Cancel
               </Button>
               <Button
                 variant='destructive'
-                onClick={() => {
+                onClick={ () => {
                   setShowConfirm(false)
                   setIsOpen(false)
-                }}
+                } }
               >
                 Discard
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      )}
+      ) }
     </>
   )
 }
