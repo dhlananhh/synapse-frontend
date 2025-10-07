@@ -34,6 +34,11 @@ export const communityService = {
       .then((res) => res.data)
   },
 
+  // Get communities list
+  getCommunities: (): Promise<any> => {
+    return communityApiClient.get(`/`).then(res => res.data);
+  },
+
   // Fetch community details by name
   getCommunityByName: (name: string): Promise<Community> =>
     communityApiClient.get(`/${name}`).then((res) => res.data.community),

@@ -99,7 +99,7 @@ export default function TopCommunitiesWidget() {
                       </span>
                       <Avatar className="h-8 w-8">
                         <AvatarImage
-                          src={ community.avatarKey || "" }
+                          src={ community.avatarUrl || "" }
                         />
                         <AvatarFallback>
                           { community.name.slice(0, 1).toUpperCase() }
