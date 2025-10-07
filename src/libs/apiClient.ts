@@ -1,19 +1,23 @@
-import axios from 'axios'
-import { authService } from '@/modules/services/auth-service'
+import axios from "axios"
+import { authService } from "@/modules/services/auth-service"
+
 
 // Base URLs
-const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://192.168.1.5:4000/api/auth'
+const AUTH_SERVICE_URL =
+  process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || "http://localhost:4000/api/auth"
 const USER_SERVICE_URL =
-  process.env.NEXT_PUBLIC_USER_SERVICE_URL || 'http://192.168.1.5:4002/api/users'
-const COMMUNITY_SERVICE_URL = process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL || 'HTTP://NOTHING'
+  process.env.NEXT_PUBLIC_USER_SERVICE_URL || "http://localhost:4002/api/users"
+const COMMUNITY_SERVICE_URL =
+  process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL || "http://localhost:4003/api/communities"
+
 
 const createApiClient = (baseURL: string) => {
   const apiClient = axios.create({
     baseURL,
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    withCredentials: true, // ensures cookies are sent with requests
+    withCredentials: true,
   })
   return apiClient
 }
@@ -39,7 +43,7 @@ const setupInterceptors = (client: typeof authApiClient) => {
           // After refresh, you may want to reload the page or retry the request
           window.location.reload()
         } catch {
-          window.location.href = '/login'
+          window.location.href = "/login"
         }
       }
       return Promise.reject(error)
@@ -51,4 +55,8 @@ setupInterceptors(authApiClient)
 setupInterceptors(userApiClient)
 setupInterceptors(communityApiClient)
 
-export { authApiClient, userApiClient, communityApiClient }
+export {
+  authApiClient,
+  userApiClient,
+  communityApiClient
+}
