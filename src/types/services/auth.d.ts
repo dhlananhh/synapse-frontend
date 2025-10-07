@@ -2,94 +2,91 @@
 // Payloads for API Requests
 // =================================
 
-
 export interface RegisterPayload {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-  username: string;
-  gender: "MALE" | "FEMALE";
-  birthday?: Date;
+  firstName: string
+  lastName: string
+  email: string
+  password: string
+  username: string
+  gender: 'MALE' | 'FEMALE'
+  birthday?: Date
 }
 
 export interface LoginPayload {
-  email: string;
-  password: string;
+  email: string
+  password: string
 }
 
 export interface VerifyEmailPayload {
-  email: string;
-  code: string;
+  email: string
+  code: string
 }
 
 export interface ResendVerificationPayload {
-  email: string;
+  email: string
 }
 
 export interface RequestPasswordResetPayload {
-  email: string;
+  email: string
 }
 
 export interface VerifyResetCodePayload {
-  email: string;
-  code: string;
+  email: string
+  code: string
 }
 
 export interface SetNewPasswordPayload {
-  newPassword: string;
+  new_password: string
 }
 
 export interface ChangePasswordPayload {
-  currentPassword: string;
-  newPassword: string;
+  current_password: string
+  new_password: string
 }
-
 
 // =================================
 // Responses from API
 // =================================
 
 export interface AuthUser {
-  id: string;
-  email: string;
-  role: "USER" | "SYSTEM_ADMIN";
+  id: string
+  email: string
+  role: 'USER' | 'SYSTEM_ADMIN'
 }
 
 export interface Account {
-  id: string;
-  email: string;
-  isEmailVerified: boolean;
-  role: "USER" | "SYSTEM_ADMIN";
-  status: "ACTIVE" | "PENDING" | "SUSPENDED" | "BANNED";
-  createdAt: string;
-  updatedAt: string;
+  id: string
+  email: string
+  isEmailVerified: boolean
+  role: 'USER' | 'SYSTEM_ADMIN'
+  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED' | 'BANNED'
+  createdAt: string
+  updatedAt: string
 }
 
 export interface RegisterResponse {
-  account: Account;
+  account: Account
 }
 
 export interface LoginResponse {
-  accessToken: string;
-  tokenType: "Bearer";
-  refreshToken?: string;
-  expiresIn: number;
-  user: AuthUser;
+  accessToken: string
+  tokenType: 'Bearer'
+  expiresIn: number
+  user: AuthUser
 }
 
 export interface RefreshTokenResponse {
-  access_token: string;
-  token_type: "Bearer";
-  expires_in: number;
-  user: AuthUser;
+  access_token: string
+  token_type: 'Bearer'
+  expires_in: number
+  user: AuthUser
 }
 
 export interface VerifyResetCodeResponse {
-  reset_token: string;
-  expires_in: number;
+  reset_token: string
+  expires_in: number
 }
 
 export interface GenericMessageResponse {
-  message: string;
+  message: string
 }

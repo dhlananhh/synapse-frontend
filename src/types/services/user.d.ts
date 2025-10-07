@@ -3,105 +3,158 @@
 // =================================
 
 export interface CreateUserProfilePayload {
-  accountId: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  gender: Gender;
+  accountId: string
+  username: string
+  firstName: string
+  lastName: string
+  gender: Gender
 }
 
 export interface UpdateUserProfilePayload {
-  username?: string;
-  firstName?: string;
-  lastName?: string;
-  gender?: "MALE" | "FEMALE";
-  bio?: string | null;
-  location?: string | null;
-  avatarUrl?: string | null;
+  username?: string
+  firstName?: string
+  lastName?: string
+  gender?: 'MALE' | 'FEMALE'
+  bio?: string
+  location?: string
+  avatarUrl?: string | null
 }
 
 export interface UpdateUserPreferencesPayload {
-  theme?: "light" | "dark";
-  language?: string;
+  theme?: 'light' | 'dark'
+  language?: string
   extras?: {
-    notifications: boolean;
-  };
+    notifications: boolean
+  }
 }
-
 
 // =================================
 // Responses from API
 // =================================
 
-export interface UserProfile {
-  id: string;
-  accountId?: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  email?: string;
-  gender: "MALE" | "FEMALE";
-  bio: string | null;
-  location: string | null;
-  avatarUrl: string | null;
-  isPrivate: boolean;
-  createdAt?: string;
-  updatedAt?: string;
-  followerCount: number;
-  followingCount: number;
-  relationshipStatus: RelationshipStatus | null;
+export interface FollowRelationship {
+  id: string
+  followerId: string
+  followingId: string
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED' // add other statuses if needed
+  createdAt?: string
+  // add other fields if your backend includes them
 }
 
-export interface RelationshipStatus {
-  isFollowing: boolean;
-  isRequested: boolean;
-  followsYou: boolean;
-  requestsYou: boolean;
+export interface UserProfile {
+  id: string
+  username: string
+  firstName: string
+  lastName: string
+  gender: 'MALE' | 'FEMALE'
+  bio: string | null
+  location: string | null
+  avatarUrl: string | null
+  isPrivate: boolean
+  createdAt?: string
+  followerCount?: number
+  followingCount?: number
+  relationshipStatus?: {
+    requesterToTarget: FollowRelationship | null
+    targetToRequester: FollowRelationship | null
+  }
+  createdAt: string
 }
 
 export interface UserPreferences {
-  theme: "light" | "dark";
-  language: string;
+  theme: 'light' | 'dark'
+  language: string
   extras: {
-    notifications: boolean;
-  };
+    notifications: boolean
+  }
 }
 
 export interface SearchUserResult {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  avatarUrl: string | null;
-  _count: {
-    followers: number;
-  };
+  id: string
+  username: string
+  firstName: string
+  lastName: string
+  avatarUrl: string | null
+  isPrivate: boolean
+  followerCount: number
 }
 
 export interface FollowInfo {
-  id: string;
-  username: string;
-  firstName: string;
-  lastName: string;
-  avatarUrl: string | null;
+  id: string
+  username: string
+  firstName: string
+  lastName: string
+  avatarUrl: string | null
 }
 
 export interface FollowerResponse {
-  follower: FollowInfo;
-  createdAt: string;
+  follower: FollowInfo
+  createdAt: string
 }
 
 export interface FollowingResponse {
-  following: FollowInfo;
-  createdAt: string;
+  following: FollowInfo
+  createdAt: string
+}
+
+export interface FollowerRecord {
+  id: string
+  follower: {
+    id: string
+    username: string
+    firstName: string
+    lastName: string
+    avatarUrl: string | null
+  }
+  createdAt: string
+}
+
+export interface FollowingRecord {
+  id: string
+  following: {
+    id: string
+    username: string
+    firstName: string
+    lastName: string
+    avatarUrl: string | null
+  }
+  createdAt: string
 }
 
 export interface TogglePrivacyResponse {
-  id: string;
-  isPrivate: boolean;
+  id: string
+  isPrivate: boolean
 }
 
 export interface FollowResponse {
-  message: string;
-  status: "PENDING" | "ACCEPTED";
+  message: string
+  status: 'PENDING' | 'ACCEPTED'
+}
+
+export interface PendingFollowRequest {
+  id: string
+  createdAt: string
+  requester: {
+    id: string
+    username: string
+    firstName: string
+    lastName: string
+    avatarUrl: string | null
+  }
+}
+
+export interface PendingFollowRequestsResponse {
+  requests: PendingFollowRequest[]
+  pagination: {
+    hasMore: boolean
+    nextCursor: string | null
+  }
+}
+
+export interface SimpleProfile {
+  id: string
+  username: string
+  firstName: string
+  lastName: string
+  avatarUrl: string | null
 }

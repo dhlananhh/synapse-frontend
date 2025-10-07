@@ -1,57 +1,56 @@
-"use client";
+'use client'
 
-
-import React, { useState } from "react";
-import { useAuth } from "@/context/AuthContext";
-import { userService } from "@/modules/services/user-service";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
-import { toast } from "sonner";
-
+import React, { useState } from 'react'
+import { userService } from '@/modules/services/user-service'
+import { Switch } from '@/components/ui/switch'
+import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
+import { PrivacyConfirmDialog } from './PrivacyConfirmDialog'
+import { UserProfile } from '@/types/services/user'
 
 interface PrivacyToggleProps {
-  initialIsPrivate: boolean;
-  userId: string;
+  profile: UserProfile
+  onPrivacyChange: (isPrivate: boolean) => void
 }
 
+export function PrivacyToggle({ profile, onPrivacyChange }: PrivacyToggleProps) {
+  const [isPrivate, setIsPrivate] = useState(profile.isPrivate)
+  const [isConfirming, setIsConfirming] = useState(false)
+  const [loading, setLoading] = useState(false)
 
-export function PrivacyToggle({ initialIsPrivate, userId }: PrivacyToggleProps) {
-  const { user } = useAuth();
-  const [ isPrivate, setIsPrivate ] = useState(initialIsPrivate);
-  const [ isLoading, setIsLoading ] = useState(false);
+  const handleToggle = () => setIsConfirming(true)
 
-  const isOwner = user?.id === userId;
-  if (!isOwner) {
-    return null;
+  const handleConfirm = async () => {
+    setLoading(true)
+    try {
+      await userService.togglePrivacy()
+      const newPrivacy = !isPrivate
+      setIsPrivate(newPrivacy)
+      onPrivacyChange(newPrivacy)
+      toast.success(`Your profile is nowwww ${newPrivacy ? 'private' : 'public'}.`)
+    } catch {
+      toast.error('Failed to update privacy setting.')
+    } finally {
+      setLoading(false)
+      setIsConfirming(false)
+    }
   }
 
-  const handleToggle = async (checked: boolean) => {
-    setIsLoading(true);
-    try {
-      await userService.togglePrivacy(userId);
-      setIsPrivate(checked);
-      toast.success(`Your account is now ${checked ? "private" : "public"}.`);
-    } catch (error: any) {
-      toast.error("Failed to update privacy", {
-        description: error.response?.data?.message || "Please try again later."
-      });
-      setIsPrivate(!checked);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
-    <div className="flex items-center space-x-2">
+    <div className='flex items-center gap-2'>
+      <Label htmlFor='privacy-switch'>Private Profile</Label>
       <Switch
-        id="privacy-mode"
-        checked={ isPrivate }
-        onCheckedChange={ handleToggle }
-        disabled={ isLoading }
+        id='privacy-switch'
+        checked={isPrivate}
+        onCheckedChange={handleToggle}
+        disabled={loading}
       />
-      <Label htmlFor="privacy-mode">
-        Private Account
-      </Label>
+      <PrivacyConfirmDialog
+        isOpen={isConfirming}
+        onOpenChange={setIsConfirming}
+        onConfirm={handleConfirm}
+        isMakingPrivate={!isPrivate}
+      />
     </div>
-  );
+  )
 }

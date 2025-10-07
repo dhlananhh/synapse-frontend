@@ -1,171 +1,171 @@
 // User type
 export type User = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  password?: string;
-  displayName?: string;
-  avatarUrl?: string;
-  createdAt: string;
+  id: string
+  firstName: string
+  lastName: string
+  username: string
+  email: string
+  password?: string
+  displayName?: string
+  avatarUrl?: string
+  createdAt: string
   karma: {
-    post: number;
-    comment: number;
-  };
-  gender: string;
-  birthday?: string;
-  bannerUrl?: string;
-};
+    post: number
+    comment: number
+  }
+  gender: string
+  birthday?: string
+  bannerUrl?: string
+}
 
 // UserFromJwt type
 export type UserFromJwt = {
-  sub: string;
-  email: string;
-  role: string;
+  sub: string
+  email: string
+  role: string
 }
 
 // Trophy type
 export type Trophy = {
-  id: string;
-  name: string;
-  description: string;
-  Icon: React.ElementType;
-};
+  id: string
+  name: string
+  description: string
+  Icon: React.ElementType
+}
 
 // Comment type
 export type Comment = {
-  id: string;
-  text: string;
-  author: User;
-  createdAt: string;
-  votes: number;
-  replies?: Comment[];
-  receivedAwards?: Award[];
-};
+  id: string
+  text: string
+  author: User
+  createdAt: string
+  votes: number
+  replies?: Comment[]
+  receivedAwards?: Award[]
+}
 
 // UserComment interface
 export interface UserComment extends Comment {
-  postTitle: string;
-  postId: string;
-  postAuthor: string;
+  postTitle: string
+  postId: string
+  postAuthor: string
 }
 
 // Community type
-export type Community = {
-  id: string;
-  slug: string;
-  name: string;
-  imageUrl?: string;
-  description: string;
-  createdAt: string;
-  memberCount: number;
-  ownerId: string;
-  moderatorIds: string[];
-};
+// export type Community = {
+//   id: string;
+//   slug: string;
+//   name: string;
+//   imageUrl?: string;
+//   description: string;
+//   createdAt: string;
+//   memberCount: number;
+//   ownerId: string;
+//   moderatorIds: string[];
+// };
 
 // Post type
 export type Post = {
-  id: string;
-  title: string;
-  content: string;
-  author: User;
+  id: string
+  title: string
+  content: string
+  author: User
   community: {
-    id: string;
-    slug: string;
-    name: string;
-  };
-  createdAt: string;
-  votes: number;
-  comments: Comment[];
-  flair?: Flair;
-  receivedAwards?: Award[];
-};
+    id: string
+    slug: string
+    name: string
+  }
+  createdAt: string
+  votes: number
+  comments: Comment[]
+  flair?: Flair
+  receivedAwards?: Award[]
+}
 
 // Flair type
 export type Flair = {
-  id: string;
-  name: string;
-  color: string;
-  communityId: string;
-};
+  id: string
+  name: string
+  color: string
+  communityId: string
+}
 
 // Award type
 export type Award = {
-  id: string;
-  name: string;
-  description: string;
-  cost: number;
-  Icon: React.ElementType;
-};
+  id: string
+  name: string
+  description: string
+  cost: number
+  Icon: React.ElementType
+}
 
 // NotificationType
-export type NotificationType = "NEW_COMMENT" | "POST_UPVOTE" | "NEW_FOLLOWER";
+export type NotificationType = 'NEW_COMMENT' | 'POST_UPVOTE' | 'NEW_FOLLOWER'
 
 // Notification type
 export type Notification = {
-  id: string;
-  type: NotificationType;
-  actor: User;
-  entityUrl: string;
-  message: string;
-  isRead: boolean;
-  createdAt: string;
-};
+  id: string
+  type: NotificationType
+  actor: User
+  entityUrl: string
+  message: string
+  isRead: boolean
+  createdAt: string
+}
 
 // SortType
-export type SortType = "hot" | "new" | "top";
+export type SortType = 'hot' | 'new' | 'top'
 
 // Activity type
 export type Activity = {
-  date: string;
-  count: number;
-  level: 0 | 1 | 2 | 3 | 4;
+  date: string
+  count: number
+  level: 0 | 1 | 2 | 3 | 4
 }
 
 // Message type
 export type Message = {
-  id: string;
-  text: string;
-  senderId: string;
-  timestamp: string;
-};
+  id: string
+  text: string
+  senderId: string
+  timestamp: string
+}
 
 // Conversation type
 export type Conversation = {
-  contact: User;
-  messages: Message[];
-};
+  contact: User
+  messages: Message[]
+}
 
 // ChatState interface
 export interface ChatState {
-  conversations: Conversation[];
-  activeConversationId: string | null;
-  isWidgetOpen: boolean;
-  openChat: (contact: User) => void;
-  closeChat: () => void;
-  sendMessage: (text: string, user: User) => void;
-  _receiveSimulatedReply: (contactId: string, originalText: string) => void;
-};
+  conversations: Conversation[]
+  activeConversationId: string | null
+  isWidgetOpen: boolean
+  openChat: (contact: User) => void
+  closeChat: () => void
+  sendMessage: (text: string, user: User) => void
+  _receiveSimulatedReply: (contactId: string, originalText: string) => void
+}
 
 // NotificationState interface
 export interface NotificationState {
-  notifications: Notification[];
-  unreadCount: number;
-  addNotification: (notification: Notification) => void;
-  markAsRead: (notificationId: string) => void;
-  markAllAsRead: () => void;
-};
+  notifications: Notification[]
+  unreadCount: number
+  addNotification: (notification: Notification) => void
+  markAsRead: (notificationId: string) => void
+  markAllAsRead: () => void
+}
 
 // Language type
 export type Language = {
-  code: string;
-  name: string;
-  FlagComponent: React.ElementType;
-};
+  code: string
+  name: string
+  FlagComponent: React.ElementType
+}
 
 // View Mode type
-export type ViewMode = "card" | "compact";
+export type ViewMode = 'card' | 'compact'
 
 // CommunityMemberWithRole type
-export type CommunityMemberWithRole = User & { role?: "Owner" | "Moderator" };
+export type CommunityMemberWithRole = User & { role?: 'Owner' | 'Moderator' }
