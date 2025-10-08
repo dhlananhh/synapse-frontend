@@ -97,7 +97,7 @@ export default function AboutCommunityWidget() {
             <div className="flex items-center gap-2">
               <Cake className="h-5 w-5" />
               <span>
-                Created
+                Created { " " }
                 {
                   createdAtDate
                     ? format(createdAtDate, "MMM d, yyyy")
