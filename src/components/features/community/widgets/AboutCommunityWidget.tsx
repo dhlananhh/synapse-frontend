@@ -167,7 +167,7 @@ export default function AboutCommunityWidget() {
                         variant="outline"
                       >
                         <Link
-                          href={ `/c/${community.name}/manage` }
+                          href={ `/c/${community.name}/manage/members` }
                           className="flex items-center justify-center gap-2 w-full"
                         >
                           <UserPlus className="h-4 w-4" />

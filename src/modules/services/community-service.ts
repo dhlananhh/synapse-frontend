@@ -94,6 +94,17 @@ export const communityService = {
   // Membership Management
   // =================================
 
+  // Find members in a community with optional query params
+  // params: { q?: string; role?: string; cursor?: string | null; limit?: number }
+  // Expects server response shape like: { members: [...], pagination: { hasMore, nextCursor } }
+  getMembers: (
+    communityId: string,
+    params?: { q?: string; role?: string; cursor?: string | null; limit?: number }
+  ): Promise<{
+    members: CommunityMember[]
+    pagination?: { hasMore: boolean; nextCursor: string | null }
+  }> => communityApiClient.get(`/${communityId}/members`, { params }).then((res) => res.data),
+
   // Join community
   joinCommunity: (communityId: string): Promise<any> =>
     communityApiClient.post(`/${communityId}/members`).then((res) => res.data),
@@ -126,6 +137,30 @@ export const communityService = {
       limit?: number;
     }
   ): Promise<any> => communityApiClient.get(`${communityId}/members/banned`, { params }).then((res) => res.data),
+
+  // Ban a member from a community
+  // POST /{communityId}/members/{userId}/ban
+  banMember: (
+    communityId: string,
+    userId: string,
+    reason?: string
+  ): Promise<any> =>
+    communityApiClient.post(`/${communityId}/members/${userId}/ban`, { reason }).then(res => res.data),
+
+  // Unbans a member from a community
+  // POST {communityId}/members/{userId}/unban
+  unbanMember: (communityId: string, userId: string): Promise<any> =>
+    communityApiClient.post(`/${communityId}/members/${userId}/unban`).then(res => res.data),
+
+  // Remove a member from a community
+  // DELETE /{communityId}/members/{userId}
+  removeMember: (communityId: string, userId: string): Promise<any> =>
+    communityApiClient.delete(`/${communityId}/members/${userId}`).then(res => res.data),
+
+  // Update member role
+  // PUT /{communityId}/members/{userId}/role
+  updateMemberRole: (communityId: string, userId: string, role: 'MODERATOR' | 'MEMBER'): Promise<void> =>
+    communityApiClient.put(`/${communityId}/members/${userId}/role`, { role }).then(res => res.data),
 
   // Approve join request
   // POST /{communityId}/members/{userId}/approve
@@ -218,16 +253,5 @@ export const communityService = {
   // DELETE /{communityId}/rules/{ruleId}
   deleteRule: (communityId: string, ruleId: string): Promise<void> =>
     communityApiClient.delete(`/${communityId}/rules/${ruleId}`).then(() => undefined),
-
-  // Find members in a community with optional query params
-  // params: { q?: string; role?: string; cursor?: string | null; limit?: number }
-  // Expects server response shape like: { members: [...], pagination: { hasMore, nextCursor } }
-  getMembers: (
-    communityId: string,
-    params?: { q?: string; role?: string; cursor?: string | null; limit?: number }
-  ): Promise<{
-    members: CommunityMember[]
-    pagination?: { hasMore: boolean; nextCursor: string | null }
-  }> => communityApiClient.get(`/${communityId}/members`, { params }).then((res) => res.data),
 
 }

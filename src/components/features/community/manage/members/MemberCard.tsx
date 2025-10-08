@@ -9,13 +9,14 @@ import {
   AvatarFallback,
   AvatarImage
 } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel
 } from "@/components/ui/dropdown-menu";
 import {
   MoreHorizontal,
@@ -23,127 +24,193 @@ import {
   UserX,
   Gavel,
   ShieldOff,
-  Trash2
+  Trash2,
+  Shield,
+  Star
 } from "lucide-react";
 
 
 interface MemberCardProps {
   member: CommunityMember;
-  type: "pending" | "current" | "banned";
-  onApprove?: (userId: string) => void;
-  onReject?: (userId: string) => void;
-  onBan?: (userId: string) => void;
-  onUnban?: (userId: string) => void;
-  onRemove?: (userId: string) => void;
+  // Role of the person performing community member management
+  currentUserRole?: "OWNER" | "MODERATOR" | "MEMBER";
+
+  // Action for "Pending" tab
+  onApprove?: (userId: string, username: string) => void;
+  onReject?: (userId: string, username: string) => void;
+
+  // Action for "Banned" tab
+  onUnban?: (userId: string, username: string) => void;
+
+  // Action for "Curent" tab
+  onBan?: (userId: string, username: string) => void;
+  onRemove?: (userId: string, username: string) => void;
+  onPromote?: (userId: string, username: string) => void; // Owner only
+  onDemote?: (userId: string, username: string) => void;  // Owner only
 }
 
 
 export function MemberCard({
   member,
-  type,
-  onApprove,
-  onReject,
-  onBan,
-  onUnban,
-  onRemove
+  currentUserRole,
+  onApprove, onReject, onUnban,
+  onBan, onRemove, onPromote, onDemote
 }: MemberCardProps) {
+
+  const canManageModerator = currentUserRole === "OWNER" && member.role === "MODERATOR";
+  const canManageMember = currentUserRole === "OWNER" || currentUserRole === "MODERATOR";
+
   const renderActions = () => {
-    switch (type) {
-      case "pending":
-        return (
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={ () => onReject?.(member.userId) }
-            >
-              <UserX className="h-4 w-4 mr-2" />
-              Reject
-            </Button>
-            <Button
-              size="sm"
-              onClick={ () => onApprove?.(member.userId) }
-            >
-              <UserCheck className="h-4 w-4 mr-2" />
-              Approve
-            </Button>
-          </div>
-        );
-      case "current":
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="icon">
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={ () => onBan?.(member.userId) }
-                className="text-destructive"
-              >
-                <Gavel className="h-4 w-4 mr-2" />
-                Ban User
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={ () => onRemove?.(member.userId) }
-                className="text-destructive"
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Remove from Community
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      case "banned":
-        return (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={ () => onUnban?.(member.userId) }
-          >
-            <ShieldOff className="h-4 w-4 mr-2" />
-            Unban
+    // --- Context: PENDING TAB ---
+    if (onApprove && onReject) {
+      return (
+        <div className="flex flex-wrap gap-2">
+          <Button size="sm" variant="outline" onClick={ () => onReject(member.userId, member.username) }>
+            <UserX className="h-4 w-4 mr-2" />
+            Reject
           </Button>
-        )
-      default:
-        return null;
+          <Button size="sm" onClick={ () => onApprove(member.userId, member.username) }>
+            <UserCheck className="h-4 w-4 mr-2" />
+            Approve
+          </Button>
+        </div>
+      );
     }
+
+    // --- Context: BANNED TAB ---
+    if (onUnban) {
+      return (
+        <Button size="sm" variant="outline" onClick={ () => onUnban(member.userId, member.username) }>
+          <ShieldOff className="h-4 w-4 mr-2" />
+          Unban
+        </Button>
+      );
+    }
+
+    // --- Context: CURRENT MEMBERS TAB ---
+    // Only show the actions menu if the user has permission and the member is not the Owner
+    const canShowActionsMenu = (canManageModerator || (canManageMember && member.role === "MEMBER")) && member.role !== "OWNER";
+
+    if (canShowActionsMenu) {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <MoreHorizontal className="h-4 w-4" />
+              <span className="sr-only">Member Actions</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+
+            {/* Owner-Only Actions */ }
+            {
+              currentUserRole === "OWNER" && member.role === "MEMBER" && (
+                <DropdownMenuItem
+                  onClick={ () => onPromote?.(member.userId, member.username) }
+                >
+                  <Shield className="h-4 w-4 mr-2" />
+                  Promote to Moderator
+                </DropdownMenuItem>
+              )
+            }
+            {
+              currentUserRole === "OWNER" && member.role === "MODERATOR" && (
+                <DropdownMenuItem
+                  onClick={ () => onDemote?.(member.userId, member.username) }
+                >
+                  <UserCheck className="h-4 w-4 mr-2" />
+                  Demote to Member
+                </DropdownMenuItem>
+              )
+            }
+            {
+              currentUserRole === "OWNER" && <DropdownMenuSeparator />
+            }
+
+            {/* Dangerous actions */ }
+            <DropdownMenuItem
+              onClick={ () => onBan?.(member.userId, member.username) }
+              className="text-destructive focus:bg-destructive/10"
+            >
+              <Gavel className="h-4 w-4 mr-2" />
+              Ban Member
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={ () => onRemove?.(member.userId, member.username) }
+              className="text-destructive focus:bg-destructive/10"
+            >
+              <Trash2 className="h-4 w-4 mr-2" />
+              Remove from Community
+            </DropdownMenuItem>
+
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    }
+
+    return null;
   }
 
   return (
-    <div className="flex items-center justify-between p-3 border-b">
+    <div className="flex items-center justify-between p-3 border-b last:border-b-0 hover:bg-muted/50 transition-colors">
       <div className="flex items-center gap-4">
-        <Avatar>
-          <AvatarImage
-            src={ member.userId || "" }
-          />
-          <AvatarFallback>
-            { member.username.charAt(0).toUpperCase() }
-          </AvatarFallback>
-        </Avatar>
+        <Link
+          href={ `/u/${member.userId}` }
+        >
+          <Avatar className="h-10 w-10">
+            <AvatarImage
+              src={ member.avatarUrl ?? "" }
+              alt={ `@${member.username}` }
+            />
+            <AvatarFallback>
+              { member.username.charAt(0).toUpperCase() }
+            </AvatarFallback>
+          </Avatar>
+        </Link>
         <div>
-          <Link
-            href={ `/u/${member.username}` }
-            className="font-semibold hover:underline"
-          >
-            { member.username }
-          </Link>
+          <div className="flex items-center gap-2">
+            <Link
+              href={ `/u/${member.userId}` }
+              className="font-semibold hover:underline"
+            >
+              { member.username }
+            </Link>
+            {/* Badges show roles */ }
+            {
+              member.role === "OWNER" && (
+                <div
+                  title="Owner"
+                  className="flex items-center text-yellow-500"
+                >
+                  <Star className="h-4 w-4 fill-yellow-500" />
+                </div>
+              )
+            }
+            {
+              member.role === "MODERATOR" && (
+                <div
+                  title="Moderator"
+                  className="flex items-center text-blue-500"
+                >
+                  <Shield className="h-4 w-4 fill-blue-500" />
+                </div>
+              )
+            }
+          </div>
           {
-            type === "current" && (
-              <Badge
-                variant={ member.role === "OWNER" ? "default" : "secondary" }
-                className="ml-2"
-              >
-                { member.role }
-              </Badge>
+            member.joinedAt && (
+              <p className="text-xs text-muted-foreground">
+                Joined { new Date(member.joinedAt).toLocaleDateString() }
+              </p>
             )
           }
         </div>
       </div>
-      { renderActions() }
+      <div className="shrink-0">
+        { renderActions() }
+      </div>
     </div>
   );
 }

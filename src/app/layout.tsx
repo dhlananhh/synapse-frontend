@@ -13,9 +13,9 @@ import NotificationSimulator from '@/components/providers/NotificationSimulator'
 import { CommandMenuProvider } from '@/context/CommandMenuContext'
 
 const lexend = Lexend({
-  subsets: ['latin'],
+  subsets: [ 'latin' ],
   variable: '--font-sans',
-  weight: ['300', '400', '500', '600', '700'],
+  weight: [ '300', '400', '500', '600', '700' ],
 })
 
 export const metadata: Metadata = {
@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en' suppressHydrationWarning>
-      <body className={cn('min-h-screen bg-background font-sans antialiased', lexend.variable)}>
+      <body className={ cn('min-h-screen bg-background font-sans antialiased', lexend.variable) }>
         <I18nProvider>
           <ThemeProvider
             attribute='class'
@@ -44,8 +44,8 @@ export default function RootLayout({
             <CommandMenuProvider>
               <AuthProvider>
                 <NotificationSimulator />
-                <main className='container mx-auto max-w-7xl pt-16 flex-grow'>{children}</main>
-                {/* <ChatWidget /> */}
+                <main className='container mx-auto max-w-7xl pt-16 flex-grow'>{ children }</main>
+                {/* <ChatWidget /> */ }
               </AuthProvider>
             </CommandMenuProvider>
 

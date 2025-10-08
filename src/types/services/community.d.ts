@@ -30,7 +30,7 @@ export interface Community {
   id: string
   name: string
   description: string
-  status: 'PUBLIC' | 'RESTRICTED' | 'PRIVATE'
+  status: "PUBLIC" | "RESTRICTED" | "PRIVATE"
   ownerId: string
   memberCount: number
   postCount: number
@@ -52,8 +52,8 @@ export interface CommunityMembership {
   communityId: string
   userId: string
   username: string
-  role: 'OWNER' | 'MODERATOR' | 'MEMBER'
-  status: 'ACTIVE' | 'PENDING' | 'BANNED'
+  role: "OWNER" | "MODERATOR" | "MEMBER"
+  status: "ACTIVE" | "PENDING" | "BANNED"
   joinedAt: string | null
 }
 
@@ -61,7 +61,7 @@ export interface SearchCommunityResult {
   id: string
   name: string
   description: string
-  status: 'PUBLIC' | 'RESTRICTED' | 'PRIVATE'
+  status: "PUBLIC" | "RESTRICTED" | "PRIVATE"
   ownerId: string
   memberCount: number
   postCount: number
@@ -103,6 +103,8 @@ export interface CommunityMember {
   userId: string
   communityId: string
   username: string
-  role: 'OWNER' | 'MODERATOR' | 'MEMBER' | string
-  status: 'ACTIVE' | 'PENDING' | 'BANNED' | string
+  role: "OWNER" | "MODERATOR" | "MEMBER" | string;
+  status: "ACTIVE" | "PENDING" | "BANNED" | string;
+  joinedAt: string;
+  avatarUrl?: string | null;
 }
