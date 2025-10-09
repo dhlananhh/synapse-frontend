@@ -15,7 +15,7 @@ import { Tag, Settings } from 'lucide-react'
 import { useMembership } from '@/context/MembershipContext'
 import { Button } from '@/components/ui/button'
 import { useCommunity } from '@/context/CommunityContext'
-import { ManageCommunityFlairsDialog } from '@/components/features/community/manage/dialogs/ManageCommunityFlairsDialog'
+import { ManageCommunityFlairsDialog } from '@/components/features/community/manage/dialogs/ManageFlairsDialog'
 
 export default function CommunityFlairsWidget() {
   const community = useCommunity()

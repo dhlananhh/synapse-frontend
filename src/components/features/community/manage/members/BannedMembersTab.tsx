@@ -57,7 +57,7 @@ export function BannedMembersTab({ communityId, currentUserRole }: BannedMembers
 
     try {
       await communityService.unbanMember(communityId, userId);
-      toast.success(`User @${username} has been unbanned.`);
+      toast.success(`User @${username} has been unbanned successfully!`);
     } catch (error: any) {
       toast.error(`Failed to unban @${username}.`, {
         description: error.response?.data?.message || "Please try again.",

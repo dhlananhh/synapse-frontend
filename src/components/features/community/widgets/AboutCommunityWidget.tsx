@@ -30,6 +30,7 @@ import {
   FileText,
   TriangleAlert,
   ShieldCheck,
+  FolderKanban,
 } from "lucide-react"
 
 
@@ -157,6 +158,25 @@ export default function AboutCommunityWidget() {
                   <h4 className="font-semibold text-sm">
                     { isOwner ? "Owner Actions" : "Moderator Actions" }
                   </h4>
+
+                  {/* Community Management - available to moderators & owners (if active) */ }
+                  {
+                    canManage && (
+                      <Button
+                        asChild
+                        className="w-full"
+                        variant="outline"
+                      >
+                        <Link
+                          href={ `/c/${community.name}/manage` }
+                          className="flex items-center justify-center gap-2 w-full"
+                        >
+                          <FolderKanban className="h-4 w-4" />
+                          Manage this community
+                        </Link>
+                      </Button>
+                    )
+                  }
 
                   {/* Manage Members - available to moderators & owners (if active) */ }
                   {

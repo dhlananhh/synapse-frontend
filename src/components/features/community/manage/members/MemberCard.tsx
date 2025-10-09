@@ -65,11 +65,18 @@ export function MemberCard({
     if (onApprove && onReject) {
       return (
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" onClick={ () => onReject(member.userId, member.username) }>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={ () => onReject(member.userId, member.username) }
+          >
             <UserX className="h-4 w-4 mr-2" />
             Reject
           </Button>
-          <Button size="sm" onClick={ () => onApprove(member.userId, member.username) }>
+          <Button
+            size="sm"
+            onClick={ () => onApprove(member.userId, member.username) }
+          >
             <UserCheck className="h-4 w-4 mr-2" />
             Approve
           </Button>
@@ -80,7 +87,11 @@ export function MemberCard({
     // --- Context: BANNED TAB ---
     if (onUnban) {
       return (
-        <Button size="sm" variant="outline" onClick={ () => onUnban(member.userId, member.username) }>
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={ () => onUnban(member.userId, member.username) }
+        >
           <ShieldOff className="h-4 w-4 mr-2" />
           Unban
         </Button>
@@ -95,7 +106,11 @@ export function MemberCard({
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-8 w-8">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+            >
               <MoreHorizontal className="h-4 w-4" />
               <span className="sr-only">Member Actions</span>
             </Button>
@@ -202,7 +217,7 @@ export function MemberCard({
           {
             member.joinedAt && (
               <p className="text-xs text-muted-foreground">
-                Joined { new Date(member.joinedAt).toLocaleDateString() }
+                Joined { " " } { new Date(member.joinedAt).toLocaleDateString() }
               </p>
             )
           }

@@ -107,7 +107,9 @@ export function CurrentMembersTab({ communityId, currentUserRole }: CurrentMembe
           break;
       }
 
-      toast.success(`Successfully performed action "${action}" on @${username}.`, { id: actionToastId });
+      toast.success(`Successfully performed action "${action}" on @${username}.`, {
+        id: actionToastId
+      });
 
     } catch (error: any) {
       // Rollback on error
@@ -171,7 +173,9 @@ export function CurrentMembersTab({ communityId, currentUserRole }: CurrentMembe
     <div>
       {/* Search Bar */ }
       <div className="p-3 border-b relative">
-        <Search className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        <Search
+          className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
+        />
         <Input
           placeholder="Search by username..."
           className="pl-8"

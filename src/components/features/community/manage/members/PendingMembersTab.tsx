@@ -55,7 +55,7 @@ export function PendingMembersTab({ communityId, currentUserRole }: PendingMembe
         toast.success(`Approved ${username}"s request to join.`);
       } else {
         await communityService.rejectJoinRequest(communityId, userId);
-        toast.success(`Rejected ${username}"s request.`);
+        toast.success(`Rejected ${username}'s request successfully!`);
       }
     } catch (error: any) {
       toast.error(`Failed to ${action} request.`, {

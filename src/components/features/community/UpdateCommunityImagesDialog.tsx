@@ -47,8 +47,8 @@ export function UpdateCommunityImagesDialog({
   const [ isOpen, setIsOpen ] = useState(false);
   const [ isUploading, setIsUploading ] = useState(false);
 
-  const [ avatarPreview, setAvatarPreview ] = useState<string | null>(community.avatarKey);
-  const [ bannerPreview, setBannerPreview ] = useState<string | null>(community.bannerKey);
+  const [ avatarPreview, setAvatarPreview ] = useState<string | null>(community.avatarUrl);
+  const [ bannerPreview, setBannerPreview ] = useState<string | null>(community.bannerUrl);
   const [ avatarFile, setAvatarFile ] = useState<File | null>(null);
   const [ bannerFile, setBannerFile ] = useState<File | null>(null);
 
@@ -110,8 +110,8 @@ export function UpdateCommunityImagesDialog({
     if (!open) {
       setAvatarFile(null);
       setBannerFile(null);
-      setAvatarPreview(community.avatarKey);
-      setBannerPreview(community.bannerKey);
+      setAvatarPreview(community.avatarUrl);
+      setBannerPreview(community.bannerUrl);
     }
     setIsOpen(open);
   }

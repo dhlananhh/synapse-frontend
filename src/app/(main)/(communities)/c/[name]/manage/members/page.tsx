@@ -1,17 +1,33 @@
-'use client';
+"use client";
+
+
+import React from "react";
 import { useCommunity } from "@/context/CommunityContext";
-import { useMembership } from '@/context/MembershipContext';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useMembership } from "@/context/MembershipContext";
 import { PendingMembersTab } from "@/components/features/community/manage/members/PendingMembersTab";
 import { CurrentMembersTab } from "@/components/features/community/manage/members/CurrentMembersTab";
 import { BannedMembersTab } from "@/components/features/community/manage/members/BannedMembersTab";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger
+} from "@/components/ui/tabs";
+import { Loader2 } from "lucide-react";
+
 
 export default function ManageMembersPage() {
   const community = useCommunity();
   const membershipContext = useMembership();
   const currentUserRole = membershipContext?.membership?.role;
 
-  if (!community) { return <div>Loading...</div>; }
+  if (!community) {
+    return (
+      <div className="mt-10 text-2xl">
+        <Loader2 className="animate-spin h-8 w-8 text-primary" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
