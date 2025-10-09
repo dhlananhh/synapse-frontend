@@ -1,4 +1,4 @@
-import { userApiClient } from "@/libs/apiClient";
+import { authApiClient, userApiClient } from '@/libs/apiClient'
 import {
   UserProfile,
   UpdateUserProfilePayload,
@@ -8,78 +8,106 @@ import {
   FollowerResponse,
   FollowingResponse,
   TogglePrivacyResponse,
-  FollowResponse
-} from "@/types/services/user";
-
+  FollowResponse,
+  PendingFollowRequestsResponse,
+  FollowerRecord,
+  FollowingRecord,
+  SimpleProfile,
+} from '@/types/services/user'
 
 export const userService = {
-
   // =================================
   // User Profile & Preferences
   // =================================
 
-  getMe: (): Promise<UserProfile> => (
-    userApiClient.get(`/me`).then(res => res.data)
-  ),
+  getUserProfile: (userId: string): Promise<UserProfile> =>
+    userApiClient.get(`/${userId}`).then((res) => {
+      console.log('user profile fetched ', res)
+      return res.data
+    }),
 
-  getUserProfile: (userId: string): Promise<UserProfile> => (
-    userApiClient.get(`/${userId}`).then(res => res.data)
-  ),
-
-  updateUserProfile: (userId: string, payload: UpdateUserProfilePayload): Promise<UserProfile> => (
-    userApiClient.patch(`/${userId}`, payload).then(res => res.data)
-  ),
+  updateUserProfile: (payload: UpdateUserProfilePayload): Promise<UserProfile> =>
+    userApiClient.patch(`/me`, payload).then((res) => res.data),
 
   getUserPreferences: (userId: string): Promise<UserPreferences> => {
-    return userApiClient.get(`/${userId}/preferences`).then(res => res.data);
+    return userApiClient.get(`/${userId}/preferences`).then((res) => res.data)
   },
 
-  updateUserPreferences: (userId: string, payload: UpdateUserPreferencesPayload): Promise<UserPreferences> => {
-    return userApiClient.patch(`/${userId}/preferences`, payload).then(res => res.data);
+  updateUserPreferences: (
+    userId: string,
+    payload: UpdateUserPreferencesPayload
+  ): Promise<UserPreferences> => {
+    return userApiClient.patch(`/${userId}/preferences`, payload).then((res) => res.data)
   },
 
-  searchUsers: (name: string, page = 1, limit = 10): Promise<SearchUserResult[]> => {
-    return userApiClient.get(`/search`, { params: { name, page, limit } }).then(res => res.data);
+  updateUserAvatar: (formData: FormData): Promise<{ avatarUrl: string }> => {
+    return userApiClient
+      .patch('/me/avatar', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      })
+      .then((res) => res.data)
   },
 
-  togglePrivacy: (userId: string): Promise<TogglePrivacyResponse> => {
-    return userApiClient.patch(`/${userId}/privacy`).then(res => res.data);
+  searchUsers: (
+    q: string,
+    cursor?: string,
+    limit = 10
+  ): Promise<{
+    users: SearchUserResult[]
+    pagination: { hasMore: boolean; nextCursor: string | null }
+  }> => {
+    return userApiClient.get(`/`, { params: { q, cursor, limit } }).then((res) => res.data)
+  },
+
+  togglePrivacy: (): Promise<TogglePrivacyResponse> => {
+    return userApiClient.patch(`/me/privacy`).then((res) => res.data)
+  },
+
+  getSimpleProfiles: (userIds: string[]): Promise<SimpleProfile[]> => {
+    return userApiClient
+      .get('/simple-profiles', { params: { userIds: userIds.join(',') } })
+      .then((res) => res.data)
   },
 
   // =================================
   // Social Interactions (Following)
   // =================================
 
-  followUser: (userId: string): Promise<FollowResponse> => (
-    userApiClient.post(`/${userId}/follow`).then(res => res.data)
-  ),
+  followUser: (userId: string): Promise<FollowResponse> =>
+    userApiClient.post(`/me/following`, { userId }).then((res) => res.data),
 
-  unfollowUser: (userId: string): Promise<void> => (
-    userApiClient.delete(`/${userId}/follow`).then(res => res.data)
-  ),
+  unfollowUser: (followId: string): Promise<void> =>
+    userApiClient.delete(`/me/following/${followId}`).then((res) => res.data),
 
-  acceptFollowRequest: (followerId: string): Promise<void> => (
-    userApiClient.patch(`/${followerId}/follow/accept`).then(res => res.data)
-  ),
+  acceptFollowRequest: (requestId: string): Promise<void> =>
+    userApiClient
+      .patch(`/me/follow-requests/${requestId}`, { action: 'accept' })
+      .then((res) => res.data),
 
-  rejectFollowRequest: (followerId: string): Promise<void> => (
-    userApiClient.patch(`/${followerId}/follow/reject`).then(res => res.data)
-  ),
+  rejectFollowRequest: (requestId: string): Promise<void> =>
+    userApiClient
+      .patch(`/me/follow-requests/${requestId}`, { action: 'reject' })
+      .then((res) => res.data),
 
-  cancelFollowRequest: (followingId: string): Promise<void> => (
-    userApiClient.delete(`/${followingId}/follow/cancel`).then(res => res.data)
-  ),
+  cancelFollowRequest: (requestId: string): Promise<void> =>
+    userApiClient
+      .patch(`/me/follow-requests/${requestId}`, { action: 'cancel' })
+      .then((res) => res.data),
 
   // =================================
   // Social Lists
   // =================================
 
-  getFollowers: (userId: string, page = 1, limit = 20): Promise<FollowerResponse[]> => (
-    userApiClient.get(`/${userId}/followers`, { params: { page, limit } }).then(res => res.data)
-  ),
+  getFollowers: (userId: string, page = 1, limit = 20): Promise<FollowerRecord[]> =>
+    userApiClient
+      .get(`/${userId}/followers`, { params: { page, limit } })
+      .then((res) => res.data.follows),
 
-  getFollowing: (userId: string, page = 1, limit = 20): Promise<FollowingResponse[]> => (
-    userApiClient.get(`/${userId}/following`, { params: { page, limit } }).then(res => res.data)
-  ),
+  getFollowing: (userId: string, page = 1, limit = 20): Promise<FollowingRecord[]> =>
+    userApiClient
+      .get(`/${userId}/following`, { params: { page, limit } })
+      .then((res) => res.data.following),
 
-};
+  getPendingFollowRequests: (): Promise<PendingFollowRequestsResponse> =>
+    userApiClient.get('/me/follow-requests').then((res) => res.data),
+}
