@@ -1,331 +1,254 @@
-"use client";
+'use client'
 
-
-import React, { useState, useEffect } from "react";
-import {
-  useForm,
-  Controller,
-  useWatch
-} from "react-hook-form";
-import {
-  useRouter,
-  useSearchParams
-} from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  TPostSchema,
-  PostSchema
-} from "@/libs/validators/post-validator";
-import { useAuth } from "@/context/MockAuthContext";
-import {
-  createPost,
-  fetchFlairsForCommunity
-} from "@/libs/mock-api";
-import { mockCommunities } from "@/libs/mock-data";
-import {
-  Community,
-  Flair,
-  Post,
-  User
-} from "@/types";
-import { toast } from "sonner";
+import React, { useState, useEffect } from 'react'
+import { useForm, Controller, useWatch } from 'react-hook-form'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { TPostSchema, PostSchema } from '@/libs/validators/post-validator'
+import { useAuth } from '@/context/AuthContext'
+import { createPost, fetchFlairsForCommunity } from '@/libs/mock-api'
+import { mockCommunities } from '@/libs/mock-data'
+import { Community, Flair, Post, User } from '@/types'
+import { toast } from 'sonner'
 import {
   Card,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  Check,
-  ChevronsUpDown
-} from "lucide-react";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger
-} from "@/components/ui/popover";
+  CardTitle,
+} from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Loader2, Check, ChevronsUpDown } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList
-} from "@/components/ui/command";
+  CommandList,
+} from '@/components/ui/command'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge";
-import Editor from "@/components/shared/Editor";
-import { cn } from "@/libs/utils";
-import { PATHS } from "@/libs/paths";
-import { FormProvider } from "react-hook-form";
-
+  SelectValue,
+} from '@/components/ui/select'
+import { Badge } from '@/components/ui/badge'
+import Editor from '@/components/shared/Editor'
+import { cn } from '@/libs/utils'
+import { PATHS } from '@/libs/paths'
+import { FormProvider } from 'react-hook-form'
+import { AuthUser } from '@/types/services/auth'
 
 export default function CreatePostForm() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const { user } = useAuth();
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const { user } = useAuth()
 
-  const [ flairs, setFlairs ] = useState<Flair[]>([]);
-  const [ isLoadingFlairs, setIsLoadingFlairs ] = useState(false);
+  const [flairs, setFlairs] = useState<Flair[]>([])
+  const [isLoadingFlairs, setIsLoadingFlairs] = useState(false)
 
-  const preselectedCommunitySlug = searchParams.get("community");
-  const preselectedCommunity = mockCommunities.find(c => c.slug === preselectedCommunitySlug);
+  const preselectedCommunitySlug = searchParams.get('community')
+  const preselectedCommunity = mockCommunities.find((c) => c.slug === preselectedCommunitySlug)
 
   const methods = useForm<TPostSchema>({
     resolver: zodResolver(PostSchema),
     defaultValues: {
-      communityId: preselectedCommunity?.id || "",
-    }
-  });
+      communityId: preselectedCommunity?.id || '',
+    },
+  })
 
   const {
     control,
     handleSubmit,
     register,
-    formState: { errors, isSubmitting }
-  } = methods;
+    formState: { errors, isSubmitting },
+  } = methods
 
   const selectedCommunityId = useWatch({
     control,
-    name: "communityId"
-  });
+    name: 'communityId',
+  })
 
   useEffect(() => {
     if (!selectedCommunityId) {
-      setFlairs([]);
-      return;
+      setFlairs([])
+      return
     }
 
     const loadFlairs = async () => {
-      setIsLoadingFlairs(true);
+      setIsLoadingFlairs(true)
       try {
-        const fetchedFlairs = await fetchFlairsForCommunity(selectedCommunityId);
-        setFlairs(fetchedFlairs);
+        const fetchedFlairs = await fetchFlairsForCommunity(selectedCommunityId)
+        setFlairs(fetchedFlairs)
       } catch (error) {
-        console.error("Failed to fetch flairs", error);
-        toast.error("Could not load flairs for this community.");
-        setFlairs([]);
+        console.error('Failed to fetch flairs', error)
+        toast.error('Could not load flairs for this community.')
+        setFlairs([])
       } finally {
-        setIsLoadingFlairs(false);
+        setIsLoadingFlairs(false)
       }
-    };
+    }
 
-    loadFlairs();
-  }, [ selectedCommunityId ]);
-
+    loadFlairs()
+  }, [selectedCommunityId])
 
   const onSubmit = async (data: TPostSchema) => {
     if (!user) {
-      toast.error("You must be logged in to create a post.");
-      return;
+      toast.error('You must be logged in to create a post.')
+      return
     }
 
     try {
-      const newPost = await createPost(data, user as User);
-      toast.success("Post created successfully!");
-      router.push(PATHS.post(newPost.id));
+      const newPost = await createPost(data, user as AuthUser)
+      toast.success('Post created successfully!')
+      router.push(PATHS.post(newPost.id))
     } catch (error: any) {
-      toast.error("Failed to create post", {
-        description: error.message || "A community with that URL already exists. Please choose another.",
-      });
+      toast.error('Failed to create post', {
+        description:
+          error.message || 'A community with that URL already exists. Please choose another.',
+      })
     }
-  };
-
+  }
 
   return (
-    <form onSubmit={ handleSubmit(onSubmit) }>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <Card>
         <CardHeader>
-          <CardTitle>
-            Create a Post
-          </CardTitle>
+          <CardTitle>Create a Post</CardTitle>
           <CardDescription>
             Choose a community and share your thoughts with the world.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className='space-y-4'>
           <div>
             <Label>Choose a Community</Label>
             <Controller
-              control={ control }
-              name="communityId"
-              render={
-                ({ field }) => (
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        role="combobox"
-                        className="w-full justify-between mt-1"
-                      >
-                        {
-                          field.value
-                            ? `c/${mockCommunities.find(c => c.id === field.value)?.slug}`
-                            : "Select a community..."
-                        }
-                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                      <Command>
-                        <CommandInput placeholder="Search communities..." />
-                        <CommandList>
-                          <CommandEmpty>
-                            No communities found.
-                          </CommandEmpty>
-                          <CommandGroup>
-                            {
-                              mockCommunities.map(community => (
-                                <CommandItem
-                                  key={ community.id }
-                                  value={ community.slug }
-                                  onSelect={ () => field.onChange(community.id) }
-                                >
-                                  <Check
-                                    className={
-                                      cn(
-                                        "mr-2 h-4 w-4",
-                                        community.id === field.value ? "opacity-100" : "opacity-0"
-                                      )
-                                    }
-                                  />
-                                  c/{ community.slug }
-                                </CommandItem>
-                              ))
-                            }
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                )
-              }
+              control={control}
+              name='communityId'
+              render={({ field }) => (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant='outline'
+                      role='combobox'
+                      className='w-full justify-between mt-1'
+                    >
+                      {field.value
+                        ? `c/${mockCommunities.find((c) => c.id === field.value)?.slug}`
+                        : 'Select a community...'}
+                      <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className='w-[--radix-popover-trigger-width] p-0'>
+                    <Command>
+                      <CommandInput placeholder='Search communities...' />
+                      <CommandList>
+                        <CommandEmpty>No communities found.</CommandEmpty>
+                        <CommandGroup>
+                          {mockCommunities.map((community) => (
+                            <CommandItem
+                              key={community.id}
+                              value={community.slug}
+                              onSelect={() => field.onChange(community.id)}
+                            >
+                              <Check
+                                className={cn(
+                                  'mr-2 h-4 w-4',
+                                  community.id === field.value ? 'opacity-100' : 'opacity-0'
+                                )}
+                              />
+                              c/{community.slug}
+                            </CommandItem>
+                          ))}
+                        </CommandGroup>
+                      </CommandList>
+                    </Command>
+                  </PopoverContent>
+                </Popover>
+              )}
             />
-            {
-              errors.communityId && (
-                <p className="text-sm text-destructive mt-1">
-                  { errors.communityId.message }
-                </p>
-              )
-            }
+            {errors.communityId && (
+              <p className='text-sm text-destructive mt-1'>{errors.communityId.message}</p>
+            )}
           </div>
 
           <div
-            className={
-              cn(
-                "space-y-2 transition-opacity",
-                !selectedCommunityId
-                  ? "opacity-50 pointer-events-none"
-                  : "opacity-100"
-              )
-            }
+            className={cn(
+              'space-y-2 transition-opacity',
+              !selectedCommunityId ? 'opacity-50 pointer-events-none' : 'opacity-100'
+            )}
           >
-            <Label>
-              Flair (Optional)
-            </Label>
+            <Label>Flair (Optional)</Label>
             <Controller
-              control={ control }
-              name="flairId"
-              render={
-                ({ field }) => (
-                  <Select
-                    onValueChange={ field.onChange }
-                    defaultValue={ field.value }
-                    disabled={ !selectedCommunityId || isLoadingFlairs }
-                  >
-                    <SelectTrigger>
-                      <SelectValue
-                        placeholder={ isLoadingFlairs ? "Loading flairs..." : "Select a flair..." }
-                      />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {
-                        flairs.length > 0 ? (
-                          flairs.map(flair => (
-                            <SelectItem
-                              key={ flair.id }
-                              value={ flair.id }
-                            >
-                              <div className="flex items-center gap-2">
-                                <div
-                                  style={ { backgroundColor: flair.color } }
-                                  className="h-4 w-4 rounded-full"
-                                />
-                                { flair.name }
-                              </div>
-                            </SelectItem>
-                          ))
-                        ) : (
-                          <p className="text-sm text-muted-foreground p-2">
-                            No flairs for this community.
-                          </p>
-                        )
-                      }
-                    </SelectContent>
-                  </Select>
-                )
-              }
+              control={control}
+              name='flairId'
+              render={({ field }) => (
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  disabled={!selectedCommunityId || isLoadingFlairs}
+                >
+                  <SelectTrigger>
+                    <SelectValue
+                      placeholder={isLoadingFlairs ? 'Loading flairs...' : 'Select a flair...'}
+                    />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {flairs.length > 0 ? (
+                      flairs.map((flair) => (
+                        <SelectItem key={flair.id} value={flair.id}>
+                          <div className='flex items-center gap-2'>
+                            <div
+                              style={{ backgroundColor: flair.color }}
+                              className='h-4 w-4 rounded-full'
+                            />
+                            {flair.name}
+                          </div>
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <p className='text-sm text-muted-foreground p-2'>
+                        No flairs for this community.
+                      </p>
+                    )}
+                  </SelectContent>
+                </Select>
+              )}
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="title">
-              Title
-            </Label>
-            <Input
-              id="title"
-              { ...register("title") }
-            />
-            {
-              errors.title && (
-                <p className="text-sm text-destructive mt-1">
-                  { errors.title.message }
-                </p>
-              )
-            }
+          <div className='space-y-2'>
+            <Label htmlFor='title'>Title</Label>
+            <Input id='title' {...register('title')} />
+            {errors.title && (
+              <p className='text-sm text-destructive mt-1'>{errors.title.message}</p>
+            )}
           </div>
 
-          <div className="space-y-2">
-            <Label>
-              Content
-            </Label>
-            <FormProvider { ...methods }>
-              <Editor name="content" />
+          <div className='space-y-2'>
+            <Label>Content</Label>
+            <FormProvider {...methods}>
+              <Editor name='content' />
             </FormProvider>
-            {
-              errors.content && (
-                <p className="text-sm text-destructive mt-1">
-                  { (errors.content as any).message }
-                </p>
-              )
-            }
+            {errors.content && (
+              <p className='text-sm text-destructive mt-1'>{(errors.content as any).message}</p>
+            )}
           </div>
         </CardContent>
 
-        <CardFooter className="justify-end">
-          <Button
-            type="submit"
-            disabled={ isSubmitting }
-          >
-            {
-              isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            }
+        <CardFooter className='justify-end'>
+          <Button type='submit' disabled={isSubmitting}>
+            {isSubmitting && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
             Create Post
           </Button>
         </CardFooter>
       </Card>
     </form>
-  );
+  )
 }

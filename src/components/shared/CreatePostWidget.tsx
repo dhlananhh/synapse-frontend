@@ -16,12 +16,6 @@ export default function CreatePostWidget() {
 
   return (
     <div className="mb-8 p-3 rounded-md bg-card flex items-center gap-4 border">
-      {/*
-        {
-          user && <UserAvatar user={ user } />
-        }
-      */}
-
       <div className="relative w-full">
         <Input
           onClick={ goToSubmitPage }

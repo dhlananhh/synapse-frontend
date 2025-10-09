@@ -3,9 +3,8 @@
 
 import React from "react";
 import CreatePostWidget from "@/components/shared/CreatePostWidget";
-// import PostFeed from "@/components/features/post/PostFeed";
-import TopCommunitiesWidget from "@/components/features/community/widgets/TopCommunitiesWidget";
 import { Navbar } from "@/components/shared/Navbar";
+import TopCommunitiesWidget from "@/components/features/community/TopCommunitiesWidget";
 
 
 export default function FeedPage() {
@@ -15,7 +14,6 @@ export default function FeedPage() {
 
       <div className="md:col-span-2">
         <CreatePostWidget />
-        {/* <PostFeed /> */ }
       </div>
       <aside className="hidden md:block">
         <div className="sticky top-20 space-y-4">
