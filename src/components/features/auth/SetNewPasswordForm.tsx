@@ -37,7 +37,7 @@ const formSchema = z.object({
   confirmPassword: z.string()
 }).refine(data => data.newPassword === data.newPassword, {
   message: "Passwords don't match",
-  path: [ "confirm_password" ],
+  path: [ "confirmPassword" ],
 });
 
 
