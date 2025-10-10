@@ -4,7 +4,6 @@ import React from "react";
 import Link from "next/link";
 import { ChevronRight, ExternalLink } from "lucide-react";
 
-
 interface SettingsRowProps {
   title: string;
   description: string;
@@ -13,7 +12,6 @@ interface SettingsRowProps {
   isExternal?: boolean;
 }
 
-
 export default function SettingsRow({
   title,
   description,
@@ -21,17 +19,22 @@ export default function SettingsRow({
   href,
   isExternal,
 }: SettingsRowProps) {
-
   const content = (
-    <div className="flex justify-between items-center p-4 border-b">
+    <div className="flex items-center justify-between border-b p-4">
       <div className="flex flex-col">
-        <h4 className="font-semibold">{ title }</h4>
-        <p className="text-sm text-muted-foreground">{ description }</p>
+        <h4 className="font-semibold">{title}</h4>
+        <p className="text-muted-foreground text-sm">
+          {description}
+        </p>
       </div>
       <div className="flex items-center gap-2">
-        { children }
-        { href && !isExternal && <ChevronRight className="h-5 w-5 text-muted-foreground" /> }
-        { href && isExternal && <ExternalLink className="h-5 w-5 text-muted-foreground" /> }
+        {children}
+        {href && !isExternal && (
+          <ChevronRight className="text-muted-foreground h-5 w-5" />
+        )}
+        {href && isExternal && (
+          <ExternalLink className="text-muted-foreground h-5 w-5" />
+        )}
       </div>
     </div>
   );
@@ -39,12 +42,12 @@ export default function SettingsRow({
   if (href) {
     return (
       <Link
-        href={ href }
-        target={ isExternal ? "_blank" : undefined }
-        rel={ isExternal ? "noopener noreferrer" : undefined }
-        className="block hover:bg-secondary/50"
+        href={href}
+        target={isExternal ? "_blank" : undefined}
+        rel={isExternal ? "noopener noreferrer" : undefined}
+        className="hover:bg-secondary/50 block"
       >
-        { content }
+        {content}
       </Link>
     );
   }

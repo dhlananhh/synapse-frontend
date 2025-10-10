@@ -1,14 +1,10 @@
 "use client";
 
-
-import React, {
-  useState,
-  useEffect
-} from "react";
+import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   Community,
-  CommunityFlair
+  CommunityFlair,
 } from "@/types/services/community";
 import { communityService } from "@/modules/services/community-service";
 import { CommunityFlairForm } from "./CommunityFlairForm";
@@ -28,7 +24,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger
+  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,25 +32,32 @@ import {
   Plus,
   Edit,
   Trash2,
-  Hash
+  Hash,
 } from "lucide-react";
-
 
 interface ManageCommunityFlairDialogProps {
   community: Community;
 }
 
-
-export function ManageCommunityFlairDialog({ community }: ManageCommunityFlairDialogProps) {
-  const [ flairs, setFlairs ] = useState<CommunityFlair[]>([]);
-  const [ isLoading, setIsLoading ] = useState(true);
-  const [ isSubmitting, setIsSubmitting ] = useState(false);
-  const [ editingFlairId, setEditingFlairId ] = useState<string | null>(null);
+export function ManageCommunityFlairDialog({
+  community,
+}: ManageCommunityFlairDialogProps) {
+  const [flairs, setFlairs] = useState<CommunityFlair[]>(
+    []
+  );
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingFlairId, setEditingFlairId] = useState<
+    string | null
+  >(null);
 
   const fetchFlairs = async () => {
     setIsLoading(true);
     try {
-      const response = await communityService.getCommunityFlairs(community.id);
+      const response =
+        await communityService.getCommunityFlairs(
+          community.id
+        );
       setFlairs(response.data);
     } catch (error) {
       toast.error("Could not fetch flairs.");
@@ -71,18 +74,31 @@ export function ManageCommunityFlairDialog({ community }: ManageCommunityFlairDi
     setIsSubmitting(true);
     try {
       if (editingFlairId === "new") {
-        const response = await communityService.createCommunityFlair(community.id, data);
-        setFlairs(prev => [ ...prev, response.data ]);
+        const response =
+          await communityService.createCommunityFlair(
+            community.id,
+            data
+          );
+        setFlairs((prev) => [...prev, response.data]);
         toast.success("Flair created successfully!");
       } else if (editingFlairId) {
-        const response = await communityService.updateCommunityFlair(community.id, editingFlairId, data);
-        setFlairs(prev => prev.map(f => f.id === editingFlairId ? response.data : f));
+        const response =
+          await communityService.updateCommunityFlair(
+            community.id,
+            editingFlairId,
+            data
+          );
+        setFlairs((prev) =>
+          prev.map((f) =>
+            f.id === editingFlairId ? response.data : f
+          )
+        );
         toast.success("Flair updated successfully!");
       }
       setEditingFlairId(null);
     } catch (error: any) {
       toast.error("Operation failed", {
-        description: error.response?.data?.message
+        description: error.response?.data?.message,
       });
     } finally {
       setIsSubmitting(false);
@@ -91,8 +107,13 @@ export function ManageCommunityFlairDialog({ community }: ManageCommunityFlairDi
 
   const handleDelete = async (flairId: string) => {
     try {
-      await communityService.deleteCommunityFlair(community.id, flairId);
-      setFlairs(prev => prev.filter(f => f.id !== flairId));
+      await communityService.deleteCommunityFlair(
+        community.id,
+        flairId
+      );
+      setFlairs((prev) =>
+        prev.filter((f) => f.id !== flairId)
+      );
       toast.success("Flair deleted.");
     } catch (error) {
       toast.error("Failed to delete flair.");
@@ -101,13 +122,8 @@ export function ManageCommunityFlairDialog({ community }: ManageCommunityFlairDi
 
   return (
     <Dialog>
-      <DialogTrigger
-        asChild
-      >
-        <Button
-          size="sm"
-          variant="outline"
-        >
+      <DialogTrigger asChild>
+        <Button size="sm" variant="outline">
           <Hash className="h-4 w-4" />
           Manage Flairs
         </Button>
@@ -116,111 +132,112 @@ export function ManageCommunityFlairDialog({ community }: ManageCommunityFlairDi
         <DialogHeader>
           <DialogTitle>Manage Community Flairs</DialogTitle>
         </DialogHeader>
-        <div className="py-4 space-y-4">
-          <h3 className="text-sm font-semibold text-muted-foreground">
+        <div className="space-y-4 py-4">
+          <h3 className="text-muted-foreground text-sm font-semibold">
             CREATE A NEW FLAIR
           </h3>
 
           <div className="flex justify-end">
             <Button
               size="sm"
-              onClick={ () => setEditingFlairId("new") }
+              onClick={() => setEditingFlairId("new")}
             >
               <Plus className="mr-2 h-4 w-4" />
               Add New Flair
             </Button>
           </div>
 
-          {
-            editingFlairId && (
-              <CommunityFlairForm
-                initialData={
-                  editingFlairId === "new"
-                    ? null
-                    : flairs.find(f => f.id === editingFlairId)
-                }
-                onSubmit={ handleFormSubmit }
-                isSubmitting={ isSubmitting }
-                onCancel={ () => setEditingFlairId(null) }
-              />
-            )
-          }
+          {editingFlairId && (
+            <CommunityFlairForm
+              initialData={
+                editingFlairId === "new"
+                  ? null
+                  : flairs.find(
+                      (f) => f.id === editingFlairId
+                    )
+              }
+              onSubmit={handleFormSubmit}
+              isSubmitting={isSubmitting}
+              onCancel={() => setEditingFlairId(null)}
+            />
+          )}
 
           <div className="space-y-2">
-            <h3 className="text-sm font-semibold text-muted-foreground">
+            <h3 className="text-muted-foreground text-sm font-semibold">
               EXISTING FLAIRS
             </h3>
-            {
-              isLoading
-                ? <Loader2 className="animate-spin" />
-                : (
-                  flairs.length === 0 ? (
-                    <p className="text-sm text-center py-4">
-                      No flairs created yet.
-                    </p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {
-                        flairs.map(flair => (
-                          <li
-                            key={ flair.id }
-                            className="flex items-center justify-between p-2 rounded-md border"
+            {isLoading ? (
+              <Loader2 className="animate-spin" />
+            ) : flairs.length === 0 ? (
+              <p className="py-4 text-center text-sm">
+                No flairs created yet.
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {flairs.map((flair) => (
+                  <li
+                    key={flair.id}
+                    className="flex items-center justify-between rounded-md border p-2"
+                  >
+                    <span
+                      className="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold"
+                      style={{
+                        backgroundColor:
+                          flair.color ?? "#ccc",
+                        color: "#fff",
+                      }}
+                    >
+                      {flair.name}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7"
+                        onClick={() =>
+                          setEditingFlairId(flair.id)
+                        }
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-red-500"
                           >
-                            <span
-                              className="inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold"
-                              style={ {
-                                backgroundColor: flair.color ?? "#ccc",
-                                color: "#fff"
-                              } }
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Delete "{flair.name}"?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={() =>
+                                handleDelete(flair.id)
+                              }
                             >
-                              { flair.name }
-                            </span>
-                            <div className="flex items-center gap-1">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7"
-                                onClick={ () => setEditingFlairId(flair.id) }
-                              >
-                                <Edit className="h-4 w-4" />
-                              </Button>
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 text-red-500"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Delete "{ flair.name }"?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      This action cannot be undone.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction
-                                      onClick={ () => handleDelete(flair.id) }
-                                    >
-                                      Confirm Delete
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-                            </div>
-                          </li>
-                        ))
-                      }
-                    </ul>
-                  )
-                )
-            }
+                              Confirm Delete
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </DialogContent>

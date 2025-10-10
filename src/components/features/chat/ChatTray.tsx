@@ -17,20 +17,20 @@ export function ChatTray() {
     useAuth();
 
   const isThreadsListOpen = useChatStore(
-    (state) => state.isThreadsListOpen,
+    (state) => state.isThreadsListOpen
   );
   const toggleThreadsList = useChatStore(
-    (state) => state.toggleThreadsList,
+    (state) => state.toggleThreadsList
   );
   const openThreads = useChatStore(
-    (state) => state.openThreads,
+    (state) => state.openThreads
   );
   const minimizedThreads = useChatStore(
-    (state) => state.minimizedThreads,
+    (state) => state.minimizedThreads
   );
   const openChat = useChatStore((state) => state.openChat);
   const initializeThreads = useChatStore(
-    (state) => state.initializeThreads,
+    (state) => state.initializeThreads
   );
   const threads = useChatStore((state) => state.threads);
 
@@ -40,7 +40,7 @@ export function ChatTray() {
     if (myUserId && threads.length === 0) {
       initializeThreads(myUserId);
     }
-  }, [ myUserId, threads, initializeThreads ]);
+  }, [myUserId, threads, initializeThreads]);
 
   if (isAuthLoading || !myUserId) {
     return null;
@@ -50,53 +50,45 @@ export function ChatTray() {
     thread.participants.find((p: any) => p.id !== myUserId);
 
   return (
-    <div className="fixed bottom-0 right-4 z-50 flex items-end gap-4">
+    <div className="fixed right-4 bottom-0 z-50 flex items-end gap-4">
       <div className="flex gap-4">
-        {
-          minimizedThreads.map((thread) => (
-            <Button
-              key={ thread.id }
-              onClick={ () => openChat(thread.id) }
-              className="shadow-2xl rounded-t-lg rounded-b-none w-60 justify-start"
-            >
-              { getOtherParticipant(thread)?.username }
-            </Button>
-          ))
-        }
+        {minimizedThreads.map((thread) => (
+          <Button
+            key={thread.id}
+            onClick={() => openChat(thread.id)}
+            className="w-60 justify-start rounded-t-lg rounded-b-none shadow-2xl"
+          >
+            {getOtherParticipant(thread)?.username}
+          </Button>
+        ))}
       </div>
 
       <div className="relative">
-        {
-          isThreadsListOpen && (
-            <ThreadsList myUserId={ myUserId } />
-          )
-        }
+        {isThreadsListOpen && (
+          <ThreadsList myUserId={myUserId} />
+        )}
         <Button
-          onClick={ toggleThreadsList }
-          className="w-60 shadow-2xl rounded-t-lg rounded-b-none justify-between"
+          onClick={toggleThreadsList}
+          className="w-60 justify-between rounded-t-lg rounded-b-none shadow-2xl"
         >
           <div className="flex items-center gap-2">
             <MessageSquare /> Chats
           </div>
-          {
-            isThreadsListOpen ? (
-              <ChevronDown />
-            ) : (
-              <ChevronUp />
-            )
-          }
+          {isThreadsListOpen ? (
+            <ChevronDown />
+          ) : (
+            <ChevronUp />
+          )}
         </Button>
       </div>
 
-      {
-        openThreads.map((thread) => (
-          <ChatWindow
-            key={ thread.id }
-            thread={ thread }
-            myUserId={ myUserId }
-          />
-        ))
-      }
+      {openThreads.map((thread) => (
+        <ChatWindow
+          key={thread.id}
+          thread={thread}
+          myUserId={myUserId}
+        />
+      ))}
     </div>
   );
 }

@@ -14,7 +14,7 @@ export interface Message {
 
 export interface Thread {
   id: string;
-  participants: [ User, User ];
+  participants: [User, User];
   messages: Message[];
   lastMessage?: Message;
 }

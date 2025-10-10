@@ -1,15 +1,13 @@
 "use client";
 
-
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
-
 export default function UserProfileSkeleton() {
   return (
-    <div className="container mx-auto max-w-4xl py-8 space-y-8">
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-        <Skeleton className="w-32 h-32 rounded-full" />
+    <div className="container mx-auto max-w-4xl space-y-8 py-8">
+      <div className="flex flex-col items-center gap-6 md:flex-row md:items-start">
+        <Skeleton className="h-32 w-32 rounded-full" />
         <div className="flex-1 space-y-3">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-5 w-32" />
@@ -23,5 +21,5 @@ export default function UserProfileSkeleton() {
         <Skeleton className="h-10 w-28" />
       </div>
     </div>
-  )
+  );
 }

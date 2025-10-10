@@ -16,7 +16,9 @@ interface CommentFormProps {
   onCommentSubmit: (text: string) => Promise<void>;
 }
 
-export default function CommentForm({ onCommentSubmit }: CommentFormProps) {
+export default function CommentForm({
+  onCommentSubmit,
+}: CommentFormProps) {
   const {
     register,
     handleSubmit,
@@ -29,20 +31,26 @@ export default function CommentForm({ onCommentSubmit }: CommentFormProps) {
   const onSubmit = async (data: TCommentSchema) => {
     await onCommentSubmit(data.text);
     reset();
-  }
+  };
 
   return (
-    <form onSubmit={ handleSubmit(onSubmit) }>
+    <form onSubmit={handleSubmit(onSubmit)}>
       <div className="grid w-full gap-2">
         <Textarea
-          { ...register("text") }
+          {...register("text")}
           placeholder="What are your thoughts?"
-          rows={ 3 }
+          rows={3}
         />
-        { errors.text && <p className="text-xs text-destructive">{ errors.text.message }</p> }
+        {errors.text && (
+          <p className="text-destructive text-xs">
+            {errors.text.message}
+          </p>
+        )}
         <div className="mt-2 flex justify-end">
-          <Button type="submit" disabled={ isSubmitting }>
-            { isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting && (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            )}
             Post Comment
           </Button>
         </div>

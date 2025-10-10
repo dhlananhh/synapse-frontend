@@ -96,9 +96,9 @@ Why **Synapse**? In neuroscience, a synapse is the crucial junction where nerve 
 
 This name was chosen because it perfectly encapsulates the core mission of this platform:
 
--   **Connecting Ideas:** Just as a biological synapse connects neurons, this platform connects individual thoughts and ideas, allowing them to build upon each other in posts and comments.
--   **Transmitting Knowledge:** It's a space where a signal—an idea, a question, or a piece of knowledge—is transmitted from one person to the entire community, sparking discussion and collective understanding.
--   **Forming a Collective Intelligence:** When millions of synapses fire together, a consciousness emerges. Similarly, when a community comes together to discuss and vote on content, a form of "digital collective intelligence" takes shape, curating the best ideas and solutions.
+- **Connecting Ideas:** Just as a biological synapse connects neurons, this platform connects individual thoughts and ideas, allowing them to build upon each other in posts and comments.
+- **Transmitting Knowledge:** It's a space where a signal—an idea, a question, or a piece of knowledge—is transmitted from one person to the entire community, sparking discussion and collective understanding.
+- **Forming a Collective Intelligence:** When millions of synapses fire together, a consciousness emerges. Similarly, when a community comes together to discuss and vote on content, a form of "digital collective intelligence" takes shape, curating the best ideas and solutions.
 
 **Synapse** is more than just a forum; it's an engine for connecting knowledge and fostering intelligent discussion.
 
@@ -141,14 +141,14 @@ synapse-client/
 ├── public/                                   # 🏞️ Static assets (images, fonts, favicons). Files here are served at the root.
 └── src/                                      # 🗺️ Next.js App Router: The core of the application's routing and pages.
     ├── app/                                  # - Route Group for authentication pages (login, register). Has a simple, centered layout.
-    │   ├── (auth)/                           
+    │   ├── (auth)/
     │   │   ├── login
     │   │   │     └── page.tsx
     │   │   └── register
     │   │        └── page.tsx
     │   ├── (landing)/                        # - Route Group for the public, unauthenticated marketing page.
     │   │   └── page.tsx                      # -> Handles the root "/" URL for new visitors.
-    │   ├── reset-password/               
+    │   ├── reset-password/
     │   │   └── page.tsx                      # - Handles the complete password reset flow.
     │   ├── (main)/                           # - Group for the main application layout (with Navbar, Footer, etc.)
     │   │   ├── (communities)/
@@ -187,7 +187,7 @@ synapse-client/
     │   │   ├── report/                       # - ReportDialog
     │   │   ├── settings/                     # - SettingsRow, UpdateProfileForm
     │   │   │  └── dialogs/
-    │   │   │  └── tabs/                   
+    │   │   │  └── tabs/
     │   │   └── user/                         # - UserProfile, ProfileHeader, ActivityCalendar, etc.
     │   ├── providers/                        # - Global "wrapper" components & headless logic (Theme, I18nProvider).
     │   │   ├── NotificationSimulator.tsx
@@ -222,10 +222,10 @@ synapse-client/
     │
     ├── modules/                              # 🧱 Encapsulates communication logic with backend microservices.
     │     └── services/                       # - Houses API service clients. Each file maps to a microservice.
-    │       └── auth-service.ts 
-    │       └── user-service.ts 
+    │       └── auth-service.ts
+    │       └── user-service.ts
     │
-    ├── locales/                              # 🌐 Internationalization (i18n): For multi-language support.   
+    ├── locales/                              # 🌐 Internationalization (i18n): For multi-language support.
     │   ├── en.json                           # - English language translation strings.
     │   └── vn.json                           # - Vietnamese language translation strings.
     │
@@ -238,15 +238,15 @@ synapse-client/
     │
     ├── types/                                # 📝 TypeScript Type Definitions
     │   ├── services/
-    │     ├── auth.d.ts 
-    │     └── auth.d.ts 
+    │     ├── auth.d.ts
+    │     └── auth.d.ts
     │   ├── globals.d.ts                      # - Global type declarations, if needed for third-party libraries.
     │   └── index.d.ts                        # - Centralized definitions for all custom application types (User, Post, Comment, etc.).
     │
     ├── utils/                                # 🛠️ General Utilities: Small, stateless helper functions.
     │     └── index.ts                        # - Can re-export functions or contain general helpers (e.g., the `cn` function for classnames).
     ├── middleware.ts
-    └── tailwind.config.ts                    # - Tailwind CSS theme configuration (colors, fonts, plugins).                            
+    └── tailwind.config.ts                    # - Tailwind CSS theme configuration (colors, fonts, plugins).
 ```
 
 ### Architectural Decisions Explained:
@@ -264,20 +264,20 @@ synapse-client/
 
 ### Key Architectural Updates Reflected in this Structure:
 
--   **Routing (`app/`):** The structure clearly shows the separation between the **`(landing)`** group for unauthenticated users and the **`(main)`** group for the core application experience. The move of the post feed to `/feed` is also documented. The addition of the `/edit` page for posts is now visible.
--   **Components (`components/`):** The `features/` directory is now fully fleshed out, with a sub-folder for each major feature domain (auth, chat, post, user, etc.). This makes the project incredibly easy to navigate. The `providers/` directory now correctly lists all our global system components, like the `NotificationSimulator` and `GlobalModals`.
--   **State Management (`context/` & `store/`):** The structure explicitly shows the strategic decision to use both React Context and Zustand for different state management needs, a hallmark of a mature architecture.
--   **Libraries & Utilities (`lib/`):** The addition of the `paths.ts` file is a key highlight, demonstrating a commitment to maintainable code by centralizing route management.
+- **Routing (`app/`):** The structure clearly shows the separation between the **`(landing)`** group for unauthenticated users and the **`(main)`** group for the core application experience. The move of the post feed to `/feed` is also documented. The addition of the `/edit` page for posts is now visible.
+- **Components (`components/`):** The `features/` directory is now fully fleshed out, with a sub-folder for each major feature domain (auth, chat, post, user, etc.). This makes the project incredibly easy to navigate. The `providers/` directory now correctly lists all our global system components, like the `NotificationSimulator` and `GlobalModals`.
+- **State Management (`context/` & `store/`):** The structure explicitly shows the strategic decision to use both React Context and Zustand for different state management needs, a hallmark of a mature architecture.
+- **Libraries & Utilities (`lib/`):** The addition of the `paths.ts` file is a key highlight, demonstrating a commitment to maintainable code by centralizing route management.
 
 This final project structure is a complete and accurate representation of the sophisticated application you have built. It serves as an excellent architectural overview in your documentation.
 
 ### Key Additions and Clarifications in the Comments:
 
--   **`app/`**: I've added more specific comments clarifying the purpose of each route group (`(auth)`, `(landing)`, `(main)`) and how they relate to the application's layouts.
--   **`components/`**: I've reinforced the three-tiered ("smart" vs. "dumb" vs. "primitive") component philosophy, which is a key architectural concept.
--   **`context/` vs `store/`**: I've explicitly stated the "why" behind using two different state management libraries (infrequent vs. frequent updates). This is a crucial senior-level distinction.
--   **`lib/`**: Clarified that this directory (renamed from `libs`) is for core business logic, not just library code. Highlighted the `paths.ts` file's importance.
--   **`locales/`, `styles/`, `utils/`**: I've added comments explaining the purpose of these new, well-organized directories you created.
+- **`app/`**: I've added more specific comments clarifying the purpose of each route group (`(auth)`, `(landing)`, `(main)`) and how they relate to the application's layouts.
+- **`components/`**: I've reinforced the three-tiered ("smart" vs. "dumb" vs. "primitive") component philosophy, which is a key architectural concept.
+- **`context/` vs `store/`**: I've explicitly stated the "why" behind using two different state management libraries (infrequent vs. frequent updates). This is a crucial senior-level distinction.
+- **`lib/`**: Clarified that this directory (renamed from `libs`) is for core business logic, not just library code. Highlighted the `paths.ts` file's importance.
+- **`locales/`, `styles/`, `utils/`**: I've added comments explaining the purpose of these new, well-organized directories you created.
 
 ## 🚀 Getting Started
 
@@ -301,7 +301,6 @@ This final project structure is a complete and accurate representation of the so
     ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
 
 ## 📸 Screenshots
 
