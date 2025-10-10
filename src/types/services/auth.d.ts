@@ -2,6 +2,7 @@
 // Payloads for API Requests
 // =================================
 
+
 export interface RegisterPayload {
   firstName: string;
   lastName: string;
@@ -44,6 +45,7 @@ export interface ChangePasswordPayload {
   newPassword: string;
 }
 
+
 // =================================
 // Responses from API
 // =================================
@@ -71,6 +73,7 @@ export interface RegisterResponse {
 export interface LoginResponse {
   accessToken: string;
   tokenType: "Bearer";
+  refreshToken?: string;
   expiresIn: number;
   user: AuthUser;
 }

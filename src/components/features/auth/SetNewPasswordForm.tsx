@@ -1,5 +1,6 @@
 "use client";
 
+
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -30,21 +31,15 @@ import {
 } from "@/components/ui/form";
 import { BrainCircuit } from "lucide-react";
 
-const formSchema = z
-  .object({
-    newPassword: z.string().min(8, {
-      message:
-        "Password must be at least 8 characters long.",
-    }),
-    confirmPassword: z.string(),
-  })
-  .refine(
-    (data) => data.newPassword === data.confirmPassword,
-    {
-      message: "Passwords don't match",
-      path: ["confirm_password"],
-    }
-  );
+
+const formSchema = z.object({
+  newPassword: z.string().min(8, { message: "Password must be at least 8 characters long." }),
+  confirmPassword: z.string()
+}).refine(data => data.newPassword === data.newPassword, {
+  message: "Passwords don't match",
+  path: [ "confirmPassword" ],
+});
+
 
 export function SetNewPasswordForm() {
   const router = useRouter();
@@ -53,37 +48,29 @@ export function SetNewPasswordForm() {
     defaultValues: { newPassword: "", confirmPassword: "" },
   });
 
-  const onSubmit = async (
-    values: z.infer<typeof formSchema>
-  ) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await authService.setNewPassword({
-        newPassword: values.newPassword,
-      });
+      await authService.setNewPassword({ newPassword: values.newPassword });
       toast("Success!", {
-        description:
-          "Your password has been reset. You can now log in.",
+        description: "Your password has been reset. You can now log in.",
       });
       router.push("/login");
     } catch (error) {
       toast("Error", {
-        description:
-          "Your session may have expired. Please start the process over.",
+        description: "Your session may have expired. Please start the process over.",
       });
     }
   };
 
   return (
-    <Card className="mx-auto w-full max-w-lg">
+    <Card className="mx-auto max-w-lg w-full">
       <CardHeader className="items-center text-center">
         <Link
           href="/"
-          className="mb-2 flex flex-col items-center gap-2"
+          className="flex flex-col items-center gap-2 mb-2"
         >
-          <BrainCircuit className="text-primary h-10 w-10" />
-          <CardTitle className="text-2xl">
-            Synapse
-          </CardTitle>
+          <BrainCircuit className="h-10 w-10 text-primary" />
+          <CardTitle className="text-2xl">Synapse</CardTitle>
         </Link>
         <CardTitle className="mt-5 text-2xl uppercase">
           Set a New Password
@@ -94,52 +81,65 @@ export function SetNewPasswordForm() {
       </CardHeader>
 
       <CardContent>
-        <Form {...form}>
+        <Form
+          { ...form }
+        >
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={ form.handleSubmit(onSubmit) }
             className="space-y-4"
           >
+
             <FormField
-              control={form.control}
+              control={ form.control }
               name="newPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>New Password</FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={
+                ({ field }) => (
+                  <FormItem>
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        { ...field }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }
             />
             <FormField
-              control={form.control}
+              control={ form.control }
               name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Confirm New Password
-                  </FormLabel>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={
+                ({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirm New Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        { ...field }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }
             />
 
             <Button
               type="submit"
               className="w-full"
-              disabled={form.formState.isSubmitting}
+              disabled={ form.formState.isSubmitting }
             >
-              {form.formState.isSubmitting
-                ? "Saving..."
-                : "Set New Password"}
+              {
+                form.formState.isSubmitting
+                  ? "Saving..."
+                  : "Set New Password"
+              }
             </Button>
           </form>
         </Form>
       </CardContent>
-    </Card>
+    </Card >
   );
 }
