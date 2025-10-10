@@ -1,12 +1,12 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import * as z from 'zod'
-import { HexColorPicker } from 'react-colorful'
-import { CommunityFlair } from '@/types/services/community'
-import { Button } from '@/components/ui/button'
+import React from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import { HexColorPicker } from "react-colorful";
+import { CommunityFlair } from "@/types/services/community";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,27 +14,31 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form'
-import { Input } from '@/components/ui/input'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const formSchema = z.object({
-  name: z.string().min(1, 'Flair name is required').max(30),
+  name: z.string().min(1, "Flair name is required").max(30),
   description: z.string().max(100).optional(),
   color: z
     .string()
-    .regex(/^#[0-9a-fA-F]{6}$/, 'Invalid hex color')
+    .regex(/^#[0-9a-fA-F]{6}$/, "Invalid hex color")
     .optional()
     .nullable(),
-})
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 interface CommunityFlairFormProps {
-  initialData?: CommunityFlair | null
-  onSubmit: (data: FormValues) => Promise<void>
-  isSubmitting: boolean
-  onCancel: () => void
+  initialData?: CommunityFlair | null;
+  onSubmit: (data: FormValues) => Promise<void>;
+  isSubmitting: boolean;
+  onCancel: () => void;
 }
 
 export function CommunityFlairForm({
@@ -46,18 +50,21 @@ export function CommunityFlairForm({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: initialData?.name || '',
-      description: initialData?.description || '',
-      color: initialData?.color || '#3b82f6',
+      name: initialData?.name || "",
+      description: initialData?.description || "",
+      color: initialData?.color || "#3b82f6",
     },
-  })
+  });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4 p-4 border rounded-md'>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-4 rounded-md border p-4"
+      >
         <FormField
           control={form.control}
-          name='name'
+          name="name"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Flair Name</FormLabel>
@@ -70,7 +77,7 @@ export function CommunityFlairForm({
         />
         <FormField
           control={form.control}
-          name='description'
+          name="description"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description (Optional)</FormLabel>
@@ -83,39 +90,56 @@ export function CommunityFlairForm({
         />
         <FormField
           control={form.control}
-          name='color'
+          name="color"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Color</FormLabel>
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant='outline' className='w-full justify-start text-left font-normal'>
-                    <div className='flex items-center gap-2'>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start text-left font-normal"
+                  >
+                    <div className="flex items-center gap-2">
                       <div
-                        className='h-4 w-4 rounded-full border'
-                        style={{ backgroundColor: field.value ?? undefined }}
+                        className="h-4 w-4 rounded-full border"
+                        style={{
+                          backgroundColor:
+                            field.value ?? undefined,
+                        }}
                       />
                       <span>{field.value}</span>
                     </div>
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className='w-auto p-0 border-0'>
-                  <HexColorPicker color={field.value ?? ''} onChange={field.onChange} />
+                <PopoverContent className="w-auto border-0 p-0">
+                  <HexColorPicker
+                    color={field.value ?? ""}
+                    onChange={field.onChange}
+                  />
                 </PopoverContent>
               </Popover>
               <FormMessage />
             </FormItem>
           )}
         />
-        <div className='flex justify-end gap-2'>
-          <Button type='button' variant='ghost' onClick={onCancel}>
+        <div className="flex justify-end gap-2">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+          >
             Cancel
           </Button>
-          <Button type='submit' disabled={isSubmitting}>
-            {isSubmitting ? 'Saving...' : initialData ? 'Save Changes' : 'Create Flair'}
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting
+              ? "Saving..."
+              : initialData
+                ? "Save Changes"
+                : "Create Flair"}
           </Button>
         </div>
       </form>
     </Form>
-  )
+  );
 }

@@ -1,7 +1,7 @@
 interface ResourceTypeSelectorProps {
-  resourceTypes: { label: string; value: string }[]
-  selectedType: string
-  onTypeChange: (type: string) => void
+  resourceTypes: { label: string; value: string }[];
+  selectedType: string;
+  onTypeChange: (type: string) => void;
 }
 
 export function ResourceTypeSelector({
@@ -10,15 +10,18 @@ export function ResourceTypeSelector({
   onTypeChange,
 }: ResourceTypeSelectorProps) {
   return (
-    <div className='flex mb-6 items-center'>
+    <div className="mb-6 flex items-center">
       {resourceTypes.map((rt, idx) =>
         selectedType === rt.value ? (
           <button
             key={rt.value}
-            className='px-4 py-2 rounded-full font-medium bg-primary/20 text-white shadow border-2 border-primary transition'
+            className="bg-primary/20 border-primary rounded-full border-2 px-4 py-2 font-medium text-white shadow transition"
             style={{
-              boxShadow: '0 2px 8px rgba(99,102,241,0.15)',
-              marginRight: idx !== resourceTypes.length - 1 ? '4rem' : undefined, // Add more space between items
+              boxShadow: "0 2px 8px rgba(99,102,241,0.15)",
+              marginRight:
+                idx !== resourceTypes.length - 1
+                  ? "4rem"
+                  : undefined, // Add more space between items
             }}
             disabled
           >
@@ -27,9 +30,12 @@ export function ResourceTypeSelector({
         ) : (
           <span
             key={rt.value}
-            className='cursor-pointer text-foreground hover:text-primary font-medium transition'
+            className="text-foreground hover:text-primary cursor-pointer font-medium transition"
             style={{
-              marginRight: idx !== resourceTypes.length - 1 ? '4rem' : undefined, // Add more space between items
+              marginRight:
+                idx !== resourceTypes.length - 1
+                  ? "4rem"
+                  : undefined, // Add more space between items
             }}
             onClick={() => onTypeChange(rt.value)}
           >
@@ -38,5 +44,5 @@ export function ResourceTypeSelector({
         )
       )}
     </div>
-  )
+  );
 }

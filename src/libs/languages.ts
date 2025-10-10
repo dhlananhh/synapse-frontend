@@ -7,12 +7,9 @@ import {
   De,
   Jp,
   Kr,
-  Cn
+  Cn,
 } from "react-flags-select";
-import {
-
-} from "country-list";
-
+import {} from "country-list";
 
 export const SUPPORTED_LANGUAGES: Language[] = [
   { code: "en", name: "English", FlagComponent: Us },

@@ -1,6 +1,5 @@
 "use client";
 
-
 import React from "react";
 import {
   AlertDialog,
@@ -13,7 +12,6 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-
 interface PrivacyConfirmDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -21,14 +19,12 @@ interface PrivacyConfirmDialogProps {
   isMakingPrivate: boolean;
 }
 
-
 export function PrivacyConfirmDialog({
   isOpen,
   onOpenChange,
   onConfirm,
   isMakingPrivate,
 }: PrivacyConfirmDialogProps) {
-
   const title = isMakingPrivate
     ? "Make Account Private?"
     : "Make Account Public?";
@@ -38,26 +34,17 @@ export function PrivacyConfirmDialog({
     : "Your profile and posts will be visible to everyone on Synapse. Are you sure you want to continue?";
 
   return (
-    <AlertDialog
-      open={ isOpen }
-      onOpenChange={ onOpenChange }
-    >
+    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            { title }
-          </AlertDialogTitle>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>
-            { description }
+            {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>
-            Cancel
-          </AlertDialogCancel>
-          <AlertDialogAction
-            onClick={ onConfirm }
-          >
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={onConfirm}>
             Continue
           </AlertDialogAction>
         </AlertDialogFooter>

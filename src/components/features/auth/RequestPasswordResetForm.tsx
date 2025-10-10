@@ -1,6 +1,5 @@
 "use client";
 
-
 import React from "react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -26,50 +25,59 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { BrainCircuit } from "lucide-react";
 
-
 const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address." }),
+  email: z.string().email({
+    message: "Please enter a valid email address.",
+  }),
 });
-
 
 interface RequestCodeFormProps {
   onSuccess: (email: string) => void;
 }
 
-
-export function RequestPasswordResetForm({ onSuccess }: RequestCodeFormProps) {
+export function RequestPasswordResetForm({
+  onSuccess,
+}: RequestCodeFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: { email: "" },
   });
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (
+    values: z.infer<typeof formSchema>
+  ) => {
     try {
-      await authService.requestPasswordReset({ email: values.email });
+      await authService.requestPasswordReset({
+        email: values.email,
+      });
       toast.success("Code Sent", {
-        description: "A password reset code has been sent to your email."
+        description:
+          "A password reset code has been sent to your email.",
       });
       onSuccess(values.email);
     } catch (error) {
       toast.error("Error", {
-        description: "Failed to send reset code. Please check the email and try again.",
+        description:
+          "Failed to send reset code. Please check the email and try again.",
       });
     }
   };
 
   return (
-    <Card className="mx-auto max-w-lg w-full">
+    <Card className="mx-auto w-full max-w-lg">
       <CardHeader className="items-center text-center">
         <Link
           href="/"
-          className="flex flex-col items-center gap-2 mb-2"
+          className="mb-2 flex flex-col items-center gap-2"
         >
-          <BrainCircuit className="h-10 w-10 text-primary" />
-          <CardTitle className="text-2xl">Synapse</CardTitle>
+          <BrainCircuit className="text-primary h-10 w-10" />
+          <CardTitle className="text-2xl">
+            Synapse
+          </CardTitle>
         </Link>
 
         <CardTitle className="mt-5 text-2xl uppercase">
@@ -81,47 +89,40 @@ export function RequestPasswordResetForm({ onSuccess }: RequestCodeFormProps) {
       </CardHeader>
 
       <CardContent>
-        <Form
-          { ...form }
-        >
+        <Form {...form}>
           <form
-            onSubmit={ form.handleSubmit(onSubmit) }
+            onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-4"
           >
-
             <FormField
-              control={ form.control }
+              control={form.control}
               name="email"
-              render={
-                ({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Enter your email"
-                        { ...field }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )
-              }
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Email</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder="Enter your email"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
 
             <Button
               type="submit"
               className="w-full"
-              disabled={ form.formState.isSubmitting }
+              disabled={form.formState.isSubmitting}
             >
-              {
-                form.formState.isSubmitting
-                  ? "Sending..."
-                  : "Send Code"
-              }
+              {form.formState.isSubmitting
+                ? "Sending..."
+                : "Send Code"}
             </Button>
           </form>
         </Form>
       </CardContent>
-    </Card >
+    </Card>
   );
 }
