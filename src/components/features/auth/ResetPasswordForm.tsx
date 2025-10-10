@@ -64,16 +64,13 @@ export default function ResetPasswordForm() {
     try {
       toast.info("Verifying code and resetting password...");
 
-      const verifyResponse = await authService.verifyPasswordResetCode({
+      await authService.verifyPasswordResetCode({
         email: data.email,
         code: data.code,
       });
 
-      const { reset_token } = verifyResponse;
-
       await authService.setNewPassword({
-        reset_token,
-        new_password: data.password,
+        newPassword: data.password,
       });
 
       toast.success("Password Reset Successfully!", {
