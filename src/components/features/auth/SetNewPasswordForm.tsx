@@ -33,9 +33,9 @@ import { BrainCircuit } from "lucide-react";
 
 
 const formSchema = z.object({
-  new_password: z.string().min(8, { message: "Password must be at least 8 characters long." }),
-  confirm_password: z.string()
-}).refine(data => data.new_password === data.confirm_password, {
+  newPassword: z.string().min(8, { message: "Password must be at least 8 characters long." }),
+  confirmPassword: z.string()
+}).refine(data => data.newPassword === data.newPassword, {
   message: "Passwords don't match",
   path: [ "confirm_password" ],
 });
@@ -45,12 +45,12 @@ export function SetNewPasswordForm() {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { new_password: "", confirm_password: "" },
+    defaultValues: { newPassword: "", confirmPassword: "" },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      await authService.setNewPassword({ new_password: values.new_password });
+      await authService.setNewPassword({ newPassword: values.newPassword });
       toast("Success!", {
         description: "Your password has been reset. You can now log in.",
       });
@@ -91,7 +91,7 @@ export function SetNewPasswordForm() {
 
             <FormField
               control={ form.control }
-              name="new_password"
+              name="newPassword"
               render={
                 ({ field }) => (
                   <FormItem>
@@ -109,7 +109,7 @@ export function SetNewPasswordForm() {
             />
             <FormField
               control={ form.control }
-              name="confirm_password"
+              name="confirmPassword"
               render={
                 ({ field }) => (
                   <FormItem>
