@@ -249,10 +249,13 @@ export const communityService = {
   // POST /{communityId}/members/{userId}/reject
   rejectJoinRequest: (
     communityId: string,
-    userId: string
+    userId: string,
+    params?: {
+      reason?: string | null;
+    }
   ): Promise<any> =>
     communityApiClient
-      .post(`/${communityId}/members/${userId}/reject`)
+      .post(`/${communityId}/members/${userId}/reject`, { params })
       .then((res) => res.data),
 
   // ==============================

@@ -10,7 +10,8 @@ import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { CommunityMember } from "@/types/services/community";
 import { communityService } from "@/modules/services/community-service";
-import { MemberCard } from "./MemberCard";
+import { MemberCard } from "@/components/features/community/manage/members/MemberCard";
+import { ActionConfirmDialog } from "@/components/features/community/manage/members/ActionConfirmDialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,6 +24,12 @@ import {
 interface CurrentMembersTabProps {
   communityId: string;
   currentUserRole?: "OWNER" | "MODERATOR" | "MEMBER";
+}
+
+interface ActionState {
+  type: "ban" | "remove" | "promote" | "demote";
+  userId: string;
+  username: string;
 }
 
 
@@ -39,6 +46,9 @@ export function CurrentMembersTab({
   const [ isLoadingMore, setIsLoadingMore ] = useState(false);
   const [ nextCursor, setNextCursor ] = useState<string | null>(null);
   const [ hasMore, setHasMore ] = useState(false);
+
+  const [ actionState, setActionState ] = useState<ActionState | null>(null);
+  const [ isConfirming, setIsConfirming ] = useState(false);
 
   const fetchMembers = useCallback(async (isNewSearch: boolean) => {
     const cursor = isNewSearch ? null : nextCursor;
@@ -82,87 +92,61 @@ export function CurrentMembersTab({
     return () => clearTimeout(timer);
   });
 
-  const handleAction = async (
-    userId: string,
-    username: string,
-    action: "ban" | "remove" | "promote" | "demote"
-  ) => {
+  const handleTriggerAction = (userId: string, username: string, action: ActionState[ 'type' ]) => {
+    setActionState({ type: action, userId, username });
+  };
+
+  const performAction = async (reason?: string) => {
+    if (!actionState) return;
+
+    // Sửa `action` thành `type` khi destructuring để khớp với `interface ActionState`
+    const { userId, username, type: action } = actionState;
+    // Cú pháp `type: action` có nghĩa là: lấy thuộc tính `type` từ `actionState` 
+    // và gán nó vào một biến mới tên là `action`.
+
+    setIsConfirming(true);
     const originalMembers = [ ...members ];
-    let actionToastId: string | number | undefined;
+    let actionToastId: string | number | undefined = toast.loading(`Performing action: ${action}...`);
 
     try {
-      actionToastId = toast.loading(
-        `Performing action: ${action}...`
-      );
-
-      if (action === "ban" || action === "remove") {
-        setMembers((prev) =>
-          prev.filter((m) => m.userId !== userId)
-        );
-      } else if (action === "promote") {
-        setMembers((prev) =>
-          prev.map((m) =>
-            m.userId === userId
-              ? { ...m, role: "MODERATOR" }
-              : m
-          )
-        );
-      } else if (action === "demote") {
-        setMembers((prev) =>
-          prev.map((m) =>
-            m.userId === userId
-              ? { ...m, role: "MEMBER" }
-              : m
-          )
-        );
-      }
+      if (action === "ban" || action === "remove")
+        setMembers(prev => prev.filter((m) => m.userId !== userId));
+      else if (action === "promote")
+        setMembers(
+          prev => prev.map(m => m.userId === userId ? { ...m, role: "MODERATOR" } : m));
+      else if (action === "demote")
+        setMembers(prev => prev.map(m => m.userId === userId ? { ...m, role: "MEMBER" } : m));
 
       switch (action) {
         case "ban":
-          await communityService.banMember(
-            communityId,
-            userId
-          );
+          await communityService.banMember(communityId, userId, reason);
           break;
         case "remove":
-          await communityService.removeMember(
-            communityId,
-            userId
-          );
+          await communityService.removeMember(communityId, userId);
           break;
         case "promote":
-          await communityService.updateMemberRole(
-            communityId,
-            userId,
-            "MODERATOR"
-          );
+          await communityService.updateMemberRole(communityId, userId, "MODERATOR");
           break;
         case "demote":
-          await communityService.updateMemberRole(
-            communityId,
-            userId,
-            "MEMBER"
-          );
+          await communityService.updateMemberRole(communityId, userId, "MEMBER");
           break;
       }
 
       toast.success(
-        `Successfully performed action "${action}" on @${username}.`,
-        {
-          id: actionToastId,
-        }
+        `Successfully performed "${action}" on @${username}.`,
+        { id: actionToastId }
       );
     } catch (error: any) {
-      setMembers(originalMembers);
+      setMembers(originalMembers); // Rollback
       toast.error(`Failed to ${action} @${username}.`, {
-        description:
-          error.response?.data?.message ||
-          "Please try again.",
-        id: actionToastId,
+        description: error.response?.data?.message || "Please try again.",
+        id: actionToastId
       });
+    } finally {
+      setIsConfirming(false);
+      setActionState(null);
     }
   };
-
 
   const renderContent = () => {
     if (isLoading && members.length === 0) {
@@ -193,29 +177,20 @@ export function CurrentMembersTab({
 
     return (
       <div>
-        {
-          members.map((member) => (
-            <MemberCard
-              key={ member.id }
-              member={ member }
-              currentUserRole={ currentUserRole }
-              onBan={ (userId, username) =>
-                handleAction(userId, username, "ban")
-              }
-              onRemove={ (userId, username) =>
-                handleAction(userId, username, "remove")
-              }
-              onPromote={ (userId, username) =>
-                handleAction(userId, username, "promote")
-              }
-              onDemote={ (userId, username) =>
-                handleAction(userId, username, "demote")
-              }
-            />
-          ))
-        }
+        { members.map((member) => (
+          <MemberCard
+            key={ member.id }
+            member={ member }
+            currentUserRole={ currentUserRole }
+            // Các hàm này bây giờ sẽ mở dialog
+            onBan={ (userId, username) => handleTriggerAction(userId, username, "ban") }
+            onRemove={ (userId, username) => handleTriggerAction(userId, username, "remove") }
+            onPromote={ (userId, username) => handleTriggerAction(userId, username, "promote") }
+            onDemote={ (userId, username) => handleTriggerAction(userId, username, "demote") }
+          />
+        )) }
       </div>
-    );
+    )
   };
 
   return (
@@ -255,6 +230,26 @@ export function CurrentMembersTab({
           </div>
         )
       }
+
+      <ActionConfirmDialog
+        isOpen={ !!actionState }
+        onOpenChange={ () => setActionState(null) }
+        title={ `Are you sure you want to ${actionState?.type} @${actionState?.username}?` }
+        description={
+          actionState?.type === 'ban' ? 'This user will be permanently banned and removed.' :
+            actionState?.type === 'remove' ? 'This user will be removed from the community.' :
+              `You are about to change the role for this user.`
+        }
+        actionLabel={ `Confirm ${actionState?.type}` }
+        isConfirming={ isConfirming }
+        withReason={
+          (actionState?.type === 'ban' || actionState?.type === 'remove') ? {
+            label: `Reason for ${actionState.type} (optional)`,
+            placeholder: 'Provide a reason...'
+          } : undefined
+        }
+        onConfirm={ performAction }
+      />
     </div>
   );
 }
