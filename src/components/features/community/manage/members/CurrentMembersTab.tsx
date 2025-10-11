@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, {
   useState,
   useEffect,
@@ -12,86 +13,81 @@ import { communityService } from "@/modules/services/community-service";
 import { MemberCard } from "./MemberCard";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, User, Search } from "lucide-react";
+import {
+  Loader2,
+  User,
+  Search
+} from "lucide-react";
+
 
 interface CurrentMembersTabProps {
   communityId: string;
   currentUserRole?: "OWNER" | "MODERATOR" | "MEMBER";
 }
 
+
 export function CurrentMembersTab({
   communityId,
   currentUserRole,
 }: CurrentMembersTabProps) {
-  // State for the list of members
-  const [members, setMembers] = useState<CommunityMember[]>(
-    []
+  const [ members, setMembers ] = useState<CommunityMember[]>([]);
+
+  const [ searchTerm, setSearchTerm ] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 1000); // 1 second delay
+
+  const [ isLoading, setIsLoading ] = useState(true);
+  const [ isLoadingMore, setIsLoadingMore ] = useState(false);
+  const [ nextCursor, setNextCursor ] = useState<string | null>(null);
+  const [ hasMore, setHasMore ] = useState(false);
+
+  const fetchMembers = useCallback(async (isNewSearch: boolean) => {
+    const cursor = isNewSearch ? null : nextCursor;
+    const loadingSetter = isNewSearch
+      ? setIsLoading
+      : setIsLoadingMore;
+    loadingSetter(true);
+
+    try {
+      const response = await communityService.getMembers(
+        communityId,
+        {
+          q: debouncedSearchTerm,
+          cursor: cursor,
+        }
+      );
+      const newMembers = response.members || [];
+
+      setMembers((prev) =>
+        isNewSearch
+          ? newMembers
+          : [ ...prev, ...newMembers ]
+      );
+      setHasMore(response.pagination?.hasMore ?? false);
+      setNextCursor(
+        response.pagination?.nextCursor ?? null
+      );
+    } catch (error) {
+      toast.error("Failed to load community members.");
+    } finally {
+      loadingSetter(false);
+    }
+  },
+    [ communityId, debouncedSearchTerm, nextCursor ]
   );
 
-  // State for search functionality
-  const [searchTerm, setSearchTerm] = useState("");
-  const debouncedSearchTerm = useDebounce(searchTerm, 500); // 500ms delay
-
-  // State for loading and pagination
-  const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [nextCursor, setNextCursor] = useState<
-    string | null
-  >(null);
-  const [hasMore, setHasMore] = useState(false);
-
-  // Memoized function to fetch members from the API
-  const fetchMembers = useCallback(
-    async (isNewSearch: boolean) => {
-      const cursor = isNewSearch ? null : nextCursor;
-      const loadingSetter = isNewSearch
-        ? setIsLoading
-        : setIsLoadingMore;
-      loadingSetter(true);
-
-      try {
-        const response = await communityService.getMembers(
-          communityId,
-          {
-            q: debouncedSearchTerm,
-            cursor: cursor,
-          }
-        );
-        const newMembers = response.members || [];
-
-        setMembers((prev) =>
-          isNewSearch
-            ? newMembers
-            : [...prev, ...newMembers]
-        );
-        setHasMore(response.pagination?.hasMore ?? false);
-        setNextCursor(
-          response.pagination?.nextCursor ?? null
-        );
-      } catch (error) {
-        toast.error("Failed to load community members.");
-      } finally {
-        loadingSetter(false);
-      }
-    },
-    [communityId, debouncedSearchTerm, nextCursor]
-  );
-
-  // Effect to trigger a new search when the debounced term changes
   useEffect(() => {
-    // Adding a small extra delay to make the UI feel smoother
     const timer = setTimeout(() => {
       fetchMembers(true);
     }, 100);
     return () => clearTimeout(timer);
-  }); // fetchMembers is not needed here
+  });
 
   const handleAction = async (
     userId: string,
     username: string,
     action: "ban" | "remove" | "promote" | "demote"
   ) => {
-    const originalMembers = [...members];
+    const originalMembers = [ ...members ];
     let actionToastId: string | number | undefined;
 
     try {
@@ -121,7 +117,6 @@ export function CurrentMembersTab({
         );
       }
 
-      // API Call
       switch (action) {
         case "ban":
           await communityService.banMember(
@@ -158,7 +153,6 @@ export function CurrentMembersTab({
         }
       );
     } catch (error: any) {
-      // Rollback on error
       setMembers(originalMembers);
       toast.error(`Failed to ${action} @${username}.`, {
         description:
@@ -169,7 +163,6 @@ export function CurrentMembersTab({
     }
   };
 
-  // --- RENDER LOGIC ---
 
   const renderContent = () => {
     if (isLoading && members.length === 0) {
@@ -188,9 +181,11 @@ export function CurrentMembersTab({
             No members found
           </h3>
           <p className="text-muted-foreground mt-1 text-sm">
-            {searchTerm
-              ? "Try a different search term."
-              : "This community has no other members yet."}
+            {
+              searchTerm
+                ? "Try a different search term."
+                : "This community has no other members yet."
+            }
           </p>
         </div>
       );
@@ -198,60 +193,68 @@ export function CurrentMembersTab({
 
     return (
       <div>
-        {members.map((member) => (
-          <MemberCard
-            key={member.id}
-            member={member}
-            currentUserRole={currentUserRole}
-            onBan={(userId, username) =>
-              handleAction(userId, username, "ban")
-            }
-            onRemove={(userId, username) =>
-              handleAction(userId, username, "remove")
-            }
-            onPromote={(userId, username) =>
-              handleAction(userId, username, "promote")
-            }
-            onDemote={(userId, username) =>
-              handleAction(userId, username, "demote")
-            }
-          />
-        ))}
+        {
+          members.map((member) => (
+            <MemberCard
+              key={ member.id }
+              member={ member }
+              currentUserRole={ currentUserRole }
+              onBan={ (userId, username) =>
+                handleAction(userId, username, "ban")
+              }
+              onRemove={ (userId, username) =>
+                handleAction(userId, username, "remove")
+              }
+              onPromote={ (userId, username) =>
+                handleAction(userId, username, "promote")
+              }
+              onDemote={ (userId, username) =>
+                handleAction(userId, username, "demote")
+              }
+            />
+          ))
+        }
       </div>
     );
   };
 
   return (
     <div>
-      {/* Search Bar */}
+      {/* Search Bar */ }
       <div className="relative border-b p-3">
-        <Search className="text-muted-foreground absolute top-1/2 left-6 h-4 w-4 -translate-y-1/2" />
+        <Search
+          className="text-muted-foreground absolute top-1/2 left-6 h-4 w-4 -translate-y-1/2"
+        />
         <Input
           placeholder="Search by username..."
           className="pl-8"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          value={ searchTerm }
+          onChange={ (e) => setSearchTerm(e.target.value) }
         />
       </div>
 
-      {renderContent()}
+      { renderContent() }
 
-      {/* Load More Button */}
-      {hasMore && (
-        <div className="flex justify-center border-t p-4">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => fetchMembers(false)}
-            disabled={isLoadingMore}
-          >
-            {isLoadingMore && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Load More
-          </Button>
-        </div>
-      )}
+      {/* Load More Button */ }
+      {
+        hasMore && (
+          <div className="flex justify-center border-t p-4">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={ () => fetchMembers(false) }
+              disabled={ isLoadingMore }
+            >
+              {
+                isLoadingMore && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )
+              }
+              Load More
+            </Button>
+          </div>
+        )
+      }
     </div>
   );
 }

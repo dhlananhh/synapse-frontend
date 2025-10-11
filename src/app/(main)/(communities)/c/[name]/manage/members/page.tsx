@@ -36,16 +36,20 @@ export default function ManageMembersPage() {
         </h1>
         <p className="text-muted-foreground">
           Manage join requests, current members, and bans
-          for r/{community.name}.
+          for c/{ community.name }.
         </p>
       </div>
       <Tabs defaultValue="pending">
         <TabsList className="grid w-full grid-cols-3">
           <TabsTrigger value="pending">
-            Join Requests
+            Pending Join Requests
           </TabsTrigger>
-          <TabsTrigger value="current">Members</TabsTrigger>
-          <TabsTrigger value="banned">Banned</TabsTrigger>
+          <TabsTrigger value="current">
+            Current Members
+          </TabsTrigger>
+          <TabsTrigger value="banned">
+            Banned Members
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent
@@ -53,8 +57,8 @@ export default function ManageMembersPage() {
           className="mt-4 overflow-hidden rounded-lg border"
         >
           <PendingMembersTab
-            communityId={community.id}
-            currentUserRole={currentUserRole}
+            communityId={ community.id }
+            currentUserRole={ currentUserRole }
           />
         </TabsContent>
 
@@ -63,8 +67,8 @@ export default function ManageMembersPage() {
           className="mt-4 overflow-hidden rounded-lg border"
         >
           <CurrentMembersTab
-            communityId={community.id}
-            currentUserRole={currentUserRole}
+            communityId={ community.id }
+            currentUserRole={ currentUserRole }
           />
         </TabsContent>
 
@@ -73,8 +77,8 @@ export default function ManageMembersPage() {
           className="mt-4 overflow-hidden rounded-lg border"
         >
           <BannedMembersTab
-            communityId={community.id}
-            currentUserRole={currentUserRole}
+            communityId={ community.id }
+            currentUserRole={ currentUserRole }
           />
         </TabsContent>
       </Tabs>
