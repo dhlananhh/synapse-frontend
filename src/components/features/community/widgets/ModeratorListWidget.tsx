@@ -52,9 +52,6 @@ function ModeratorItem({ user }: { user: SimpleProfile }) {
           <span className="font-semibold">
             { `u/${user.username}` }
           </span>
-          <span className="text-muted-foreground text-xs">
-            { user.firstName } { user.lastName }
-          </span>
         </div>
       </Link>
     </li>
@@ -66,9 +63,7 @@ export default function ModeratorListWidget() {
   const community = useCommunity();
   const communityId = community?.id ?? "";
 
-  const [ moderators, setModerators ] = useState<
-    SimpleProfile[]
-  >([]);
+  const [ moderators, setModerators ] = useState<SimpleProfile[]>([]);
   const [ isLoading, setIsLoading ] = useState(true);
   const [ error, setError ] = useState<string | null>(null);
   const [ isDialogOpen, setIsDialogOpen ] = useState(false);
