@@ -87,8 +87,8 @@ export default function CommunityManagePage() {
     {
       title: "Community Settings",
       description:
-        "Update community details like name, description, and privacy settings.",
-      href: `/c/${community.name}/settings`,
+        "Update community details like name, description, avatar, banner, and privacy settings.",
+      href: `/c/${community.name}/edit`,
       icon: Settings,
       permission: "owner",
     },
@@ -123,39 +123,39 @@ export default function CommunityManagePage() {
           Moderation Tools
         </h1>
         <p className="text-muted-foreground text-lg">
-          Manage your community{" "}
+          Manage your community{ " " }
           <span className="text-primary font-semibold">
-            c/{community.name}
+            c/{ community.name }
           </span>
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {availableTools.map((tool) => (
+        { availableTools.map((tool) => (
           <Link
-            href={tool.href}
-            key={tool.title}
+            href={ tool.href }
+            key={ tool.title }
             className="group"
           >
             <Card className="hover:border-primary h-full transition-colors hover:shadow-lg">
               <CardHeader className="flex-row items-center gap-4">
                 <tool.icon className="text-primary h-8 w-8" />
                 <div>
-                  <CardTitle>{tool.title}</CardTitle>
+                  <CardTitle>{ tool.title }</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  {tool.description}
+                  { tool.description }
                 </CardDescription>
                 <div className="text-primary mt-4 flex items-center text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100">
-                  Go to {tool.title}
+                  Go to { tool.title }
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </div>
               </CardContent>
             </Card>
           </Link>
-        ))}
+        )) }
       </div>
     </div>
   );
@@ -169,8 +169,8 @@ function ManagementDashboardSkeleton() {
         <Skeleton className="h-6 w-1/2" />
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {[...Array(6)].map((_, i) => (
-          <Card key={i} className="h-[180px]">
+        { [ ...Array(6) ].map((_, i) => (
+          <Card key={ i } className="h-[180px]">
             <CardHeader className="flex-row items-center gap-4">
               <Skeleton className="h-8 w-8 rounded-full" />
               <Skeleton className="h-6 w-2/3" />
@@ -180,7 +180,7 @@ function ManagementDashboardSkeleton() {
               <Skeleton className="h-4 w-5/6" />
             </CardContent>
           </Card>
-        ))}
+        )) }
       </div>
     </div>
   );
