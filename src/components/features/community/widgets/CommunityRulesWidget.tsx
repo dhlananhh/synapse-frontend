@@ -80,10 +80,12 @@ export default function CommunityRulesWidget() {
       <CardHeader className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <ListOrdered className="h-5 w-5" />
-          <CardTitle className="m-0 p-0">
-            { communityName
-              ? `${communityName} Rules`
-              : "Rules" }
+          <CardTitle className="m-0 p-0 lowercase">
+            {
+              communityName
+                ? `${communityName} Rules`
+                : "Rules"
+            }
           </CardTitle>
         </div>
 

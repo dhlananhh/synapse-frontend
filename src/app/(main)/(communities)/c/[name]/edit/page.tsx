@@ -72,7 +72,8 @@ export default function EditCommunityPage() {
         <p className="mt-2 text-muted-foreground">
           Only the owner of { " " }
           <span className="font-semibold">
-            c/{ community.name }</span>
+            c/{ community.name }
+          </span>
           { " " } can edit these settings.
         </p>
         <Button
@@ -208,7 +209,8 @@ export default function EditCommunityPage() {
                     />
                   ) : (
                     <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                  ) }
+                  )
+                }
               </div>
             )
             }
