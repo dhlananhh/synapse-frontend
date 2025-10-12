@@ -120,10 +120,10 @@ export default function CommunityManagePage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold">
-          Moderation Tools
+          Moderation & Management Tools
         </h1>
         <p className="text-muted-foreground text-lg">
-          Manage your community{ " " }
+          Manage your community { " " }
           <span className="text-primary font-semibold">
             c/{ community.name }
           </span>
