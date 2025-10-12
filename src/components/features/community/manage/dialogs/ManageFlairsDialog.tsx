@@ -51,7 +51,7 @@ interface ManageCommunityFlairDialogProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-export function ManageCommunityFlairsDialog({
+export function ManageFlairsDialog({
   community,
   flairs,
   setFlairs,

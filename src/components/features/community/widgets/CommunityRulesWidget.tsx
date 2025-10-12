@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, {
+  useEffect,
+  useState
+} from "react";
 import {
   Card,
   CardHeader,
@@ -12,13 +15,17 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { CommunityRule } from "@/types/services/community";
-import { ListOrdered, Settings } from "lucide-react";
+import {
+  ListOrdered,
+  Settings
+} from "lucide-react";
 import { ManageRulesDialog } from "@/components/features/community/manage/dialogs/ManageRulesDialog";
 import { useMembership } from "@/context/MembershipContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { communityService } from "@/modules/services/community-service";
 import { useCommunity } from "@/context/CommunityContext";
+
 
 export default function CommunityRulesWidget() {
   const community = useCommunity();
@@ -29,9 +36,9 @@ export default function CommunityRulesWidget() {
   const membership = membershipContext?.membership ?? null;
   const isOwner = membership?.role === "OWNER";
 
-  const [rules, setRules] = useState<CommunityRule[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [ rules, setRules ] = useState<CommunityRule[]>([]);
+  const [ loading, setLoading ] = useState<boolean>(true);
+  const [ error, setError ] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -62,10 +69,10 @@ export default function CommunityRulesWidget() {
     return () => {
       mounted = false;
     };
-  }, [communityId]);
+  }, [ communityId ]);
 
   const sortedRules = rules.length
-    ? [...rules].sort((a, b) => a.order - b.order)
+    ? [ ...rules ].sort((a, b) => a.order - b.order)
     : [];
 
   return (
@@ -74,17 +81,17 @@ export default function CommunityRulesWidget() {
         <div className="flex items-center gap-2">
           <ListOrdered className="h-5 w-5" />
           <CardTitle className="m-0 p-0">
-            {communityName
+            { communityName
               ? `${communityName} Rules`
-              : "Rules"}
+              : "Rules" }
           </CardTitle>
         </div>
 
-        {isOwner && community && (
+        { isOwner && community && (
           <ManageRulesDialog
-            community={community}
-            rules={rules}
-            setRules={setRules}
+            community={ community }
+            rules={ rules }
+            setRules={ setRules }
             trigger={
               <Button
                 variant="ghost"
@@ -95,10 +102,10 @@ export default function CommunityRulesWidget() {
               </Button>
             }
           />
-        )}
+        ) }
       </CardHeader>
       <CardContent>
-        {loading ? (
+        { loading ? (
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <Skeleton className="h-6 w-6 rounded-full" />
@@ -111,7 +118,7 @@ export default function CommunityRulesWidget() {
           </div>
         ) : error ? (
           <p className="text-destructive text-sm">
-            {error}
+            { error }
           </p>
         ) : sortedRules.length === 0 ? (
           <p className="text-muted-foreground text-sm">
@@ -119,16 +126,21 @@ export default function CommunityRulesWidget() {
           </p>
         ) : (
           <Accordion type="multiple" className="w-full">
-            {sortedRules.map((rule) => (
-              <AccordionItem value={rule.id} key={rule.id}>
-                <AccordionTrigger className="font-semibold">{`${rule.order}/ ${rule.title}`}</AccordionTrigger>
+            { sortedRules.map((rule) => (
+              <AccordionItem
+                value={ rule.id }
+                key={ rule.id }
+              >
+                <AccordionTrigger className="font-semibold">
+                  { `${rule.order}/ ${rule.title}` }
+                </AccordionTrigger>
                 <AccordionContent className="text-muted-foreground text-sm">
-                  {rule.description}
+                  { rule.description }
                 </AccordionContent>
               </AccordionItem>
-            ))}
+            )) }
           </Accordion>
-        )}
+        ) }
       </CardContent>
     </Card>
   );

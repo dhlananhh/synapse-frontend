@@ -26,8 +26,8 @@ export function UpdateCommunityDialog({
   community,
   onUpdate,
 }: UpdateCommunityDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ isOpen, setIsOpen ] = useState(false);
+  const [ isSubmitting, setIsSubmitting ] = useState(false);
 
   const handleFormSubmit = async (
     formData: TUpdateCommunityDetailsSchema
@@ -50,7 +50,7 @@ export function UpdateCommunityDialog({
         "Failed to update community details. Try again later!",
         {
           description:
-            error.response?.data?.errors?.[0]?.message ||
+            error.response?.data?.errors?.[ 0 ]?.message ||
             "An unexpected error occurred.",
         }
       );
@@ -60,7 +60,7 @@ export function UpdateCommunityDialog({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={ isOpen } onOpenChange={ setIsOpen }>
       <DialogTrigger asChild>
         <Button variant="outline" className="w-full">
           <div className="flex w-full items-center justify-center gap-2">
@@ -79,9 +79,9 @@ export function UpdateCommunityDialog({
         </DialogHeader>
         <div className="pt-4">
           <UpdateCommunityForm
-            initialData={community}
-            onSubmit={handleFormSubmit}
-            isSubmitting={isSubmitting}
+            initialData={ community }
+            onSubmit={ handleFormSubmit }
+            isSubmitting={ isSubmitting }
           />
         </div>
       </DialogContent>

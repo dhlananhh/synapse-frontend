@@ -49,19 +49,19 @@ export default function UpdateCommunityForm({
   });
 
   return (
-    <Form {...form}>
+    <Form { ...form }>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={ form.handleSubmit(onSubmit) }
         className="space-y-8"
       >
         <FormField
-          control={form.control}
+          control={ form.control }
           name="name"
-          render={({ field }) => (
+          render={ ({ field }) => (
             <FormItem>
               <FormLabel>Community Name</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input { ...field } />
               </FormControl>
               <FormDescription>
                 Community name must be 3-50 characters long
@@ -70,29 +70,29 @@ export default function UpdateCommunityForm({
               </FormDescription>
               <FormMessage />
             </FormItem>
-          )}
+          ) }
         />
         <FormField
-          control={form.control}
+          control={ form.control }
           name="description"
-          render={({ field }) => (
+          render={ ({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
                 <Textarea
                   className="resize-none"
-                  rows={4}
-                  {...field}
+                  rows={ 4 }
+                  { ...field }
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
-          )}
+          ) }
         />
         <FormField
-          control={form.control}
+          control={ form.control }
           name="isPrivate"
-          render={({ field }) => (
+          render={ ({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel>Private Community</FormLabel>
@@ -102,39 +102,38 @@ export default function UpdateCommunityForm({
               </div>
               <FormControl>
                 <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+                  checked={ field.value }
+                  onCheckedChange={ field.onChange }
                 />
               </FormControl>
             </FormItem>
-          )}
+          ) }
         />
         <FormField
-          control={form.control}
+          control={ form.control }
           name="isNSFW"
-          render={({ field }) => (
+          render={ ({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel>Adult Content (NSFW)</FormLabel>
                 <FormDescription>
-                  Check this box if your community contains
-                  content intended for members aged 18 and
-                  older.
+                  Check this item if your community contains
+                  content intended for members aged 18 and older.
                 </FormDescription>
               </div>
               <FormControl>
                 <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+                  checked={ field.value }
+                  onCheckedChange={ field.onChange }
                 />
               </FormControl>
             </FormItem>
-          )}
+          ) }
         />
         <FormField
-          control={form.control}
+          control={ form.control }
           name="moderationMode"
-          render={({ field }) => (
+          render={ ({ field }) => (
             <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
               <div className="space-y-0.5">
                 <FormLabel>Moderation Mode</FormLabel>
@@ -144,17 +143,20 @@ export default function UpdateCommunityForm({
               </div>
               <FormControl>
                 <Switch
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+                  checked={ field.value }
+                  onCheckedChange={ field.onChange }
                 />
               </FormControl>
             </FormItem>
-          )}
+          ) }
         />
 
         <div className="flex justify-end pt-4">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save Changes"}
+          <Button
+            type="submit"
+            disabled={ isSubmitting }
+          >
+            { isSubmitting ? "Saving..." : "Save Changes" }
           </Button>
         </div>
       </form>

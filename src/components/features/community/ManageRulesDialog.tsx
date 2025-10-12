@@ -33,7 +33,12 @@ import {
   DialogDescription,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Loader2, Plus, Edit, Trash2 } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Edit,
+  Trash2
+} from "lucide-react";
 
 interface ManageRulesDialogProps {
   community: Community;
@@ -42,23 +47,19 @@ interface ManageRulesDialogProps {
 export function ManageRulesDialog({
   community,
 }: ManageRulesDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [rules, setRules] = useState<CommunityRule[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [ isOpen, setIsOpen ] = useState(false);
+  const [ rules, setRules ] = useState<CommunityRule[]>([]);
+  const [ isLoading, setIsLoading ] = useState(true);
 
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingRule, setEditingRule] =
+  const [ isCreateOpen, setIsCreateOpen ] = useState(false);
+  const [ editingRule, setEditingRule ] =
     useState<CommunityRule | null>(null);
 
   const fetchRules = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await communityService.getRules(
-        community.id
-      );
-      const sortedRules = response.sort(
-        (a, b) => a.order - b.order
-      );
+      const response = await communityService.getRules(community.id);
+      const sortedRules = response.sort((a, b) => a.order - b.order);
       setRules(sortedRules);
     } catch (error) {
       toast.error("Could not fetch community rules.");
@@ -66,24 +67,20 @@ export function ManageRulesDialog({
     } finally {
       setIsLoading(false);
     }
-  }, [community.id]);
+  }, [ community.id ]);
 
   useEffect(() => {
     if (isOpen) {
       fetchRules();
     }
-  }, [isOpen, fetchRules]);
+  }, [ isOpen, fetchRules ]);
 
   const handleRuleCreated = (newRule: CommunityRule) => {
-    setRules((prev) =>
-      [...prev, newRule].sort((a, b) => a.order - b.order)
-    );
+    setRules((prev) => [ ...prev, newRule ].sort((a, b) => a.order - b.order));
     setIsCreateOpen(false);
   };
 
-  const handleRuleUpdated = (
-    updatedRule: CommunityRule
-  ) => {
+  const handleRuleUpdated = (updatedRule: CommunityRule) => {
     setRules((prev) =>
       prev
         .map((r) =>
@@ -119,7 +116,9 @@ export function ManageRulesDialog({
         </DialogTrigger>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Community Rules</DialogTitle>
+            <DialogTitle>
+              Manage Community Rules
+            </DialogTitle>
             <DialogDescription>
               Set clear expectations for your community.
             </DialogDescription>
@@ -132,7 +131,7 @@ export function ManageRulesDialog({
             <div className="flex justify-end">
               <Button
                 size="sm"
-                onClick={() => setIsCreateOpen(true)}
+                onClick={ () => setIsCreateOpen(true) }
               >
                 <Plus className="h-4 w-4" />
                 Add New Rule
@@ -144,7 +143,7 @@ export function ManageRulesDialog({
                 EXISTING RULES
               </h3>
 
-              {isLoading ? (
+              { isLoading ? (
                 <Loader2 className="animate-spin" />
               ) : rules.length === 0 ? (
                 <p className="py-4 text-center text-sm">
@@ -152,30 +151,30 @@ export function ManageRulesDialog({
                 </p>
               ) : (
                 <ul className="space-y-3">
-                  {rules
+                  { rules
                     .sort((a, b) => a.order - b.order)
                     .map((rule, index) => (
                       <li
-                        key={rule.id}
+                        key={ rule.id }
                         className="rounded-lg border p-4"
                       >
                         <div className="flex items-start justify-between">
                           <div>
                             <h4 className="font-bold">
-                              Rule {index + 1}: {rule.title}
+                              Rule { index + 1 }: { rule.title }
                             </h4>
-                            {rule.description && (
+                            { rule.description && (
                               <p className="text-muted-foreground mt-1 text-sm">
-                                {rule.description}
+                                { rule.description }
                               </p>
-                            )}
+                            ) }
                           </div>
                           <div className="flex items-center gap-1">
                             <Button
                               variant="ghost"
                               size="icon"
                               className="h-8 w-8"
-                              onClick={() =>
+                              onClick={ () =>
                                 setEditingRule(rule)
                               }
                             >
@@ -210,7 +209,7 @@ export function ManageRulesDialog({
                                   </AlertDialogCancel>
                                   <AlertDialogAction
                                     className="bg-destructive hover:bg-destructive/90"
-                                    onClick={() =>
+                                    onClick={ () =>
                                       handleDeleteRule(
                                         rule.id
                                       )
@@ -224,30 +223,30 @@ export function ManageRulesDialog({
                           </div>
                         </div>
                       </li>
-                    ))}
+                    )) }
                 </ul>
-              )}
+              ) }
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
       <CreateRuleDialog
-        isOpen={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
-        communityId={community.id}
-        onRuleCreated={handleRuleCreated}
+        isOpen={ isCreateOpen }
+        onOpenChange={ setIsCreateOpen }
+        communityId={ community.id }
+        onRuleCreated={ handleRuleCreated }
       />
 
-      {editingRule && (
+      { editingRule && (
         <UpdateRuleDialog
-          isOpen={!!editingRule}
-          onOpenChange={() => setEditingRule(null)}
-          communityId={community.id}
-          rule={editingRule}
-          onRuleUpdated={handleRuleUpdated}
+          isOpen={ !!editingRule }
+          onOpenChange={ () => setEditingRule(null) }
+          communityId={ community.id }
+          rule={ editingRule }
+          onRuleUpdated={ handleRuleUpdated }
         />
-      )}
+      ) }
     </>
   );
 }
