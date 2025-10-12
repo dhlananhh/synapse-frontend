@@ -85,7 +85,7 @@ export default function CommunityManagePage() {
       permission: "all",
     },
     {
-      title: "Community Settings",
+      title: "Edit Community Details",
       description:
         "Update community details like name, description, avatar, banner, and privacy settings.",
       href: `/c/${community.name}/edit`,
@@ -93,7 +93,7 @@ export default function CommunityManagePage() {
       permission: "owner",
     },
     {
-      title: "Community Rules",
+      title: "Manage Community Rules",
       description:
         "Create and edit the rules for your community.",
       href: "#",
@@ -101,7 +101,7 @@ export default function CommunityManagePage() {
       permission: "all",
     },
     {
-      title: "Post Flairs",
+      title: "Manage Community Flairs",
       description:
         "Manage the flairs that members can add to their posts.",
       href: "#",
