@@ -132,7 +132,7 @@ export default function AboutCommunityWidget() {
             <hr />
 
             <Link
-              href={ `/c/${community.name}/members` }
+              href={ `/c/${community.name}/manage/members` }
               className="hover:text-primary flex cursor-pointer items-center gap-2 font-medium"
             >
               <Users className="h-5 w-5" />
