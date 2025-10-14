@@ -96,7 +96,7 @@ export default function CommunityManagePage() {
       title: "Manage Community Rules",
       description:
         "Create and edit the rules for your community.",
-      href: "#",
+      href: `/c/${community.name}/manage/rules`,
       icon: ShieldCheck,
       permission: "all",
     },
@@ -104,7 +104,7 @@ export default function CommunityManagePage() {
       title: "Manage Community Flairs",
       description:
         "Manage the flairs that members can add to their posts.",
-      href: "#",
+      href: `/c/${community.name}/manage/flairs`,
       icon: Hash,
       permission: "all",
     },
@@ -169,18 +169,20 @@ function ManagementDashboardSkeleton() {
         <Skeleton className="h-6 w-1/2" />
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        { [ ...Array(6) ].map((_, i) => (
-          <Card key={ i } className="h-[180px]">
-            <CardHeader className="flex-row items-center gap-4">
-              <Skeleton className="h-8 w-8 rounded-full" />
-              <Skeleton className="h-6 w-2/3" />
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
-            </CardContent>
-          </Card>
-        )) }
+        {
+          [ ...Array(6) ].map((_, i) => (
+            <Card key={ i } className="h-[180px]">
+              <CardHeader className="flex-row items-center gap-4">
+                <Skeleton className="h-8 w-8 rounded-full" />
+                <Skeleton className="h-6 w-2/3" />
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </CardContent>
+            </Card>
+          ))
+        }
       </div>
     </div>
   );
