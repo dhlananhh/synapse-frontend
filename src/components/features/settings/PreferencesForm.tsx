@@ -36,7 +36,7 @@ import {
 } from "@/components/ui/card";
 
 const formSchema = z.object({
-  theme: z.enum(["light", "dark"]),
+  theme: z.enum([ "light", "dark" ]),
   language: z.string(),
   extras: z.object({
     notifications: z.boolean(),
@@ -56,7 +56,7 @@ export function PreferencesForm({
 }: PreferencesFormProps) {
   const { setTheme } = useTheme();
   const { i18n } = useTranslation();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [ isSubmitting, setIsSubmitting ] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -89,23 +89,23 @@ export function PreferencesForm({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
+        <Form { ...form }>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={ form.handleSubmit(onSubmit) }
             className="space-y-8"
           >
             <FormField
-              control={form.control}
+              control={ form.control }
               name="theme"
-              render={({ field }) => (
+              render={ ({ field }) => (
                 <FormItem>
                   <FormLabel>Theme</FormLabel>
                   <FormDescription>
                     Select the theme for your interface.
                   </FormDescription>
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    onValueChange={ field.onChange }
+                    defaultValue={ field.value }
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -123,21 +123,21 @@ export function PreferencesForm({
                   </Select>
                   <FormMessage />
                 </FormItem>
-              )}
+              ) }
             />
 
             <FormField
-              control={form.control}
+              control={ form.control }
               name="language"
-              render={({ field }) => (
+              render={ ({ field }) => (
                 <FormItem>
                   <FormLabel>Language</FormLabel>
                   <FormDescription>
                     Select your preferred language.
                   </FormDescription>
                   <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    onValueChange={ field.onChange }
+                    defaultValue={ field.value }
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -155,13 +155,13 @@ export function PreferencesForm({
                   </Select>
                   <FormMessage />
                 </FormItem>
-              )}
+              ) }
             />
 
             <FormField
-              control={form.control}
+              control={ form.control }
               name="extras.notifications"
-              render={({ field }) => (
+              render={ ({ field }) => (
                 <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                   <div className="space-y-0.5">
                     <FormLabel>
@@ -174,19 +174,19 @@ export function PreferencesForm({
                   </div>
                   <FormControl>
                     <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
+                      checked={ field.value }
+                      onCheckedChange={ field.onChange }
                     />
                   </FormControl>
                 </FormItem>
-              )}
+              ) }
             />
 
             <div className="flex justify-end">
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting
+              <Button type="submit" disabled={ isSubmitting }>
+                { isSubmitting
                   ? "Saving..."
-                  : "Save Changes"}
+                  : "Save Changes" }
               </Button>
             </div>
           </form>
