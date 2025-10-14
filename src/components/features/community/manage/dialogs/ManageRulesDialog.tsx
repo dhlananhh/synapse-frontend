@@ -1,5 +1,6 @@
 "use client";
 
+
 import React, {
   useState,
   useEffect,
@@ -41,14 +42,14 @@ import {
   Settings,
 } from "lucide-react";
 
+
 interface ManageRulesDialogProps {
   community: Community;
   rules: CommunityRule[];
-  setRules: React.Dispatch<
-    React.SetStateAction<CommunityRule[]>
-  >;
+  setRules: React.Dispatch<React.SetStateAction<CommunityRule[]>>;
   trigger?: React.ReactNode;
 }
+
 
 export function ManageRulesDialog({
   community,
@@ -56,19 +57,16 @@ export function ManageRulesDialog({
   setRules,
   trigger,
 }: ManageRulesDialogProps) {
-  const [open, setOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [ open, setOpen ] = useState(false);
+  const [ isLoading, setIsLoading ] = useState(false);
 
-  const [isCreateOpen, setIsCreateOpen] = useState(false);
-  const [editingRule, setEditingRule] =
-    useState<CommunityRule | null>(null);
+  const [ isCreateOpen, setIsCreateOpen ] = useState(false);
+  const [ editingRule, setEditingRule ] = useState<CommunityRule | null>(null);
 
   const fetchRules = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await communityService.getRules(
-        community.id
-      );
+      const response = await communityService.getRules(community.id);
       const sorted = response.sort(
         (a, b) => a.order - b.order
       );
@@ -79,7 +77,7 @@ export function ManageRulesDialog({
     } finally {
       setIsLoading(false);
     }
-  }, [community.id, setRules]);
+  }, [ community.id, setRules ]);
 
   // Always refresh when dialog opens
   const handleOpenChange = (isOpen: boolean) => {
@@ -90,18 +88,16 @@ export function ManageRulesDialog({
   useEffect(() => {
     // optional: initial silent prefetch if desired
     // fetchRules()
-  }, [fetchRules]);
+  }, [ fetchRules ]);
 
   const handleRuleCreated = (newRule: CommunityRule) => {
     setRules((prev) =>
-      [...prev, newRule].sort((a, b) => a.order - b.order)
+      [ ...prev, newRule ].sort((a, b) => a.order - b.order)
     );
     setIsCreateOpen(false);
   };
 
-  const handleRuleUpdated = (
-    updatedRule: CommunityRule
-  ) => {
+  const handleRuleUpdated = (updatedRule: CommunityRule) => {
     setRules((prev) =>
       prev
         .map((r) =>
@@ -129,20 +125,28 @@ export function ManageRulesDialog({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={handleOpenChange}>
+      <Dialog
+        open={ open }
+        onOpenChange={ handleOpenChange }
+      >
         <DialogTrigger asChild>
-          {trigger ? (
-            trigger
-          ) : (
-            <Button size="sm" variant="outline">
-              <Settings className="h-4 w-4" />
-              Manage Rules
-            </Button>
-          )}
+          {
+            trigger ? (
+              trigger
+            ) : (
+              <Button size="sm" variant="outline">
+                <Settings className="h-4 w-4" />
+                Manage Rules
+              </Button>
+            )
+          }
         </DialogTrigger>
+
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Community Rules</DialogTitle>
+            <DialogTitle>
+              Community Rules
+            </DialogTitle>
             <DialogDescription>
               Set clear expectations for your community.
             </DialogDescription>
@@ -156,7 +160,7 @@ export function ManageRulesDialog({
             <div className="flex justify-end">
               <Button
                 size="sm"
-                onClick={() => setIsCreateOpen(true)}
+                onClick={ () => setIsCreateOpen(true) }
               >
                 <Plus className="h-4 w-4" />
                 Add New Rule
@@ -168,115 +172,124 @@ export function ManageRulesDialog({
                 EXISTING RULES
               </h3>
 
-              {isLoading ? (
-                <Loader2 className="animate-spin" />
-              ) : rules.length === 0 ? (
-                <p className="py-4 text-center text-sm">
-                  No rules created yet.
-                </p>
-              ) : (
-                <ul className="space-y-3">
-                  {rules
-                    .slice()
-                    .sort((a, b) => a.order - b.order)
-                    .map((rule, index) => (
-                      <li
-                        key={rule.id}
-                        className="rounded-lg border p-4"
-                      >
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <h4 className="font-bold">
-                              Rule {index + 1}: {rule.title}
-                            </h4>
-                            {rule.description && (
-                              <p className="text-muted-foreground mt-1 text-sm">
-                                {rule.description}
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() =>
-                                setEditingRule(rule)
-                              }
-                            >
-                              <Edit className="h-4 w-4" />
-                              <span className="sr-only">
-                                Edit
-                              </span>
-                            </Button>
-                            <AlertDialog>
-                              <AlertDialogTrigger asChild>
+              {
+                isLoading ? (
+                  <Loader2 className="animate-spin" />
+                ) : rules.length === 0 ? (
+                  <p className="py-4 text-center text-sm">
+                    No rules created yet.
+                  </p>
+                ) : (
+                  <ul className="space-y-3">
+                    {
+                      rules
+                        .slice()
+                        .sort((a, b) => a.order - b.order)
+                        .map((rule, index) => (
+                          <li
+                            key={ rule.id }
+                            className="rounded-lg border p-4"
+                          >
+                            <div className="flex items-start justify-between">
+                              <div>
+                                <h4 className="font-bold">
+                                  Rule { index + 1 }: { rule.title }
+                                </h4>
+                                {
+                                  rule.description && (
+                                    <p className="text-muted-foreground mt-1 text-sm">
+                                      { rule.description }
+                                    </p>
+                                  )
+                                }
+                              </div>
+                              <div className="flex items-center gap-1">
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="text-destructive h-8 w-8"
+                                  className="h-8 w-8"
+                                  onClick={ () =>
+                                    setEditingRule(rule)
+                                  }
                                 >
-                                  <Trash2 className="h-4 w-4" />
+                                  <Edit className="h-4 w-4" />
                                   <span className="sr-only">
-                                    Delete
+                                    Edit
                                   </span>
                                 </Button>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                <AlertDialogHeader>
-                                  <AlertDialogTitle>
-                                    Are you sure you want to
-                                    delete this rule?
-                                  </AlertDialogTitle>
-                                  <AlertDialogDescription>
-                                    This action is permanent
-                                    and cannot be undone.
-                                  </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                  <AlertDialogCancel>
-                                    Cancel
-                                  </AlertDialogCancel>
-                                  <AlertDialogAction
-                                    className="bg-destructive hover:bg-destructive/90"
-                                    onClick={() =>
-                                      handleDeleteRule(
-                                        rule.id
-                                      )
-                                    }
-                                  >
-                                    Delete Rule
-                                  </AlertDialogAction>
-                                </AlertDialogFooter>
-                              </AlertDialogContent>
-                            </AlertDialog>
-                          </div>
-                        </div>
-                      </li>
-                    ))}
-                </ul>
-              )}
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="text-destructive h-8 w-8"
+                                    >
+                                      <Trash2 className="h-4 w-4" />
+                                      <span className="sr-only">
+                                        Delete
+                                      </span>
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Are you sure you want to
+                                        delete this rule?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        This action is permanent
+                                        and cannot be undone.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Cancel
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        className="bg-destructive hover:bg-destructive/90"
+                                        onClick={ () =>
+                                          handleDeleteRule(
+                                            rule.id
+                                          )
+                                        }
+                                      >
+                                        Delete Rule
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            </div>
+                          </li>
+                        ))
+                    }
+                  </ul>
+                )
+              }
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
+
       <CreateRuleDialog
-        isOpen={isCreateOpen}
-        onOpenChange={setIsCreateOpen}
-        communityId={community.id}
-        onRuleCreated={handleRuleCreated}
+        isOpen={ isCreateOpen }
+        onOpenChange={ setIsCreateOpen }
+        communityId={ community.id }
+        onRuleCreated={ handleRuleCreated }
       />
 
-      {editingRule && (
-        <UpdateRuleDialog
-          isOpen={!!editingRule}
-          onOpenChange={() => setEditingRule(null)}
-          communityId={community.id}
-          rule={editingRule}
-          onRuleUpdated={handleRuleUpdated}
-        />
-      )}
+      {
+        editingRule && (
+          <UpdateRuleDialog
+            isOpen={ !!editingRule }
+            onOpenChange={ () => setEditingRule(null) }
+            communityId={ community.id }
+            rule={ editingRule }
+            onRuleUpdated={ handleRuleUpdated }
+          />
+        )
+      }
     </>
   );
 }
