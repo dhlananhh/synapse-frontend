@@ -16,7 +16,7 @@ import { useMembership } from "@/context/MembershipContext";
 import { Community } from "@/types/services/community";
 import { TUpdateCommunityDetailsSchema } from "@/libs/validators/community-validator";
 import { communityService } from "@/modules/services/community-service";
-import UpdateCommunityForm from "@/components/features/community/forms/UpdateCommunityForm";
+import UpdateCommunityForm from "@/components/features/community/UpdateCommunityForm";
 import { ImageUploader } from "@/components/features/community/ImageUploader";
 import { Button } from "@/components/ui/button";
 import {
