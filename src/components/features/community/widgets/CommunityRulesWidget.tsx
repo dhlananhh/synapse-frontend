@@ -1,3 +1,6 @@
+"use client";
+
+
 import React, {
   useEffect,
   useState
@@ -37,7 +40,7 @@ export default function CommunityRulesWidget() {
   const isOwner = membership?.role === "OWNER";
 
   const [ rules, setRules ] = useState<CommunityRule[]>([]);
-  const [ loading, setLoading ] = useState<boolean>(true);
+  const [ isLoading, setIsLoading ] = useState<boolean>(true);
   const [ error, setError ] = useState<string | null>(null);
 
   useEffect(() => {
@@ -46,12 +49,12 @@ export default function CommunityRulesWidget() {
       if (!communityId) {
         if (mounted) {
           setRules([]);
-          setLoading(false);
+          setIsLoading(false);
         }
         return;
       }
 
-      setLoading(true);
+      setIsLoading(true);
       setError(null);
       try {
         const res =
@@ -62,7 +65,7 @@ export default function CommunityRulesWidget() {
         console.error("Failed to load rules", err);
         if (mounted) setError("Failed to load rules.");
       } finally {
-        if (mounted) setLoading(false);
+        if (mounted) setIsLoading(false);
       }
     };
     load();
@@ -80,7 +83,7 @@ export default function CommunityRulesWidget() {
       <CardHeader className="flex items-start justify-between gap-2">
         <div className="flex items-center gap-2">
           <ListOrdered className="h-5 w-5" />
-          <CardTitle className="m-0 p-0 lowercase">
+          <CardTitle className="m-0 p-0">
             {
               communityName
                 ? `${communityName} Rules`
@@ -89,60 +92,67 @@ export default function CommunityRulesWidget() {
           </CardTitle>
         </div>
 
-        { isOwner && community && (
-          <ManageRulesDialog
-            community={ community }
-            rules={ rules }
-            setRules={ setRules }
-            trigger={
-              <Button
-                variant="ghost"
-                size="icon"
-                aria-label="Manage rules"
-              >
-                <Settings className="h-6 w-6" />
-              </Button>
-            }
-          />
-        ) }
+        {
+          isOwner && community && (
+            <ManageRulesDialog
+              community={ community }
+              rules={ rules }
+              setRules={ setRules }
+              trigger={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Manage rules"
+                >
+                  <Settings className="h-6 w-6" />
+                </Button>
+              }
+            />
+          )
+        }
+
       </CardHeader>
       <CardContent>
-        { loading ? (
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <Skeleton className="h-6 w-6 rounded-full" />
-              <Skeleton className="h-4 w-1/2" />
+        {
+          isLoading ? (
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-6 w-6 rounded-full" />
+                <Skeleton className="h-4 w-1/2" />
+              </div>
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-6 w-6 rounded-full" />
+                <Skeleton className="h-4 w-1/3" />
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Skeleton className="h-6 w-6 rounded-full" />
-              <Skeleton className="h-4 w-1/3" />
-            </div>
-          </div>
-        ) : error ? (
-          <p className="text-destructive text-sm">
-            { error }
-          </p>
-        ) : sortedRules.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            This community currently has no rules.
-          </p>
-        ) : (
-          <Accordion type="multiple" className="w-full">
-            { sortedRules.map((rule) => (
-              <AccordionItem
-                value={ rule.id }
-                key={ rule.id }
-              >
-                <AccordionTrigger className="font-semibold">
-                  { `${rule.order}/ ${rule.title}` }
-                </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground text-sm">
-                  { rule.description }
-                </AccordionContent>
-              </AccordionItem>
-            )) }
-          </Accordion>
-        ) }
+          ) : error ? (
+            <p className="text-destructive text-sm">
+              { error }
+            </p>
+          ) : sortedRules.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              This community currently has no rules.
+            </p>
+          ) : (
+            <Accordion type="multiple" className="w-full">
+              {
+                sortedRules.map((rule) => (
+                  <AccordionItem
+                    value={ rule.id }
+                    key={ rule.id }
+                  >
+                    <AccordionTrigger className="font-semibold">
+                      { `${rule.order}/ ${rule.title}` }
+                    </AccordionTrigger>
+                    <AccordionContent className="text-muted-foreground text-sm">
+                      { rule.description }
+                    </AccordionContent>
+                  </AccordionItem>
+                ))
+              }
+            </Accordion>
+          )
+        }
       </CardContent>
     </Card>
   );
