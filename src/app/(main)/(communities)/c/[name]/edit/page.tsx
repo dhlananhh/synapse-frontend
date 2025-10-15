@@ -38,6 +38,7 @@ import {
   AvatarImage
 } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { DeleteCommunityDialog } from "@/components/features/community/DeleteCommunityDialog";
 
 
 export default function EditCommunityPage() {
@@ -48,6 +49,7 @@ export default function EditCommunityPage() {
 
   const [ community, setCommunity ] = useState<Community | null>(initialCommunity);
   const [ isSubmitting, setIsSubmitting ] = useState(false);
+  const [ isDeleteDialogOpen, setIsDeleteDialogOpen ] = useState(false);
 
   useEffect(() => {
     setCommunity(initialCommunity);
@@ -129,94 +131,129 @@ export default function EditCommunityPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8">
-      <Button
-        variant="ghost"
-        onClick={ () => router.back() }
-        className="mb-4 -ml-4"
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Back to c/{ community.name }
-      </Button>
+    <>
+      <div className="max-w-3xl mx-auto space-y-8">
+        <Button
+          variant="ghost"
+          onClick={ () => router.back() }
+          className="mb-4 -ml-4"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to c/{ community.name }
+        </Button>
 
-      {/* Card for Community details */ }
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl">
-            Edit Community Details
-          </CardTitle>
-          <CardDescription>
-            Update your community's name, description, and privacy settings.
-            Changes will be visible to everyone.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <UpdateCommunityForm
-            initialData={ community }
-            onSubmit={ handleFormSubmit }
-            isSubmitting={ isSubmitting }
-          />
-        </CardContent>
-      </Card>
+        {/* Card for Community details */ }
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">
+              Edit Community Details
+            </CardTitle>
+            <CardDescription>
+              Update your community's name, description, and privacy settings.
+              Changes will be visible to everyone.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <UpdateCommunityForm
+              initialData={ community }
+              onSubmit={ handleFormSubmit }
+              isSubmitting={ isSubmitting }
+            />
+          </CardContent>
+        </Card>
 
-      {/* Card for image uploader */ }
-      <Card>
-        <CardHeader>
-          <CardTitle>
-            Community Visuals
-          </CardTitle>
-          <CardDescription>
-            Customize a new aesthetic look of your community.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          {/* Avatar Uploader */ }
-          <ImageUploader
-            label="Community Avatar"
-            description="Appears on your community's page and in feeds."
-            currentImageUrl={ community.avatarUrl }
-            onUpload={ (file) => handleImageUpload("avatar", file) }
-            renderPreview={
-              (previewUrl) => (
-                <Avatar className="h-20 w-20">
-                  <AvatarImage
-                    src={ previewUrl ?? undefined }
-                  />
-                  <AvatarFallback className="text-3xl">
-                    { community.name.charAt(0).toUpperCase() }
-                  </AvatarFallback>
-                </Avatar>
-              )
-            }
-          />
-          <Separator />
-          {/* Banner Uploader */ }
-          <ImageUploader
-            label="Community Banner"
-            description="Appears at the top of your community page."
-            currentImageUrl={ community.bannerUrl }
-            onUpload={ (file) => handleImageUpload("banner", file) }
-            renderPreview={ (previewUrl) => (
-              <div className="w-48 aspect-[3/1] bg-secondary rounded-md flex items-center justify-center border-2 border-dashed">
-                {
-                  previewUrl ? (
-                    <Image
-                      src={ previewUrl }
-                      alt="Banner Preview"
-                      className="w-full h-full object-cover rounded-md"
-                      width={ 500 }
-                      height={ 500 }
+        {/* Card for image uploader */ }
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              Community Visuals
+            </CardTitle>
+            <CardDescription>
+              Customize a new aesthetic look of your community.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {/* Avatar Uploader */ }
+            <ImageUploader
+              label="Community Avatar"
+              description="Appears on your community's page and in feeds."
+              currentImageUrl={ community.avatarUrl }
+              onUpload={ (file) => handleImageUpload("avatar", file) }
+              renderPreview={
+                (previewUrl) => (
+                  <Avatar className="h-20 w-20">
+                    <AvatarImage
+                      src={ previewUrl ?? undefined }
                     />
-                  ) : (
-                    <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                  )
-                }
-              </div>
-            )
-            }
-          />
-        </CardContent>
-      </Card>
-    </div>
+                    <AvatarFallback className="text-3xl">
+                      { community.name.charAt(0).toUpperCase() }
+                    </AvatarFallback>
+                  </Avatar>
+                )
+              }
+            />
+            <Separator />
+            {/* Banner Uploader */ }
+            <ImageUploader
+              label="Community Banner"
+              description="Appears at the top of your community page."
+              currentImageUrl={ community.bannerUrl }
+              onUpload={ (file) => handleImageUpload("banner", file) }
+              renderPreview={ (previewUrl) => (
+                <div className="w-48 aspect-[3/1] bg-secondary rounded-md flex items-center justify-center border-2 border-dashed">
+                  {
+                    previewUrl ? (
+                      <Image
+                        src={ previewUrl }
+                        alt="Banner Preview"
+                        className="w-full h-full object-cover rounded-md"
+                        width={ 500 }
+                        height={ 500 }
+                      />
+                    ) : (
+                      <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                    )
+                  }
+                </div>
+              )
+              }
+            />
+          </CardContent>
+        </Card>
+
+        {/* Card for deleting the community */ }
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardHeader>
+            <CardTitle className="text-destructive">Danger Zone</CardTitle>
+            <CardDescription className="text-destructive/90">
+              Be careful. These actions are permanent and cannot be recovered.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex justify-between items-center">
+            <div>
+              <h4 className="font-semibold">
+                Delete This Community
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                Once you delete a community, there is no going back.
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              onClick={ () => setIsDeleteDialogOpen(true) }
+            >
+              Delete Community
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+
+
+      <DeleteCommunityDialog
+        community={ community }
+        isOpen={ isDeleteDialogOpen }
+        onOpenChange={ setIsDeleteDialogOpen }
+      />
+    </>
   );
 }

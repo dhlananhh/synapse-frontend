@@ -115,9 +115,10 @@ export const communityService = {
       .then((res) => res.data);
   },
 
-  //   // Delete a community
-  //   deleteCommunity: (id: string): Promise<void> =>
-  //     communityApiClient.delete(`/${id}`).then((res) => res.data),
+  // Delete a community
+  deleteCommunity: (communityId: string): Promise<any> => {
+    return communityApiClient.delete(`/${communityId}`).then(res => res.data);
+  },
 
   // =================================
   // Membership Management
