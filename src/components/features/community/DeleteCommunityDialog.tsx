@@ -40,16 +40,23 @@ export function DeleteCommunityDialog({
   const isConfirmationMatch = confirmationText === community.name;
 
   const handleDelete = async () => {
-    if (!isConfirmationMatch) return;
+    if (!isConfirmationMatch)
+      return;
 
     setIsDeleting(true);
     try {
       await communityService.deleteCommunity(community.id);
-      toast.success(`Community "c/${community.name}" has been permanently deleted.`);
-      router.push("/");
+      toast.success(`Community "c/${community.name}" has been permanently deleted.`, {
+        duration: 5000,
+      });
+      setTimeout(() => {
+        router.push(`/feed`)
+      }, 5000);
     } catch (error: any) {
       toast.error("Failed to delete community.", {
-        description: error.response?.data?.message || "Please try again later.",
+        description: error.response?.data?.message
+          || "Please try again later.",
+        duration: 5000,
       });
     } finally {
       setIsDeleting(false);
