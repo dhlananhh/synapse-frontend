@@ -1,8 +1,11 @@
 "use client";
 
+
 import React, { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { UserProfile } from "@/types/services/user";
+import { LogoutConfirmDialog } from "@/components/shared/LogoutConfirmDialog";
 import {
   Avatar,
   AvatarFallback,
@@ -18,17 +21,21 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { LogOut, User as UserIcon } from "lucide-react";
-import { UserProfile } from "@/types/services/user";
-import { LogoutConfirmDialog } from "@/components/shared/LogoutConfirmDialog";
+import {
+  Cog,
+  LogOut,
+  User as UserIcon
+} from "lucide-react";
+
 
 interface UserNavProps {
   user: UserProfile;
 }
 
+
 export function UserNav({ user }: UserNavProps) {
   const { logout } = useAuth();
-  const [isLogoutConfirmOpen, setIsLogoutConfirmOpen] =
+  const [ isLogoutConfirmOpen, setIsLogoutConfirmOpen ] =
     useState(false);
 
   const handleLogoutClick = (event: React.MouseEvent) => {
@@ -46,11 +53,11 @@ export function UserNav({ user }: UserNavProps) {
           >
             <Avatar className="h-10 w-10">
               <AvatarImage
-                src={user.avatarUrl || ""}
-                alt={`@${user.username}`}
+                src={ user.avatarUrl || "" }
+                alt={ `@${user.username}` }
               />
               <AvatarFallback>
-                {user.username.charAt(0).toUpperCase()}
+                { user.username.charAt(0).toUpperCase() }
               </AvatarFallback>
             </Avatar>
           </Button>
@@ -63,34 +70,44 @@ export function UserNav({ user }: UserNavProps) {
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col space-y-1">
               <p className="text-sm leading-none font-medium">
-                {`${user.firstName} ${user.lastName}`}
+                { `${user.firstName} ${user.lastName}` }
               </p>
               <p className="text-muted-foreground text-xs leading-none">
-                @{user.username}
+                @{ user.username }
               </p>
             </div>
           </DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href={`/profile/me`}>
+              <Link href={ `/profile/me` }>
                 <UserIcon className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </Link>
             </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href={ `/preferences/me` }>
+                <Cog className="mr-2 h-4 w-4" />
+                <span>Preferences</span>
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              asChild
+              onClick={ handleLogoutClick }
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              <span>Log out</span>
+            </DropdownMenuItem>
           </DropdownMenuGroup>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={handleLogoutClick}>
-            <LogOut className="mr-2 h-4 w-4" />
-            <span>Log out</span>
-          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
 
       <LogoutConfirmDialog
-        isOpen={isLogoutConfirmOpen}
-        onOpenChange={setIsLogoutConfirmOpen}
-        onConfirmLogout={logout}
+        isOpen={ isLogoutConfirmOpen }
+        onOpenChange={ setIsLogoutConfirmOpen }
+        onConfirmLogout={ logout }
       />
     </>
   );
