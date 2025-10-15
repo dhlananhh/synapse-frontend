@@ -1,20 +1,26 @@
-'use client';
+"use client";
+
 
 import React, {
   useEffect,
   useState
-} from 'react';
-import { toast } from 'sonner';
-import { useAuth } from '@/context/AuthContext';
+} from "react";
+import { toast } from "sonner";
+import { useAuth } from "@/context/AuthContext";
 import {
   UserPreferences,
   UpdateUserPreferencesPayload
-} from '@/types/services/user';
-import { userService } from '@/modules/services/user-service';
-import { PreferencesForm } from '@/components/features/settings/PreferencesForm';
-import { Skeleton } from '@/components/ui/skeleton';
-import { savePreferencesToSession, getPreferencesFromSession } from '@/libs/sessionStorageManager';
-import { Separator } from '@/components/ui/separator';
+} from "@/types/services/user";
+import { userService } from "@/modules/services/user-service";
+import { PreferencesForm } from "@/components/features/settings/PreferencesForm";
+import {
+  savePreferencesToSession,
+  getPreferencesFromSession
+} from "@/libs/sessionStorageManager";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Separator } from "@/components/ui/separator";
+import { ChangePasswordForm } from "@/components/features/settings/ChangePasswordForm";
+
 
 export default function SettingsPage() {
   const { user: currentUser } = useAuth();
@@ -23,28 +29,25 @@ export default function SettingsPage() {
   const [ isSubmitting, setIsSubmitting ] = useState(false);
 
   useEffect(() => {
-    // Chỉ thực hiện khi đã xác định được người dùng
     if (currentUser?.id) {
       const loadPreferences = async () => {
         setIsLoading(true);
-        // Ưu tiên đọc từ session storage để load nhanh
         const sessionPrefs = getPreferencesFromSession();
         if (sessionPrefs) {
           setPreferences(sessionPrefs);
-          setIsLoading(false); // Hiển thị UI ngay lập tức
+          setIsLoading(false);
         }
 
-        // Dù có dữ liệu từ session, vẫn fetch từ server để đồng bộ hóa
         try {
           const serverPrefs = await userService.getUserPreferences(currentUser.id);
-          setPreferences(serverPrefs); // Cập nhật state với dữ liệu mới nhất
-          savePreferencesToSession(serverPrefs); // Cập nhật lại session storage
+          setPreferences(serverPrefs);
+          savePreferencesToSession(serverPrefs);
         } catch (error) {
           toast.error("Could not load settings from server.");
-          // Nếu không có dữ liệu session và API lỗi, set trạng thái lỗi
           if (!sessionPrefs) setPreferences(null);
         } finally {
-          if (isLoading) setIsLoading(false);
+          if (isLoading)
+            setIsLoading(false);
         }
       };
       loadPreferences();
@@ -58,7 +61,7 @@ export default function SettingsPage() {
     try {
       const updatedPrefs = await userService.updateUserPreferences(currentUser.id, data);
       setPreferences(updatedPrefs);
-      savePreferencesToSession(updatedPrefs); // Lưu vào session sau khi thành công
+      savePreferencesToSession(updatedPrefs);
       toast.success("Preferences updated successfully!");
     } catch (error) {
       toast.error("Failed to save preferences.");
@@ -69,32 +72,78 @@ export default function SettingsPage() {
 
   const renderContent = () => {
     if (isLoading) {
-      return (
-        <div className="space-y-8 max-w-2xl"><Skeleton className="h-10 w-full" /><Skeleton className="h-10 w-full" /><Skeleton className="h-12 w-full" /></div>
-      );
+      return <SettingsPageSkeleton />;
     }
 
     if (!preferences) {
-      return <div>Could not load your preferences. Please try refreshing the page.</div>;
-    }
+      return (
+        <div>
+          Could not load your preferences. Please try refreshing the page.
+        </div>
+      );
+    };
 
     return (
-      <PreferencesForm
-        initialData={ preferences }
-        onSave={ handleUpdatePreferences }
-        isSubmitting={ isSubmitting }
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        {/* Column 1: User Preferences Form */ }
+        <div className="flex flex-col gap-4">
+          <h2 className="text-xl font-semibold">
+            Display & Language
+          </h2>
+          <PreferencesForm
+            initialData={ preferences }
+            onSave={ handleUpdatePreferences }
+            isSubmitting={ isSubmitting }
+          />
+        </div>
+
+        {/* Column 2: Change Password Form */ }
+        <div className="flex flex-col gap-4">
+          <h2 className="text-xl font-semibold">
+            Change your account password
+          </h2>
+          <ChangePasswordForm />
+        </div>
+      </div>
     );
   }
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">User Preferences</h1>
-        <p className="text-muted-foreground">Manage your account preferences and settings.</p>
+        <h1 className="text-2xl font-bold tracking-tight">
+          User Preferences
+        </h1>
+        <p className="text-muted-foreground">
+          Manage your account preferences and settings.
+        </p>
       </div>
       <Separator />
       { renderContent() }
+    </div>
+  );
+}
+
+
+function SettingsPageSkeleton() {
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-1/3" />
+        <div className="border rounded-lg p-6 space-y-8">
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-20 w-full" />
+          <Skeleton className="h-24 w-full" />
+        </div>
+      </div>
+      <div className="space-y-4">
+        <Skeleton className="h-6 w-1/4" />
+        <div className="border rounded-lg p-6 space-y-6">
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+          <Skeleton className="h-10 w-full" />
+        </div>
+      </div>
     </div>
   );
 }

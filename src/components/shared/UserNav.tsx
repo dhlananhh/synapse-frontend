@@ -24,7 +24,7 @@ import {
 import {
   Cog,
   LogOut,
-  User as UserIcon
+  UserRound,
 } from "lucide-react";
 
 
@@ -77,32 +77,43 @@ export function UserNav({ user }: UserNavProps) {
               </p>
             </div>
           </DropdownMenuLabel>
+
           <DropdownMenuSeparator />
+
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href={ `/profile/me` }>
-                <UserIcon className="mr-2 h-4 w-4" />
+              <Link
+                href={ `/profile/me` }
+              >
+                <UserRound className="mr-2 h-4 w-4" />
                 <span>Profile</span>
               </Link>
             </DropdownMenuItem>
+
             <DropdownMenuSeparator />
+
             <DropdownMenuItem asChild>
-              <Link href={ `/preferences/me` }>
+              <Link
+                href={ `/preferences/me` }
+              >
                 <Cog className="mr-2 h-4 w-4" />
                 <span>Preferences</span>
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              asChild
-              onClick={ handleLogoutClick }
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Log out</span>
-            </DropdownMenuItem>
           </DropdownMenuGroup>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onClick={ handleLogoutClick }
+            className="text-destructive focus:text-destructive pt-1"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
+
 
       <LogoutConfirmDialog
         isOpen={ isLogoutConfirmOpen }

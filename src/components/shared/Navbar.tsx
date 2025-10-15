@@ -17,7 +17,7 @@ import { UserProfile } from "@/types/services/user";
 
 export function Navbar() {
   const { user, isLoading } = useAuth();
-  const [profile, setProfile] =
+  const [ profile, setProfile ] =
     useState<UserProfile | null>(null);
 
   useEffect(() => {
@@ -26,7 +26,7 @@ export function Navbar() {
     } else {
       setProfile(null);
     }
-  }, [user?.id]);
+  }, [ user?.id ]);
 
   const renderAuthSection = () => {
     if (isLoading) {
@@ -39,7 +39,7 @@ export function Navbar() {
     }
 
     if (user && profile) {
-      return <UserNav user={profile} />;
+      return <UserNav user={ profile } />;
     }
 
     return (
@@ -57,7 +57,7 @@ export function Navbar() {
   return (
     <header className="bg-background/80 fixed inset-x-0 top-0 z-50 h-16 border-b backdrop-blur-lg">
       <div className="container mx-auto flex h-full max-w-7xl items-center gap-4">
-        {/* Left: Logo & App Name */}
+        {/* Left: Logo & App Name */ }
         <div className="flex flex-shrink-0 items-center gap-2">
           <div className="md:hidden">
             <MobileNav />
@@ -73,14 +73,14 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Search Bar */}
+        {/* Center: Search Bar */ }
         <div className="flex flex-1 justify-center px-4">
           <SearchBar />
         </div>
 
-        {/* Right: Auth/User Nav */}
+        {/* Right: Auth/User Nav */ }
         <div className="flex flex-shrink-0 items-center gap-2">
-          {renderAuthSection()}
+          { renderAuthSection() }
         </div>
       </div>
     </header>
