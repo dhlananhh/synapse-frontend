@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 import NotFoundDisplay from "@/components/shared/NotFoundDisplay";

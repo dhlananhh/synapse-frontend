@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { UserAvatar } from "./UserAvatar";
 import { Image, LinkIcon } from "lucide-react";
 
-
 export default function CreatePostWidget() {
   const router = useRouter();
   const { user } = useAuth();
@@ -15,16 +14,10 @@ export default function CreatePostWidget() {
   const goToSubmitPage = () => router.push("/submit");
 
   return (
-    <div className="mb-8 p-3 rounded-md bg-card flex items-center gap-4 border">
-      {/*
-        {
-          user && <UserAvatar user={ user } />
-        }
-      */}
-
+    <div className="bg-card mb-8 flex items-center gap-4 rounded-md border p-3">
       <div className="relative w-full">
         <Input
-          onClick={ goToSubmitPage }
+          onClick={goToSubmitPage}
           readOnly
           placeholder="Create a new post..."
           className="cursor-pointer"
@@ -32,7 +25,7 @@ export default function CreatePostWidget() {
       </div>
 
       <Button
-        onClick={ goToSubmitPage }
+        onClick={goToSubmitPage}
         variant="ghost"
         size="icon"
         title="Create Image Post"
@@ -40,7 +33,7 @@ export default function CreatePostWidget() {
         <Image className="h-5 w-5" />
       </Button>
       <Button
-        onClick={ goToSubmitPage }
+        onClick={goToSubmitPage}
         variant="ghost"
         size="icon"
         title="Create Link Post"
@@ -48,5 +41,5 @@ export default function CreatePostWidget() {
         <LinkIcon className="h-5 w-5" />
       </Button>
     </div>
-  )
+  );
 }

@@ -15,9 +15,15 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname:
+          "synapse-user-avatars.s3.ap-southeast-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 };
-
 
 export default nextConfig;

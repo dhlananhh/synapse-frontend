@@ -35,9 +35,9 @@ import { BrainCircuit } from "lucide-react";
 const formSchema = z.object({
   newPassword: z.string().min(8, { message: "Password must be at least 8 characters long." }),
   confirmPassword: z.string()
-}).refine(data => data.newPassword === data.confirmPassword, {
+}).refine(data => data.newPassword === data.newPassword, {
   message: "Passwords don't match",
-  path: [ "confirm_password" ],
+  path: [ "confirmPassword" ],
 });
 
 

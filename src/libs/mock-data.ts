@@ -9,10 +9,7 @@ import {
 } from "@/types";
 
 // import icons
-import {
-  FaAward,
-  FaMedal
-} from "react-icons/fa6";
+import { FaAward, FaMedal } from "react-icons/fa6";
 import { SiThunderbird } from "react-icons/si";
 import { BsFillCake2Fill } from "react-icons/bs";
 import {
@@ -21,17 +18,17 @@ import {
   GiLaurelCrown,
   GiHeartburn,
   GiSparkles,
-  GiRocketFlight
+  GiRocketFlight,
 } from "react-icons/gi";
 import { BsPostcardHeart } from "react-icons/bs";
-
 
 // Mock Awards
 export const allMockAwards: Award[] = [
   {
     id: "award1",
     name: "Brilliant",
-    description: "For an exceptionally insightful comment or post.",
+    description:
+      "For an exceptionally insightful comment or post.",
     cost: 100,
     Icon: GiSteelwingEmblem,
   },
@@ -52,7 +49,8 @@ export const allMockAwards: Award[] = [
   {
     id: "award4",
     name: "Mind Blown",
-    description: "When a post or comment is simply mind-blowing.",
+    description:
+      "When a post or comment is simply mind-blowing.",
     cost: 200,
     Icon: GiRocketFlight,
   },
@@ -65,14 +63,13 @@ export const allMockAwards: Award[] = [
   },
 ];
 
-
-
 // Mock Trohies
 export const allMockTrophies: Trophy[] = [
   {
     id: "t1",
     name: "First Post",
-    description: "You took your first step as a contributor!",
+    description:
+      "You took your first step as a contributor!",
     Icon: GiStarSattelites,
   },
   {
@@ -84,25 +81,29 @@ export const allMockTrophies: Trophy[] = [
   {
     id: "t3",
     name: "Top 10% Karma",
-    description: "Your contributions are highly valued by the community.",
+    description:
+      "Your contributions are highly valued by the community.",
     Icon: GiLaurelCrown,
   },
   {
     id: "t4",
     name: "Community Pioneer",
-    description: "Created a community that gained over 100 members.",
+    description:
+      "Created a community that gained over 100 members.",
     Icon: SiThunderbird,
   },
   {
     id: "t5",
     name: "One-Year Club",
-    description: "You have been a member of Synapse for over one year.",
+    description:
+      "You have been a member of Synapse for over one year.",
     Icon: BsFillCake2Fill,
   },
   {
     id: "t6",
     name: "Helpful Hand",
-    description: "Received an award on one of your posts or comments.",
+    description:
+      "Received an award on one of your posts or comments.",
     Icon: FaAward,
   },
 ];
@@ -119,10 +120,11 @@ export const adminUser: User = {
   createdAt: "2024-01-01T00:00:00Z",
   karma: {
     post: 7500,
-    comment: 2499
+    comment: 2499,
   },
   gender: "Female",
-  bannerUrl: "https://placehold.co/1200x400/06b6d4/FFFFFF?text=Synapse+Admin",
+  bannerUrl:
+    "https://placehold.co/1200x400/06b6d4/FFFFFF?text=Synapse+Admin",
 };
 
 // Mock Users
@@ -137,10 +139,11 @@ const user1: User = {
   createdAt: "2023-05-10T12:00:00Z",
   karma: {
     post: 900,
-    comment: 350
+    comment: 350,
   },
   gender: "Male",
-  bannerUrl: "https://placehold.co/1200x400/1f2937/d1d5db?text=John+Doe",
+  bannerUrl:
+    "https://placehold.co/1200x400/1f2937/d1d5db?text=John+Doe",
 };
 const user2: User = {
   id: "u2",
@@ -153,7 +156,7 @@ const user2: User = {
   createdAt: "2022-11-20T15:30:00Z",
   karma: {
     post: 2800,
-    comment: 600
+    comment: 600,
   },
   gender: "Male",
 };
@@ -168,7 +171,7 @@ const user3: User = {
   createdAt: "2022-11-20T15:30:00Z",
   karma: {
     post: 550,
-    comment: 300
+    comment: 300,
   },
   gender: "Female",
 };
@@ -340,7 +343,7 @@ const user16: User = {
   createdAt: "2024-04-01T17:20:00Z",
   karma: {
     post: 100,
-    comment: 150
+    comment: 150,
   },
   gender: "Prefer not to say",
 };
@@ -356,7 +359,7 @@ const user17: User = {
   createdAt: "2023-06-19T09:40:00Z",
   karma: {
     post: 75,
-    comment: 100
+    comment: 100,
   },
   gender: "Male",
 };
@@ -372,7 +375,7 @@ const user18: User = {
   createdAt: "2023-10-30T21:00:00Z",
   karma: {
     post: 2200,
-    comment: 900
+    comment: 900,
   },
   gender: "Female",
 };
@@ -388,7 +391,7 @@ const user19: User = {
   createdAt: "2024-05-01T12:00:00Z",
   karma: {
     post: 45,
-    comment: 50
+    comment: 50,
   },
   gender: "Female",
 };
@@ -404,7 +407,7 @@ const user20: User = {
   createdAt: "2024-05-01T12:00:00Z",
   karma: {
     post: 2300,
-    comment: 1000
+    comment: 1000,
   },
   gender: "Male",
 };
@@ -420,7 +423,7 @@ const user21: User = {
   createdAt: "2024-05-01T12:00:00Z",
   karma: {
     post: 50,
-    comment: 100
+    comment: 100,
   },
   gender: "Female",
 };
@@ -457,18 +460,20 @@ export const mockCommunities: Community[] = [
     slug: "nextjs",
     name: "Next.js Developers",
     imageUrl: "https://i.pravatar.cc/150?u=comm1",
-    description: "A community for developers passionate about the Next.js framework, Vercel, and the future of the web.",
+    description:
+      "A community for developers passionate about the Next.js framework, Vercel, and the future of the web.",
     createdAt: "2023-01-15T10:00:00Z",
     memberCount: 15432,
     ownerId: user1.id,
-    moderatorIds: [ user2.id ]
+    moderatorIds: [user2.id],
   },
   {
     id: "comm2",
     slug: "react",
     name: "React Community",
     imageUrl: "https://i.pravatar.cc/150?u=comm2",
-    description: "Discuss all things React: hooks, components, state management, and the ecosystem.",
+    description:
+      "Discuss all things React: hooks, components, state management, and the ecosystem.",
     createdAt: "2022-08-20T14:30:00Z",
     memberCount: 120543,
     ownerId: user3.id,
@@ -479,7 +484,8 @@ export const mockCommunities: Community[] = [
     slug: "webdev",
     name: "Web Development",
     imageUrl: "https://i.pravatar.cc/150?u=comm3",
-    description: "The central hub for news, articles, and discussions about modern web development.",
+    description:
+      "The central hub for news, articles, and discussions about modern web development.",
     createdAt: "2021-05-01T18:00:00Z",
     memberCount: 250100,
     ownerId: user4.id,
@@ -492,33 +498,46 @@ export const mockPosts: Post[] = [
   {
     id: "p1",
     title: "How to structure a Next.js App Router project?",
-    content: "Hey everyone, I'm a final year student working on my thesis project, a forum system. I'm using the latest version of Next.js with App Router and I'm a bit confused about how to structure my folders professionally for easy maintenance.I've looked at the official docs, but I'd love to see some real- world, battle - tested examples.Any advice on where to put components, libs, hooks, and how to handle state management would be greatly appreciated!",
+    content:
+      "Hey everyone, I'm a final year student working on my thesis project, a forum system. I'm using the latest version of Next.js with App Router and I'm a bit confused about how to structure my folders professionally for easy maintenance.I've looked at the official docs, but I'd love to see some real- world, battle - tested examples.Any advice on where to put components, libs, hooks, and how to handle state management would be greatly appreciated!",
     author: user3,
-    community: { id: "comm1", slug: "nextjs", name: "Next.js Developers" },
-    createdAt: new Date(Date.now() - 1000 * 60 * 30).toISOString(),
+    community: {
+      id: "comm1",
+      slug: "nextjs",
+      name: "Next.js Developers",
+    },
+    createdAt: new Date(
+      Date.now() - 1000 * 60 * 30
+    ).toISOString(),
     votes: 128,
     comments: [
       {
         id: "c1",
         text: "Great question! The key is separation of concerns. I always use a `features` directory inside `components` for large, feature-specific components.",
         author: user1,
-        createdAt: new Date(Date.now() - 1000 * 60 * 25).toISOString(),
+        createdAt: new Date(
+          Date.now() - 1000 * 60 * 25
+        ).toISOString(),
         votes: 15,
         replies: [
           {
             id: "c3",
             text: "This! And use a `shared` directory for truly reusable things like a custom Button or Card.",
             author: user2,
-            createdAt: new Date(Date.now() - 1000 * 60 * 20).toISOString(),
+            createdAt: new Date(
+              Date.now() - 1000 * 60 * 20
+            ).toISOString(),
             votes: 8,
-          }
-        ]
+          },
+        ],
       },
       {
         id: "c2",
         text: "For state, avoid overusing Context API for frequently updated state. Zustand is a great lightweight alternative.",
         author: user2,
-        createdAt: new Date(Date.now() - 1000 * 60 * 15).toISOString(),
+        createdAt: new Date(
+          Date.now() - 1000 * 60 * 15
+        ).toISOString(),
         votes: 12,
       },
     ],
@@ -526,29 +545,57 @@ export const mockPosts: Post[] = [
   {
     id: "p2",
     title: "Shadcn UI vs. other component libraries",
-    content: "What are your thoughts on Shadcn UI? I love that I own the code, but is it scalable for a very large application compared to something like Material-UI or Mantine? Discuss!",
+    content:
+      "What are your thoughts on Shadcn UI? I love that I own the code, but is it scalable for a very large application compared to something like Material-UI or Mantine? Discuss!",
     author: user1,
-    community: { id: "comm2", slug: "react", name: "React Community" },
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
+    community: {
+      id: "comm2",
+      slug: "react",
+      name: "React Community",
+    },
+    createdAt: new Date(
+      Date.now() - 1000 * 60 * 60 * 2
+    ).toISOString(),
     votes: 76,
     comments: [],
   },
   {
     id: "p3",
     title: "The future of server-side rendering",
-    content: "With React Server Components, the game has changed. What do you think is the future of SSR? Will SPAs become a thing of the past for content-heavy sites?",
+    content:
+      "With React Server Components, the game has changed. What do you think is the future of SSR? Will SPAs become a thing of the past for content-heavy sites?",
     author: user2,
-    community: { id: "comm3", slug: "webdev", name: "Web Development" },
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(),
+    community: {
+      id: "comm3",
+      slug: "webdev",
+      name: "Web Development",
+    },
+    createdAt: new Date(
+      Date.now() - 1000 * 60 * 60 * 24
+    ).toISOString(),
     votes: 250,
     comments: [],
   },
 ];
 
-
 // Mock Flairs
 export const mockFlairs: Flair[] = [
-  { id: "f1", name: "Discussion", color: "#06b6d4", communityId: "comm1" },
-  { id: "f2", name: "Question", color: "#f59e0b", communityId: "comm1" },
-  { id: "f3", name: "Showcase", color: "#8b5cf6", communityId: "comm2" },
+  {
+    id: "f1",
+    name: "Discussion",
+    color: "#06b6d4",
+    communityId: "comm1",
+  },
+  {
+    id: "f2",
+    name: "Question",
+    color: "#f59e0b",
+    communityId: "comm1",
+  },
+  {
+    id: "f3",
+    name: "Showcase",
+    color: "#8b5cf6",
+    communityId: "comm2",
+  },
 ];

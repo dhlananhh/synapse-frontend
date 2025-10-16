@@ -2,14 +2,16 @@
 
 
 import React, { useState } from "react";
-import { useTheme } from "next-themes";
-import { useTranslation } from "react-i18next";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { UserPreferences } from "@/types/services/user";
-
+import { useTheme } from "next-themes";
+import { useTranslation } from "react-i18next";
+import i18n from "@/libs/i18n";
+import {
+  UserPreferences,
+  UpdateUserPreferencesPayload
+} from "@/types/services/user";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,8 +19,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormDescription,
-  FormMessage
+  FormDescription
 } from "@/components/ui/form";
 import {
   Select,
@@ -31,60 +32,59 @@ import { Switch } from "@/components/ui/switch";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
+import { Loader2 } from "lucide-react";
 
 
-const formSchema = z.object({
+const preferencesSchema = z.object({
   theme: z.enum([ "light", "dark" ]),
   language: z.string(),
   extras: z.object({
     notifications: z.boolean(),
   }),
 });
-
-type FormValues = z.infer<typeof formSchema>;
+type FormValues = z.infer<typeof preferencesSchema>;
 
 
 interface PreferencesFormProps {
   initialData: UserPreferences;
   onSave: (data: FormValues) => Promise<void>;
+  isSubmitting: boolean;
 }
 
 
-export function PreferencesForm({ initialData, onSave }: PreferencesFormProps) {
+export function PreferencesForm({
+  initialData,
+  onSave,
+  isSubmitting
+}: PreferencesFormProps) {
   const { setTheme } = useTheme();
   const { i18n } = useTranslation();
-  const [ isSubmitting, setIsSubmitting ] = useState(false);
+
 
   const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(preferencesSchema),
     defaultValues: {
       theme: initialData.theme,
       language: initialData.language,
       extras: {
-        notifications: initialData.extras?.notifications ?? true
-      }
+        notifications: initialData.extras?.notifications ?? true,
+      },
     },
   });
 
   const onSubmit = async (data: FormValues) => {
-    setIsSubmitting(true);
     await onSave(data);
-
     setTheme(data.theme);
     i18n.changeLanguage(data.language);
-
-    setIsSubmitting(false);
   };
 
   return (
-    <Card className="max-w-2xl">
+    <Card>
       <CardHeader>
-        <CardTitle>Display & Feeds</CardTitle>
-        <CardDescription>Customize your experience.</CardDescription>
+        <CardTitle>Preferences</CardTitle>
       </CardHeader>
       <CardContent>
         <Form
@@ -110,7 +110,7 @@ export function PreferencesForm({ initialData, onSave }: PreferencesFormProps) {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a theme" />
+                          <SelectValue />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -118,7 +118,6 @@ export function PreferencesForm({ initialData, onSave }: PreferencesFormProps) {
                         <SelectItem value="dark">Dark</SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
                   </FormItem>
                 )
               }
@@ -140,15 +139,18 @@ export function PreferencesForm({ initialData, onSave }: PreferencesFormProps) {
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a language" />
+                          <SelectValue />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        <SelectItem value="en">English</SelectItem>
-                        <SelectItem value="vi">Tiếng Việt</SelectItem>
+                        <SelectItem value="us">
+                          English (US)
+                        </SelectItem>
+                        <SelectItem value="vi">
+                          Tiếng Việt
+                        </SelectItem>
                       </SelectContent>
                     </Select>
-                    <FormMessage />
                   </FormItem>
                 )
               }
@@ -161,9 +163,11 @@ export function PreferencesForm({ initialData, onSave }: PreferencesFormProps) {
                 ({ field }) => (
                   <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
                     <div className="space-y-0.5">
-                      <FormLabel>Enable Notifications</FormLabel>
+                      <FormLabel>
+                        Enable Notifications
+                      </FormLabel>
                       <FormDescription>
-                        Receive notifications about your activity.
+                        Receive notifications about mentions and other activity.
                       </FormDescription>
                     </div>
                     <FormControl>
@@ -183,10 +187,9 @@ export function PreferencesForm({ initialData, onSave }: PreferencesFormProps) {
                 disabled={ isSubmitting }
               >
                 {
-                  isSubmitting
-                    ? "Saving..."
-                    : "Save Changes"
+                  isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 }
+                Save Preferences
               </Button>
             </div>
           </form>

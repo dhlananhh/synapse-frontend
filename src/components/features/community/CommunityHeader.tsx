@@ -1,137 +1,200 @@
-"use client";
-
-
-import React, { useState } from "react";
-import { useAuth } from "@/context/MockAuthContext";
-import { Community } from "@/types";
-import ConfirmDialog from "@/components/shared/ConfirmDialog";
-import { Button } from "@/components/ui/button";
+import Image from "next/image";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage
-} from "@/components/ui/avatar";
+  Community,
+  CommunityMembership,
+} from "@/types/services/community";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu";
-import {
-  MoreHorizontal,
-  VolumeX,
-  Volume2
+  Lock,
+  TriangleAlert,
+  Plus,
+  LogOut,
+  X,
+  Pencil,
 } from "lucide-react";
-import { toast } from "sonner";
-
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { communityService } from "@/modules/services/community-service";
+import ConfirmDialog from "@/components/shared/ConfirmDialog";
 
 interface CommunityHeaderProps {
   community: Community;
+  membership: CommunityMembership | null;
+  onMembershipChange?: (
+    membership: CommunityMembership | null
+  ) => void;
 }
 
+export default function CommunityHeader({
+  community,
+  membership,
+  onMembershipChange,
+}: CommunityHeaderProps) {
+  const [loading, setLoading] = useState<
+    "join" | "cancel" | "leave" | null
+  >(null);
+  const [showLeaveConfirm, setShowLeaveConfirm] =
+    useState(false);
 
-export default function CommunityHeader({ community }: CommunityHeaderProps) {
-  const {
-    user,
-    isSubscribed,
-    subscribeToCommunity,
-    unsubscribeFromCommunity,
-    isMuted,
-    toggleMuteCommunity
-  } = useAuth();
-
-  const [ isConfirmingLeave, setIsConfirmingLeave ] = useState(false);
-  const [ isLeaveDialogOpen, setIsLeaveDialogOpen ] = useState(false);
-
-  const subscribed = isSubscribed(community.id);
-  const muted = isMuted(community.id);
-
-  const handleSubscription = () => {
-    if (subscribed) {
-      setIsLeaveDialogOpen(true);
-    } else {
-      subscribeToCommunity(community.id);
+  // Handler for joining community
+  const handleJoin = async () => {
+    setLoading("join");
+    try {
+      await communityService.joinCommunity(community.id);
+      if (onMembershipChange) {
+        const updated =
+          await communityService.getMembership(
+            community.name
+          );
+        onMembershipChange(updated);
+      }
+    } finally {
+      setLoading(null);
     }
   };
 
-  const handleToggleMute = () => {
-    toggleMuteCommunity(community.id);
-    toast.success(
-      muted
-        ? `Unmuted c/${community.slug}`
-        : `Muted c/${community.slug}. Posts from this community won't appear in your feeds.`
+  // Handler for cancel join request
+  const handleCancelJoin = async () => {
+    setLoading("cancel");
+    try {
+      await communityService.cancelJoinRequest(
+        community.id
+      );
+      if (onMembershipChange) {
+        const updated =
+          await communityService.getMembership(
+            community.name
+          );
+        onMembershipChange(updated);
+      }
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  // Handler for leaving community (with confirmation)
+  const handleLeave = async () => {
+    setShowLeaveConfirm(false);
+    setLoading("leave");
+    try {
+      await communityService.leaveCommunity(community.id);
+      if (onMembershipChange) {
+        // After leaving, membership will be null
+        onMembershipChange(null);
+      }
+    } finally {
+      setLoading(null);
+    }
+  };
+
+  // Membership control button
+  let membershipControl: React.ReactNode = null;
+  if (!membership) {
+    membershipControl = (
+      <Button
+        variant="default"
+        size="sm"
+        onClick={handleJoin}
+        disabled={loading === "join"}
+      >
+        <Plus className="mr-1 h-4 w-4" />
+        Join
+      </Button>
     );
+  } else if (membership.status === "PENDING") {
+    membershipControl = (
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleCancelJoin}
+        disabled={loading === "cancel"}
+      >
+        <X className="mr-1 h-4 w-4" />
+        Cancel join request
+      </Button>
+    );
+  } else if (membership.status === "ACTIVE") {
+    if (
+      membership.role === "MODERATOR" ||
+      membership.role === "MEMBER"
+    ) {
+      membershipControl = (
+        <>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowLeaveConfirm(true)}
+            disabled={loading === "leave"}
+          >
+            <LogOut className="mr-1 h-4 w-4" />
+            Leave
+          </Button>
+          <ConfirmDialog
+            open={showLeaveConfirm}
+            title="Leave Community"
+            description="Are you sure you want to leave this community?"
+            confirmText="Leave"
+            onConfirm={handleLeave}
+            onOpenChange={setShowLeaveConfirm}
+            isConfirming={loading === "leave"}
+          />
+        </>
+      );
+    }
   }
 
-  const handleConfirmLeave = async () => {
-    setIsConfirmingLeave(true);
-    await new Promise(resolve => setTimeout(resolve, 500));
-    unsubscribeFromCommunity(community.id);
-    setIsConfirmingLeave(false);
-    setIsLeaveDialogOpen(false);
-  }
+  const showCreatePost =
+    membership && membership.status === "ACTIVE";
 
   return (
-    <>
-      <div className="mb-6">
-        <div className="h-24 bg-secondary rounded-t-lg" />
-        <div className="p-4 bg-card rounded-b-lg flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 -mt-10 sm:-mt-8">
-          <div className="flex items-end gap-3">
-            <Avatar className="h-16 w-16 border-4 border-card">
-              <AvatarImage
-                src={ community.imageUrl }
-                alt={ community.name }
+    <div className="bg-background mb-6 overflow-hidden rounded-lg shadow">
+      {/* Banner */}
+      <div className="bg-muted relative h-40 w-full rounded-lg">
+        {community.bannerUrl && (
+          <Image
+            src={community.bannerUrl}
+            alt={`${community.name} banner`}
+            className="h-full w-full rounded-lg object-cover"
+          />
+        )}
+        {/* Avatar overlay with z-index */}
+        <div className="absolute -bottom-15 left-8 z-10">
+          <div className="bg-muted border-background flex h-24 w-24 items-center justify-center overflow-hidden rounded-full border-4 shadow-lg">
+            {community.avatarUrl ? (
+              <Image
+                src={community.avatarUrl}
+                alt={community.name}
+                className="h-full w-full object-cover"
               />
-              <AvatarFallback>
-                { community.name.slice(0, 2).toUpperCase() }
-              </AvatarFallback>
-            </Avatar>
-            <div>
-              <h1 className="text-2xl font-bold">
-                { community.name }
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                c/{ community.slug }
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-1">
-            {
-              user && (
-                <Button onClick={ handleSubscription }>
-                  { subscribed ? "Leave" : "Join" }
-                </Button>
-              )
-            }
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon">
-                  <MoreHorizontal className="h-5 w-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={ handleToggleMute }>
-                  { muted ? <Volume2 className="mr-2 h-4 w-4" /> : <VolumeX className="mr-2 h-4 w-4" /> }
-                  { muted ? `Unmute c/${community.slug}` : `Mute c/${community.slug}` }
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
+            ) : (
+              <span className="text-muted-foreground text-3xl">
+                {community.name && community.name.length > 0
+                  ? community.name[0].toUpperCase()
+                  : "?"}
+              </span>
+            )}
           </div>
         </div>
       </div>
-
-      <ConfirmDialog
-        open={ isLeaveDialogOpen }
-        onOpenChange={ setIsLeaveDialogOpen }
-        onConfirm={ handleConfirmLeave }
-        title={ `Leave c/${community.slug}?` }
-        description={
-          `Are you sure you want to leave this community? You will no longer see its posts in your home feed.`
-        }
-        confirmText="Leave Community"
-        isConfirming={ isConfirmingLeave }
-      />
-    </>
-  )
+      <div className="mt-4 ml-28 flex items-center gap-2 px-8 text-3xl font-bold">
+        c/{community.name}
+        {community.status === "PRIVATE" && (
+          <span className="inline-flex items-center gap-1 rounded bg-indigo-700 px-2 py-1 text-xs font-bold text-white">
+            <Lock className="h-4 w-4" />
+            Private
+          </span>
+        )}
+        {/* Action buttons */}
+        <div className="ml-auto flex gap-2">
+          {membershipControl}
+          {showCreatePost && (
+            <Button variant="secondary" size="sm">
+              <Pencil className="mr-1 h-4 w-4" />
+              Create Post
+            </Button>
+          )}
+        </div>
+      </div>
+      <div className="pb-10" />
+    </div>
+  );
 }

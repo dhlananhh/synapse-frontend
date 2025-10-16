@@ -1,6 +1,5 @@
 "use client";
 
-
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,7 +13,7 @@ import { authService } from "@/modules/services/auth-service";
 import { LoginPayload } from "@/types/services/auth";
 import {
   LoginSchema,
-  TLoginSchema
+  TLoginSchema,
 } from "@/libs/validators/auth-validator";
 
 import { Button } from "@/components/ui/button";
@@ -23,15 +22,11 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  BrainCircuit,
-  Loader2
-} from "lucide-react";
-
+import { BrainCircuit, Loader2 } from "lucide-react";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -43,17 +38,13 @@ export default function LoginForm() {
       email: "",
       password: "",
     },
-  })
+  });
 
   const { isSubmitting } = form.formState;
 
-  const {
-    register,
-    handleSubmit,
-  } = useForm<LoginPayload>({
-    resolver: zodResolver(LoginSchema)
+  const { register, handleSubmit } = useForm<LoginPayload>({
+    resolver: zodResolver(LoginSchema),
   });
-
 
   const onSubmit = async (values: TLoginSchema) => {
     try {
@@ -67,63 +58,67 @@ export default function LoginForm() {
       router.refresh();
     } catch (error: any) {
       toast.error("Failed to login", {
-        description: error.response?.data?.message || "Invalid credentials.",
+        description:
+          error.response?.data?.message ||
+          "Invalid credentials.",
         duration: 2000,
       });
     }
   };
 
-
   return (
-    <Card className="mx-auto max-w-lg w-full">
+    <Card className="mx-auto w-full max-w-lg">
       <CardHeader className="items-center text-center">
         <Link
           href="/"
-          className="flex flex-col items-center gap-2 mb-2"
+          className="mb-2 flex flex-col items-center gap-2"
         >
-          <BrainCircuit className="h-10 w-10 text-primary" />
-          <CardTitle className="text-2xl">Synapse</CardTitle>
+          <BrainCircuit className="text-primary h-10 w-10" />
+          <CardTitle className="text-2xl">
+            Synapse
+          </CardTitle>
         </Link>
         <CardTitle className="mt-5 text-2xl uppercase">
           Log In
         </CardTitle>
         <CardDescription>
-          Enter your email and password below to log in to your account.
+          Enter your email and password below to log in to
+          your account.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
         <form
-          onSubmit={ handleSubmit(onSubmit) }
+          onSubmit={handleSubmit(onSubmit)}
           className="grid gap-4"
         >
-          {/* Email */ }
+          {/* Email */}
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
             <Input
-              { ...register("email") }
+              {...register("email")}
               id="email"
               type="email"
               placeholder="Enter your email address"
             />
           </div>
 
-          {/* Password */ }
+          {/* Password */}
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
 
               <Link
                 href="/reset-password"
-                className="ml-auto inline-block text-sm text-muted-foreground hover:text-primary hover:underline"
-                tabIndex={ -1 }
+                className="text-muted-foreground hover:text-primary ml-auto inline-block text-sm hover:underline"
+                tabIndex={-1}
               >
                 Forgot your password? Reset now!
               </Link>
             </div>
 
             <Input
-              { ...register("password") }
+              {...register("password")}
               id="password"
               type="password"
               placeholder="Enter your password"
@@ -133,21 +128,21 @@ export default function LoginForm() {
           <Button
             type="submit"
             className="w-full"
-            disabled={ isSubmitting }
+            disabled={isSubmitting}
           >
-            {
-              isSubmitting
-                ? <Loader2 className="animate-spin" />
-                : "Log In"
-            }
+            {isSubmitting ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              "Log In"
+            )}
           </Button>
         </form>
 
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account? { " " }
+          Don&apos;t have an account?{" "}
           <Link
             href="/register"
-            className="ml-auto inline-block text-sm text-muted-foreground hover:text-primary hover:underline"
+            className="text-muted-foreground hover:text-primary ml-auto inline-block text-sm hover:underline"
             passHref
           >
             Register now!
@@ -155,5 +150,5 @@ export default function LoginForm() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

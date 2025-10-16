@@ -3,13 +3,13 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-
 import { authService } from "@/modules/services/auth-service";
-
+import {
+  ChangePasswordSchema,
+  TChangePasswordSchema
+} from "@/libs/validators/auth-validator";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -17,7 +17,6 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormDescription,
   FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -28,44 +27,40 @@ import {
   CardHeader,
   CardTitle
 } from "@/components/ui/card";
-
-
-const formSchema = z.object({
-  current_password: z.string().min(1, "Current password is required."),
-  new_password: z.string().min(8, "New password must be at least 8 characters."),
-});
-
-type FormValues = z.infer<typeof formSchema>;
+import { Loader2 } from "lucide-react";
 
 
 export function ChangePasswordForm() {
   const [ isSubmitting, setIsSubmitting ] = useState(false);
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<TChangePasswordSchema>({
+    resolver: zodResolver(ChangePasswordSchema),
     defaultValues: {
-      current_password: "",
-      new_password: "",
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: ""
     },
   });
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (data: TChangePasswordSchema) => {
     setIsSubmitting(true);
     try {
       await authService.changePassword({
-        currentPassword: data.current_password,
-        newPassword: data.new_password,
+        currentPassword: data.currentPassword,
+        newPassword: data.newPassword,
       });
 
       toast.success("Password changed successfully!", {
-        description: "You will need to use your new password next time you log in.",
+        description: "You will need to use your new password for your next login.",
+        duration: 5000,
       });
 
       form.reset();
-
     } catch (error: any) {
       toast.error("Failed to change password.", {
-        description: error.response?.data?.message || "Please check your current password and try again.",
+        description: error.response?.data?.message
+          || "Please check your current password.",
+        duration: 5000,
       });
     } finally {
       setIsSubmitting(false);
@@ -75,28 +70,33 @@ export function ChangePasswordForm() {
   return (
     <Card className="max-w-2xl">
       <CardHeader>
-        <CardTitle>Change Password</CardTitle>
+        <CardTitle>
+          Change Password
+        </CardTitle>
         <CardDescription>
-          For your security, we recommend choosing a strong password that you don"t use elsewhere.
+          Update your password for enhanced account security.
         </CardDescription>
       </CardHeader>
       <CardContent>
         <Form
-          { ...form }>
-
+          { ...form }
+        >
           <form
             onSubmit={ form.handleSubmit(onSubmit) }
             className="space-y-6"
           >
             <FormField
               control={ form.control }
-              name="current_password"
+              name="currentPassword"
               render={
                 ({ field }) => (
                   <FormItem>
-                    <FormLabel>Current Password</FormLabel>
+                    <FormLabel>
+                      Current Password
+                    </FormLabel>
                     <FormControl>
-                      <Input type="password"
+                      <Input
+                        type="password"
                         { ...field }
                       />
                     </FormControl>
@@ -107,18 +107,38 @@ export function ChangePasswordForm() {
             />
             <FormField
               control={ form.control }
-              name="new_password"
+              name="newPassword"
               render={
                 ({ field }) => (
                   <FormItem>
-                    <FormLabel>New Password</FormLabel>
+                    <FormLabel>
+                      New Password
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="password"
                         { ...field }
                       />
                     </FormControl>
-                    <FormDescription>Must be at least 8 characters long.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }
+            />
+            <FormField
+              control={ form.control }
+              name="confirmPassword"
+              render={
+                ({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Confirm New Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        { ...field }
+                      />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )
@@ -130,10 +150,9 @@ export function ChangePasswordForm() {
                 disabled={ isSubmitting }
               >
                 {
-                  isSubmitting
-                    ? "Updating..."
-                    : "Update Password"
+                  isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 }
+                Update Password
               </Button>
             </div>
           </form>

@@ -1,9 +1,8 @@
 import React, {
   useEffect,
   useRef,
-  useCallback
+  useCallback,
 } from "react";
-
 
 interface UseIntersectionObserverProps {
   onIntersect: () => void;
@@ -11,28 +10,33 @@ interface UseIntersectionObserverProps {
   hasMore: boolean;
 }
 
-
 export function useIntersectionObserver({
   onIntersect,
   isLoading,
-  hasMore
+  hasMore,
 }: UseIntersectionObserverProps) {
-  const observer = useRef<IntersectionObserver | null>(null);
+  const observer = useRef<IntersectionObserver | null>(
+    null
+  );
 
-  const lastElementRef = useCallback((node: HTMLElement | null) => {
-    if (isLoading || !hasMore) return;
+  const lastElementRef = useCallback(
+    (node: HTMLElement | null) => {
+      if (isLoading || !hasMore) return;
 
-    if (observer.current) observer.current.disconnect();
+      if (observer.current) observer.current.disconnect();
 
-    observer.current = new IntersectionObserver(entries => {
-      if (entries[ 0 ].isIntersecting) {
-        onIntersect();
-      }
-    });
+      observer.current = new IntersectionObserver(
+        (entries) => {
+          if (entries[0].isIntersecting) {
+            onIntersect();
+          }
+        }
+      );
 
-    if (node) observer.current.observe(node);
-
-  }, [ isLoading, hasMore, onIntersect ]);
+      if (node) observer.current.observe(node);
+    },
+    [isLoading, hasMore, onIntersect]
+  );
 
   return { lastElementRef };
 }

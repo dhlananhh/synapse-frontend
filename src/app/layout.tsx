@@ -8,10 +8,8 @@ import { AuthProvider } from "@/context/AuthContext";
 import I18nProvider from "@/components/providers/I18nProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import TopProgressBar from "@/components/providers/TopProgressBar";
-// import ChatWidget from "@/components/features/chat/ChatWidget";
 import NotificationSimulator from "@/components/providers/NotificationSimulator";
 import { CommandMenuProvider } from "@/context/CommandMenuContext";
-
 
 const lexend = Lexend({
   subsets: [ "latin" ],
@@ -19,10 +17,10 @@ const lexend = Lexend({
   weight: [ "300", "400", "500", "600", "700" ],
 });
 
-
 export const metadata: Metadata = {
   title: "Synapse - Where Minds Connect",
-  description: "Synapse is a modern discussion forum where communities share and explore knowledge.",
+  description:
+    "Synapse is a modern discussion forum where communities share and explore knowledge.",
 };
 
 export default function RootLayout({
@@ -30,15 +28,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={
-        cn(
-          "min-h-screen bg-background font-sans antialiased",
+      <body
+        className={ cn(
+          "bg-background min-h-screen font-sans antialiased",
           lexend.variable
-        )
-      }>
+        ) }
+      >
         <I18nProvider>
           <ThemeProvider
             attribute="class"
@@ -51,8 +48,9 @@ export default function RootLayout({
             <CommandMenuProvider>
               <AuthProvider>
                 <NotificationSimulator />
-                { children }
-                {/* <ChatWidget /> */ }
+                <main className="container mx-auto max-w-7xl flex-grow pt-16">
+                  { children }
+                </main>
               </AuthProvider>
             </CommandMenuProvider>
 

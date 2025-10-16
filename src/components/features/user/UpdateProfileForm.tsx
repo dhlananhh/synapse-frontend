@@ -1,6 +1,5 @@
 "use client";
 
-
 import React from "react";
 
 import { useForm } from "react-hook-form";
@@ -9,7 +8,7 @@ import * as z from "zod";
 
 import {
   UserProfile,
-  UpdateUserProfilePayload
+  UpdateUserProfilePayload,
 } from "@/types/services/user";
 
 import {
@@ -18,12 +17,11 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-
 
 const formSchema = z.object({
   firstName: z
@@ -43,8 +41,8 @@ const formSchema = z.object({
     .max(255, "Bio must not exceed 255 characters")
     .optional()
     .nullable(),
-  location: z.
-    string()
+  location: z
+    .string()
     .max(100, "Location must not exceed 100 characters")
     .optional()
     .nullable(),
@@ -52,18 +50,16 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-
 interface UpdateProfileFormProps {
   initialData: UserProfile;
   onSubmit: (data: FormValues) => Promise<void>;
   isSubmitting: boolean;
 }
 
-
 export function UpdateProfileForm({
   initialData,
   onSubmit,
-  isSubmitting
+  isSubmitting,
 }: UpdateProfileFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -77,129 +73,110 @@ export function UpdateProfileForm({
   });
 
   return (
-    <Form
-      { ...form }
-    >
+    <Form {...form}>
       <form
-        onSubmit={ form.handleSubmit(onSubmit) }
+        onSubmit={form.handleSubmit(onSubmit)}
         className="space-y-6"
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {/* First Name */ }
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {/* First Name */}
           <FormField
-            control={ form.control }
+            control={form.control}
             name="firstName"
-            render={
-              ({ field }) => (
-                <FormItem>
-                  <FormLabel>First Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      { ...field }
-                      placeholder="Enter your first name"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )
-            }
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>First Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Enter your first name"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
 
-          {/* Last Name */ }
+          {/* Last Name */}
           <FormField
-            control={ form.control }
+            control={form.control}
             name="lastName"
-            render={
-              ({ field }) => (
-                <FormItem>
-                  <FormLabel>Last Name</FormLabel>
-                  <FormControl>
-                    <Input
-                      { ...field }
-                      placeholder="Enter your last name"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )
-            }
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Last Name</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="Enter your last name"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
           />
         </div>
 
-        {/* Username */ }
+        {/* Username */}
         <FormField
-          control={ form.control }
+          control={form.control}
           name="username"
-          render={
-            ({ field }) => (
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <Input
-                    { ...field }
-                    placeholder="Enter your username"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )
-          }
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Username</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  placeholder="Enter your username"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        {/* Bio */ }
+        {/* Bio */}
         <FormField
-          control={ form.control }
+          control={form.control}
           name="bio"
-          render={
-            ({ field }) => (
-              <FormItem>
-                <FormLabel>Bio</FormLabel>
-                <FormControl>
-                  <Textarea
-                    placeholder="Tell us a little bit about yourself"
-                    className="resize-none"
-                    { ...field }
-                    value={ field.value ?? "" }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )
-          }
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Bio</FormLabel>
+              <FormControl>
+                <Textarea
+                  placeholder="Tell us a little bit about yourself"
+                  className="resize-none"
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        {/* Location */ }
+        {/* Location */}
         <FormField
-          control={ form.control }
+          control={form.control}
           name="location"
-          render={
-            ({ field }) => (
-              <FormItem>
-                <FormLabel>Location</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="e.g., Earth"
-                    { ...field }
-                    value={ field.value ?? "" }
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )
-          }
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Location</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="e.g., Earth"
+                  {...field}
+                  value={field.value ?? ""}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
 
-        {/* Submit Button */ }
+        {/* Submit Button */}
         <div className="flex justify-end">
-          <Button
-            type="submit"
-            disabled={ isSubmitting }
-          >
-            {
-              isSubmitting
-                ? "Saving..."
-                : "Save Changes"
-            }
+          <Button type="submit" disabled={isSubmitting}>
+            {isSubmitting ? "Saving..." : "Save Changes"}
           </Button>
         </div>
       </form>
