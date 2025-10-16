@@ -12,8 +12,8 @@ import { useCommunity } from "@/context/CommunityContext";
 import { useMembership } from "@/context/MembershipContext";
 import { CommunityRule } from "@/types/services/community";
 import { communityService } from "@/modules/services/community-service";
-import { CreateRuleDialog } from "@/components/features/community/manage/dialogs/CreateRuleDialog";
-import { UpdateRuleDialog } from "@/components/features/community/manage/dialogs/UpdateRuleDialog";
+import { CreateRuleDialog } from "@/components/features/community/manage/rules/CreateRuleDialog";
+import { UpdateRuleDialog } from "@/components/features/community/manage/rules/UpdateRuleDialog";
 import {
   AlertDialog,
   AlertDialogAction,

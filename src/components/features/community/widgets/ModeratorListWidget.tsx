@@ -10,7 +10,7 @@ import { useCommunity } from "@/context/CommunityContext";
 import { SimpleProfile } from "@/types/services/user";
 import { userService } from "@/modules/services/user-service";
 import { communityService } from "@/modules/services/community-service";
-import { AllModeratorsDialog } from "@/components/features/community/AllModeratorsDialog";
+import { AllModeratorsDialog } from "@/components/features/community/dialogs/AllModeratorsDialog";
 import {
   Avatar,
   AvatarImage,

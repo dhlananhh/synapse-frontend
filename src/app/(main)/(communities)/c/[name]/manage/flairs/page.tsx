@@ -12,8 +12,8 @@ import { useCommunity } from "@/context/CommunityContext";
 import { useMembership } from "@/context/MembershipContext";
 import { CommunityFlair } from "@/types/services/community";
 import { communityService } from "@/modules/services/community-service";
-import { UpdateFlairDialog } from "@/components/features/community/manage/dialogs/UpdateFlairDialog";
-import { CreateFlairDialog } from "@/components/features/community/manage/dialogs/CreateFlairDialog";
+import { UpdateFlairDialog } from "@/components/features/community/manage/flairs/UpdateFlairDialog";
+import { CreateFlairDialog } from "@/components/features/community/manage/flairs/CreateFlairDialog";
 import {
   AlertDialog,
   AlertDialogAction,

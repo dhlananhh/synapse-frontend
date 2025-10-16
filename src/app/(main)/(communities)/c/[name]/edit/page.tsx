@@ -16,8 +16,8 @@ import { useMembership } from "@/context/MembershipContext";
 import { Community } from "@/types/services/community";
 import { TUpdateCommunityDetailsSchema } from "@/libs/validators/community-validator";
 import { communityService } from "@/modules/services/community-service";
-import UpdateCommunityForm from "@/components/features/community/UpdateCommunityForm";
-import { ImageUploaderForm } from "@/components/features/community/ImageUploaderForm";
+import UpdateCommunityForm from "@/components/features/community/forms/UpdateCommunityForm";
+import { ImageUploaderForm } from "@/components/features/community/forms/ImageUploaderForm";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -38,7 +38,7 @@ import {
   AvatarImage
 } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
-import { DeleteCommunityDialog } from "@/components/features/community/DeleteCommunityDialog";
+import { DeleteCommunityDialog } from "@/components/features/community/dialogs/DeleteCommunityDialog";
 
 
 export default function EditCommunityPage() {

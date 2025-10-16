@@ -13,7 +13,7 @@ import {
   DialogTrigger,
   DialogDescription
 } from "@/components/ui/dialog";
-import { CommunityFlairForm } from "@/components/features/community/CommunityFlairForm";
+import { CommunityFlairForm } from "@/components/features/community/forms/CommunityFlairForm";
 
 
 interface CreateFlairDialogProps {

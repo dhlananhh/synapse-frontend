@@ -22,7 +22,7 @@ import {
   ListOrdered,
   Settings
 } from "lucide-react";
-import { ManageRulesDialog } from "@/components/features/community/manage/dialogs/ManageRulesDialog";
+import { ManageRulesDialog } from "@/components/features/community/manage/rules/ManageRulesDialog";
 import { useMembership } from "@/context/MembershipContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";

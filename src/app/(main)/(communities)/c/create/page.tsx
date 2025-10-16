@@ -1,6 +1,6 @@
 "use client";
 
-import { CommunityCreationWizard } from "@/components/features/community/CommunityCreationWizard";
+import { CommunityCreationWizard } from "@/components/features/community/create/CommunityCreationWizard";
 
 export default function CreateCommunityPage() {
   return (

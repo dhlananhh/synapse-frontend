@@ -13,10 +13,10 @@ type WizardStep = "info" | "images";
 
 export function CommunityCreationWizard() {
   const router = useRouter();
-  const [step, setStep] = useState<WizardStep>("info");
-  const [createdCommunity, setCreatedCommunity] =
+  const [ step, setStep ] = useState<WizardStep>("info");
+  const [ createdCommunity, setCreatedCommunity ] =
     useState<Community | null>(null);
-  const [isSubmittingInfo, setIsSubmittingInfo] =
+  const [ isSubmittingInfo, setIsSubmittingInfo ] =
     useState(false);
 
   const handleInfoSubmit = async (
@@ -34,7 +34,7 @@ export function CommunityCreationWizard() {
     } catch (error: any) {
       toast.error("Failed to create community", {
         description:
-          error.response?.data?.errors[0]?.message ||
+          error.response?.data?.errors[ 0 ]?.message ||
           "Please check the name and try again.",
       });
     } finally {
@@ -49,18 +49,18 @@ export function CommunityCreationWizard() {
 
   return (
     <div>
-      {step === "info" && (
+      { step === "info" && (
         <CommunityInfoForm
-          onSubmit={handleInfoSubmit}
-          isSubmitting={isSubmittingInfo}
+          onSubmit={ handleInfoSubmit }
+          isSubmitting={ isSubmittingInfo }
         />
-      )}
-      {step === "images" && createdCommunity && (
+      ) }
+      { step === "images" && createdCommunity && (
         <CommunityImageForm
-          community={createdCommunity}
-          onFinish={handleFinish}
+          community={ createdCommunity }
+          onFinish={ handleFinish }
         />
-      )}
+      ) }
     </div>
   );
 }

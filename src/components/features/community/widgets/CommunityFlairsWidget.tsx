@@ -11,7 +11,7 @@ import { useCommunity } from "@/context/CommunityContext";
 import { useMembership } from "@/context/MembershipContext";
 import { CommunityFlair } from "@/types/services/community";
 import { communityService } from "@/modules/services/community-service";
-import { ManageFlairsDialog } from "@/components/features/community/manage/dialogs/ManageFlairsDialog";
+import { ManageFlairsDialog } from "@/components/features/community/manage/flairs/ManageFlairsDialog";
 import CommunityFlairsWidgetSkeleton from "@/components/features/community/widgets/CommunityFlairsWidgetSkeleton";
 import {
   Card,

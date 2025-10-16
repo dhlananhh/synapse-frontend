@@ -8,7 +8,7 @@ import {
   useSetCommunity,
 } from "@/context/CommunityContext";
 import type { Community } from "@/types/services/community";
-import { UpdateCommunityDialog } from "@/components/features/community/manage/dialogs/UpdateCommunityDialog";
+import { UpdateCommunityDialog } from "@/components/features/community/dialogs/UpdateCommunityDialog";
 import {
   Card,
   CardContent,

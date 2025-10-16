@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { CommunityMember } from "@/types/services/community";
 import { communityService } from "@/modules/services/community-service";
 import { MemberCard } from "@/components/features/community/manage/members/MemberCard";
-import { ActionConfirmDialog } from "@/components/features/community/manage/members/ActionConfirmDialog";
+import { ActionConfirmDialog } from "@/components/features/community/dialogs/ActionConfirmDialog";
 import {
   Loader2,
   UserRoundPlus
