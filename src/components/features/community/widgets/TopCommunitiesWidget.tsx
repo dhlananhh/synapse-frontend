@@ -1,60 +1,64 @@
-"use client"
+"use client";
 
 
 import React, {
   useState,
   useEffect
-} from "react"
-import Link from "next/link"
-import { useAuth } from "@/context/AuthContext"
-import { SearchCommunityResult } from "@/types/services/community"
-import { communityService } from "@/modules/services/community-service"
+} from "react";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { Community } from "@/types/services/community";
+import { communityService } from "@/modules/services/community-service";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-  CardDescription
-} from "@/components/ui/card"
+  CardDescription,
+} from "@/components/ui/card";
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage
-} from "@/components/ui/avatar"
+  AvatarImage,
+} from "@/components/ui/avatar";
 import {
   Users,
   PlusCircle
-} from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "lucide-react";
 
 
 export default function TopCommunitiesWidget() {
-  const { user } = useAuth()
-  const [ topCommunities, setTopCommunities ] = useState<SearchCommunityResult[]>([])
-  const [ isLoading, setIsLoading ] = useState(true)
+  const { user } = useAuth();
+  const [ topCommunities, setTopCommunities ] = useState<Community[]>([]);
+  const [ isLoading, setIsLoading ] = useState(true);
 
   useEffect(() => {
     const fetchTopCommunities = async () => {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
-        const response = await communityService.searchCommunities("a")
-        setTopCommunities(response.communities)
+        const response =
+          await communityService.getCommunities();
+        setTopCommunities(response.communities);
       } catch (error) {
-        console.error("Failed to fetch top communities:", error)
+        console.error("Failed to fetch top communities:", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
-    }
+    };
 
-    fetchTopCommunities()
-  }, [])
+    fetchTopCommunities();
+  }, []);
 
   const renderSkeleton = () => (
     <ul className="space-y-4">
       {
         [ ...Array(5) ].map((_, i) => (
-          <li key={ i } className="flex items-center gap-3">
+          <li
+            key={ i }
+            className="flex items-center gap-3"
+          >
             <Skeleton className="h-5 w-5" />
             <Skeleton className="h-8 w-8 rounded-full" />
             <div className="flex-1 space-y-2">
@@ -65,16 +69,14 @@ export default function TopCommunitiesWidget() {
         ))
       }
     </ul>
-  )
+  );
 
   return (
     <Card>
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Users className="h-6 w-6 text-primary" />
-          <CardTitle>
-            Top Communities
-          </CardTitle>
+          <Users className="text-primary h-6 w-6" />
+          <CardTitle>Top Communities</CardTitle>
         </div>
         <CardDescription>
           Discover the most popular communities on Synapse.
@@ -93,23 +95,30 @@ export default function TopCommunitiesWidget() {
                   >
                     <Link
                       href={ `/c/${community.name}` }
-                      className="flex items-center gap-3 group"
+                      className="group flex items-center gap-3"
                     >
-                      <span className="font-bold text-lg text-muted-foreground w-6 text-center">
+                      <span className="text-muted-foreground w-6 text-center text-lg font-bold">
                         { index + 1 }
                       </span>
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={ community.avatarUrl || "" } />
+                        <AvatarImage
+                          src={ community.avatarUrl || "" }
+                        />
                         <AvatarFallback>
-                          { community.name.slice(0, 1).toUpperCase() }
+                          {
+                            community.name
+                              .slice(0, 1)
+                              .toUpperCase()
+                          }
                         </AvatarFallback>
                       </Avatar>
                       <div className="flex-1 overflow-hidden">
-                        <p className="font-semibold group-hover:underline truncate">
+                        <p className="truncate font-semibold group-hover:underline">
                           c/{ community.name }
                         </p>
-                        <p className="text-xs text-muted-foreground">
-                          { community.memberCount.toLocaleString() } members
+                        <p className="text-muted-foreground text-xs">
+                          { community.memberCount.toLocaleString() } { " " }
+                          members
                         </p>
                       </div>
                     </Link>
@@ -151,5 +160,5 @@ export default function TopCommunitiesWidget() {
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

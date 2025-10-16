@@ -1,12 +1,11 @@
 "use client";
 
-
 import React, { useState } from "react";
 import { useAuth } from "@/context/MockAuthContext";
 import { Comment } from "@/types";
 import {
   deleteComment,
-  updateComment
+  updateComment,
 } from "@/libs/mock-api";
 import { toast } from "sonner";
 
@@ -24,7 +23,7 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuTrigger
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { formatDistanceToNow } from "date-fns";
 import {
@@ -32,17 +31,18 @@ import {
   Pencil,
   Trash2,
   Loader2,
-  Flag
+  Flag,
 } from "lucide-react";
-
 
 interface CommentItemProps {
   postId: string;
   comment: Comment;
   onCommentDeleted: (commentId: string) => void;
-  onCommentUpdated: (commentId: string, newText: string) => void;
+  onCommentUpdated: (
+    commentId: string,
+    newText: string
+  ) => void;
 }
-
 
 const EditCommentSchema = z.object({
   text: z.string().min(1, "Comment cannot be empty."),
@@ -50,20 +50,21 @@ const EditCommentSchema = z.object({
 
 type TEditCommentSchema = z.infer<typeof EditCommentSchema>;
 
-
 export default function CommentItem({
   postId,
   comment,
   onCommentDeleted,
-  onCommentUpdated
+  onCommentUpdated,
 }: CommentItemProps) {
   const { user } = useAuth();
   const isAuthor = user?.id === comment.author.id;
 
-  const [ isReportDialogOpen, setIsReportDialogOpen ] = useState(false);
-  const [ isEditing, setIsEditing ] = useState(false);
-  const [ isDeleting, setIsDeleting ] = useState(false);
-  const [ isDeleteDialogOpen, setIsDeleteDialogOpen ] = useState(false);
+  const [isReportDialogOpen, setIsReportDialogOpen] =
+    useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] =
+    useState(false);
 
   const {
     register,
@@ -104,131 +105,139 @@ export default function CommentItem({
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
           <UserAvatar
-            user={ comment.author }
+            user={comment.author}
             className="h-6 w-6"
           />
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <p className="font-semibold text-primary">
-              { comment.author.username }
+          <div className="text-muted-foreground flex items-center gap-2 text-xs">
+            <p className="text-primary font-semibold">
+              {comment.author.username}
             </p>
             <span>•</span>
             <p>
-              { formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true }) }
+              {formatDistanceToNow(
+                new Date(comment.createdAt),
+                {
+                  addSuffix: true,
+                }
+              )}
             </p>
-            {
-              isEditing && (
-                <span className="text-amber-500">
-                  (editing)
-                </span>
-              )
-            }
+            {isEditing && (
+              <span className="text-amber-500">
+                (editing)
+              </span>
+            )}
           </div>
 
-          {
-            user && !isEditing && (
-              <div className="ml-auto">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-6 w-6">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    {
-                      isAuthor ? (
-                        <>
-                          <DropdownMenuItem onClick={ () => setIsEditing(true) }>
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onClick={ () => setIsDeleteDialogOpen(true) }
-                            className="text-destructive focus:text-destructive"
-                          >
-                            <Trash2 className="mr-2 h-4 w-4" />
-                            Delete
-                          </DropdownMenuItem>
-                        </>
-                      ) : (
-                        <DropdownMenuItem onClick={ () => setIsReportDialogOpen(true) }>
-                          <Flag className="mr-2 h-4 w-4" />
-                          Report
-                        </DropdownMenuItem>
-                      )
-                    }
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )
-          }
+          {user && !isEditing && (
+            <div className="ml-auto">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6"
+                  >
+                    <MoreHorizontal className="h-4 w-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  {isAuthor ? (
+                    <>
+                      <DropdownMenuItem
+                        onClick={() => setIsEditing(true)}
+                      >
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          setIsDeleteDialogOpen(true)
+                        }
+                        className="text-destructive focus:text-destructive"
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Delete
+                      </DropdownMenuItem>
+                    </>
+                  ) : (
+                    <DropdownMenuItem
+                      onClick={() =>
+                        setIsReportDialogOpen(true)
+                      }
+                    >
+                      <Flag className="mr-2 h-4 w-4" />
+                      Report
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          )}
         </div>
 
-        {
-          isEditing ? (
-            <form onSubmit={ handleSubmit(handleUpdate) } className="ml-8 space-y-2">
-              <Textarea { ...register("text") } rows={ 3 } />
-              { errors.text && <p className="text-xs text-destructive">{ errors.text.message }</p> }
-              <div className="flex gap-2 justify-end">
-                <Button
-                  type="button"
-                  size="sm"
-                  variant="ghost"
-                  onClick={ () => setIsEditing(false) }
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  disabled={ isSubmitting }
-                >
-                  { isSubmitting && <Loader2 className="h-4 w-4 animate-spin mr-2" /> }
-                  Save Changes
-                </Button>
-              </div>
-            </form>
-          ) : (
-            <p className="text-sm ml-8">
-              { comment.text }
-            </p>
-          )
-        }
-
-        {
-          comment.replies && comment.replies.length > 0 && (
-            <div className="ml-4 pl-4 border-l-2 space-y-4">
-              {
-                comment.replies.map(reply => (
-                  <CommentItem
-                    key={ reply.id }
-                    postId={ postId }
-                    comment={ reply }
-                    onCommentDeleted={ onCommentDeleted }
-                    onCommentUpdated={ onCommentUpdated }
-                  />
-                ))
-              }
+        {isEditing ? (
+          <form
+            onSubmit={handleSubmit(handleUpdate)}
+            className="ml-8 space-y-2"
+          >
+            <Textarea {...register("text")} rows={3} />
+            {errors.text && (
+              <p className="text-destructive text-xs">
+                {errors.text.message}
+              </p>
+            )}
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                size="sm"
+                variant="ghost"
+                onClick={() => setIsEditing(false)}
+              >
+                Cancel
+              </Button>
+              <Button size="sm" disabled={isSubmitting}>
+                {isSubmitting && (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                Save Changes
+              </Button>
             </div>
-          )
-        }
+          </form>
+        ) : (
+          <p className="ml-8 text-sm">{comment.text}</p>
+        )}
+
+        {comment.replies && comment.replies.length > 0 && (
+          <div className="ml-4 space-y-4 border-l-2 pl-4">
+            {comment.replies.map((reply) => (
+              <CommentItem
+                key={reply.id}
+                postId={postId}
+                comment={reply}
+                onCommentDeleted={onCommentDeleted}
+                onCommentUpdated={onCommentUpdated}
+              />
+            ))}
+          </div>
+        )}
       </div>
 
-
       <ConfirmDialog
-        open={ isDeleteDialogOpen }
-        onOpenChange={ setIsDeleteDialogOpen }
-        onConfirm={ handleDelete }
-        isConfirming={ isDeleting }
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+        onConfirm={handleDelete}
+        isConfirming={isDeleting}
         title="Delete this comment?"
         description="This action cannot be undone."
         confirmText="Delete"
       />
 
       <ReportDialog
-        isOpen={ isReportDialogOpen }
-        onOpenChange={ setIsReportDialogOpen }
-        itemId={ comment.id }
+        isOpen={isReportDialogOpen}
+        onOpenChange={setIsReportDialogOpen}
+        itemId={comment.id}
         itemType="COMMENT"
       />
     </>
-  )
+  );
 }

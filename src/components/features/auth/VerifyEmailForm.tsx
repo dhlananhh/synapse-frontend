@@ -1,14 +1,10 @@
 "use client";
 
-
-import React, {
-  useState,
-  useEffect
-} from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   useRouter,
-  useSearchParams
+  useSearchParams,
 } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -18,10 +14,10 @@ import { toast } from "sonner";
 import { authService } from "@/modules/services/auth-service";
 import {
   VerifyEmailSchema,
-  TVerifyEmailSchema
+  TVerifyEmailSchema,
 } from "@/libs/validators/auth-validator";
 
-import VerifyEmailSkeleton from "@/components/features/auth/VerifyEmailSkeleton"
+import VerifyEmailSkeleton from "@/components/features/auth/VerifyEmailSkeleton";
 
 import {
   Form,
@@ -29,7 +25,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,25 +33,21 @@ import {
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot,
 } from "@/components/ui/input-otp";
-import {
-  BrainCircuit,
-  Loader2
-} from "lucide-react";
-
+import { BrainCircuit, Loader2 } from "lucide-react";
 
 export default function VerifyEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [ isClient, setIsClient ] = useState(false);
-  const [ isResending, setIsResending ] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const email = searchParams.get("email");
 
   useEffect(() => {
@@ -73,21 +65,26 @@ export default function VerifyEmailForm() {
     if (!email) return;
 
     try {
-      await authService.verifyEmail({ email, code: data.code });
+      await authService.verifyEmail({
+        email,
+        code: data.code,
+      });
       toast.success("Email Verified!", {
-        description: "Your account is now active. You can log in.",
+        description:
+          "Your account is now active. You can log in.",
       });
       router.push("/login");
     } catch (error: any) {
       toast.error("Verification Failed", {
-        description: error.response?.data?.message || "Invalid or expired code.",
+        description:
+          error.response?.data?.message ||
+          "Invalid or expired code.",
       });
     }
   };
 
   const handleResendCode = async () => {
-    if (!email)
-      return;
+    if (!email) return;
 
     setIsResending(true);
     try {
@@ -95,7 +92,9 @@ export default function VerifyEmailForm() {
       toast.info("A new verification code has been sent.");
     } catch (error: any) {
       toast.error("Failed to Resend Code", {
-        description: error.response?.data?.message || "Please try again later.",
+        description:
+          error.response?.data?.message ||
+          "Please try again later.",
       });
     } finally {
       setIsResending(false);
@@ -103,28 +102,24 @@ export default function VerifyEmailForm() {
   };
 
   if (!isClient) {
-    return (
-      <VerifyEmailSkeleton />
-    )
+    return <VerifyEmailSkeleton />;
   }
 
   if (!email) {
     return (
-      <Card className="mx-auto max-w-lg w-full">
+      <Card className="mx-auto w-full max-w-lg">
         <CardHeader className="text-center">
-          <CardTitle className="text-destructive">Error</CardTitle>
+          <CardTitle className="text-destructive">
+            Error
+          </CardTitle>
           <CardDescription>
-            Email parameter is missing from the URL. Please return to the registration page and try again.
+            Email parameter is missing from the URL. Please
+            return to the registration page and try again.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <Button
-            asChild
-            className="w-full"
-          >
-            <Link href="/register">
-              Go to Registration
-            </Link>
+          <Button asChild className="w-full">
+            <Link href="/register">Go to Registration</Link>
           </Button>
         </CardContent>
       </Card>
@@ -132,84 +127,77 @@ export default function VerifyEmailForm() {
   }
 
   return (
-    <Card className="mx-auto max-w-lg w-full">
+    <Card className="mx-auto w-full max-w-lg">
       <CardHeader className="items-center text-center">
         <Link
           href="/"
-          className="flex flex-col items-center gap-2 mb-4"
+          className="mb-4 flex flex-col items-center gap-2"
         >
-          <BrainCircuit className="h-10 w-10 text-primary" />
-          <CardTitle className="text-2xl">Synapse</CardTitle>
+          <BrainCircuit className="text-primary h-10 w-10" />
+          <CardTitle className="text-2xl">
+            Synapse
+          </CardTitle>
         </Link>
 
-        <CardTitle className="text-2xl mt-5 uppercase">
+        <CardTitle className="mt-5 text-2xl uppercase">
           Verify Your Email
         </CardTitle>
         <CardDescription>
-          We&apos;ve sent a 6-digit verification code to { " " }
-          <strong>{ email }</strong>. <br />
+          We&apos;ve sent a 6-digit verification code to{" "}
+          <strong>{email}</strong>. <br />
           Please enter it below to activate your account.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <Form
-          { ...form }
-        >
+        <Form {...form}>
           <form
-            onSubmit={ form.handleSubmit(onSubmit) }
+            onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6"
           >
             <FormField
-              control={ form.control }
+              control={form.control}
               name="code"
-              render={
-                ({ field }) => (
-                  <FormItem className="flex flex-col items-center">
-                    <FormLabel>Verification Code</FormLabel>
-                    <FormControl>
-                      <InputOTP
-                        maxLength={ 6 }
-                        { ...field }
-                      >
-                        <InputOTPGroup>
-                          <InputOTPSlot index={ 0 } />
-                          <InputOTPSlot index={ 1 } />
-                          <InputOTPSlot index={ 2 } />
-                          <InputOTPSlot index={ 3 } />
-                          <InputOTPSlot index={ 4 } />
-                          <InputOTPSlot index={ 5 } />
-                        </InputOTPGroup>
-                      </InputOTP>
-                    </FormControl>
-                  </FormItem>
-                )
-              }
+              render={({ field }) => (
+                <FormItem className="flex flex-col items-center">
+                  <FormLabel>Verification Code</FormLabel>
+                  <FormControl>
+                    <InputOTP maxLength={6} {...field}>
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                  </FormControl>
+                </FormItem>
+              )}
             />
             <Button
               type="submit"
               className="w-full"
-              disabled={ isSubmitting }
+              disabled={isSubmitting}
             >
-              {
-                isSubmitting
-                  ? <Loader2 className="animate-spin" />
-                  : "Verify Account"
-              }
+              {isSubmitting ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                "Verify Account"
+              )}
             </Button>
           </form>
         </Form>
-        <div className="mt-4 text-center text-sm text-muted-foreground">
-          Didn&apos;t receive a code? { " " }
+        <div className="text-muted-foreground mt-4 text-center text-sm">
+          Didn&apos;t receive a code?{" "}
           <Button
             variant="link"
-            className="p-0 h-auto"
-            onClick={ handleResendCode }
-            disabled={ isResending }
+            className="h-auto p-0"
+            onClick={handleResendCode}
+            disabled={isResending}
           >
-            {
-              isResending ? "Sending..." : "Resend Code"
-            }
+            {isResending ? "Sending..." : "Resend Code"}
           </Button>
         </div>
       </CardContent>

@@ -1,24 +1,22 @@
-
-
-import React, { useMemo } from "react"
-import Link from "next/link"
-import { format } from "date-fns"
-import { useAuth } from "@/context/AuthContext"
-import { useMembership } from "@/context/MembershipContext"
+import React, { useMemo } from "react";
+import Link from "next/link";
+import { format } from "date-fns";
+import { useAuth } from "@/context/AuthContext";
+import { useMembership } from "@/context/MembershipContext";
 import {
   useCommunity,
-  useSetCommunity
-} from "@/context/CommunityContext"
-import type { Community } from "@/types/services/community"
-import { UpdateCommunityDialog } from "@/components/features/community/manage/dialogs/UpdateCommunityDialog"
+  useSetCommunity,
+} from "@/context/CommunityContext";
+import type { Community } from "@/types/services/community";
+import { UpdateCommunityDialog } from "@/components/features/community/dialogs/UpdateCommunityDialog";
 import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle
-} from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Cake,
   Users,
@@ -31,21 +29,19 @@ import {
   TriangleAlert,
   ShieldCheck,
   FolderKanban,
-} from "lucide-react"
-
+} from "lucide-react";
 
 export default function AboutCommunityWidget() {
-  const community = useCommunity()
-  const setCommunity = useSetCommunity()
-  const { user } = useAuth()
-  const membershipContext = useMembership()
+  const community = useCommunity();
+  const setCommunity = useSetCommunity();
+  const { user } = useAuth();
+  const membershipContext = useMembership();
 
   const createdAtDate = useMemo(() => {
     if (!community?.createdAt) return null;
     const d = new Date(community.createdAt);
     return Number.isNaN(d.getTime()) ? null : d;
   }, [ community?.createdAt ]);
-
 
   if (!community) {
     return (
@@ -56,7 +52,7 @@ export default function AboutCommunityWidget() {
         <CardContent className="space-y-3">
           <Skeleton className="h-4 w-full" />
           <Skeleton className="h-4 w-5/6" />
-          <div className="pt-4 space-y-2">
+          <div className="space-y-2 pt-4">
             <Skeleton className="h-5 w-1/2" />
             <Skeleton className="h-5 w-1/2" />
           </div>
@@ -66,12 +62,16 @@ export default function AboutCommunityWidget() {
   }
 
   const membership = membershipContext?.membership ?? null;
-  const role = membership?.role ?? (user?.id === community.ownerId ? "OWNER" : undefined);
+  const role =
+    membership?.role ??
+    (user?.id === community.ownerId ? "OWNER" : undefined);
   const membershipStatus = membership?.status ?? undefined;
 
   const isOwner = role === "OWNER";
   const isModerator = role === "MODERATOR";
-  const canManage = membershipStatus === "ACTIVE" && (isModerator || isOwner);
+  const canManage =
+    membershipStatus === "ACTIVE" &&
+    (isModerator || isOwner);
 
   const handleUpdate = (updated: Community) => {
     setCommunity(updated);
@@ -82,15 +82,13 @@ export default function AboutCommunityWidget() {
       <Card>
         <CardHeader>
           <CardTitle>
-            <Info className="h-5 w-5 inline mr-2" />
-            <span>
-              About c/{ community.name }
-            </span>
+            <Info className="mr-2 inline h-5 w-5" />
+            <span>About c/{ community.name }</span>
           </CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             { community.description }
           </p>
 
@@ -99,138 +97,134 @@ export default function AboutCommunityWidget() {
               <Cake className="h-5 w-5" />
               <span>
                 Created { " " }
-                {
-                  createdAtDate
-                    ? format(createdAtDate, "MMM d, yyyy")
-                    : "Unknown"
-                }
+                { createdAtDate
+                  ? format(createdAtDate, "MMM d, yyyy")
+                  : "Unknown" }
               </span>
             </div>
             <div className="flex items-center gap-2">
-              {
-                community.isPrivate ? (
-                  <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-indigo-600 text-white text-sm font-semibold">
-                    <Lock className="w-4 h-4 text-white" />
-                    Private
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-green-600 text-white text-sm font-semibold">
-                    <Globe className="w-4 h-4 text-white" />
-                    Public
-                  </span>
-                )
-              }
+              { community.isPrivate ? (
+                <span className="inline-flex items-center gap-2 rounded bg-indigo-600 px-2 py-1 text-sm font-semibold text-white">
+                  <Lock className="h-4 w-4 text-white" />
+                  Private
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2 rounded bg-green-600 px-2 py-1 text-sm font-semibold text-white">
+                  <Globe className="h-4 w-4 text-white" />
+                  Public
+                </span>
+              ) }
 
-              {
-                community.isNSFW && (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded bg-purple-600 text-white text-xs font-bold">
-                    <TriangleAlert className="w-4 h-4 text-white" />
-                    NSFW
-                  </span>
-                )
-              }
+              { community.isNSFW && (
+                <span className="inline-flex items-center gap-1 rounded bg-purple-600 px-2 py-1 text-xs font-bold text-white">
+                  <TriangleAlert className="h-4 w-4 text-white" />
+                  NSFW
+                </span>
+              ) }
 
-              {
-                community.moderationMode && (
-                  <span className="inline-flex items-center gap-2 px-2 py-1 rounded bg-amber-600 text-white text-sm font-semibold">
-                    <ShieldCheck className="w-4 h-4 text-white" />
-                    Moderated
-                  </span>
-                )
-              }
+              { community.moderationMode && (
+                <span className="inline-flex items-center gap-2 rounded bg-amber-600 px-2 py-1 text-sm font-semibold text-white">
+                  <ShieldCheck className="h-4 w-4 text-white" />
+                  Moderated
+                </span>
+              ) }
             </div>
             <hr />
 
             <Link
-              href={ `/c/${community.name}/members` }
-              className="flex items-center gap-2 hover:text-primary font-medium cursor-pointer"
+              href={ `/c/${community.name}/manage/members` }
+              className="hover:text-primary flex cursor-pointer items-center gap-2 font-medium"
             >
               <Users className="h-5 w-5" />
-              <span>{ community.memberCount.toLocaleString() } members</span>
+              <span>
+                { community.memberCount.toLocaleString() }{ " " }
+                members
+              </span>
             </Link>
           </div>
 
-          {
-            (canManage || isOwner) && (
-              <>
-                <hr />
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-sm">
-                    { isOwner ? "Owner Actions" : "Moderator Actions" }
-                  </h4>
+          { (canManage || isOwner) && (
+            <>
+              <hr />
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold">
+                  { isOwner
+                    ? "Owner Actions"
+                    : "Moderator Actions" }
+                </h4>
 
-                  {/* Community Management - available to moderators & owners (if active) */ }
-                  {
-                    canManage && (
-                      <Button
-                        asChild
-                        className="w-full"
-                        variant="outline"
-                      >
-                        <Link
-                          href={ `/c/${community.name}/manage` }
-                          className="flex items-center justify-center gap-2 w-full"
-                        >
-                          <FolderKanban className="h-4 w-4" />
-                          Manage this community
-                        </Link>
-                      </Button>
-                    )
-                  }
+                {/* Community Management - available to moderators & owners (if active) */ }
+                { canManage && (
+                  <Button
+                    asChild
+                    className="w-full justify-start"
+                    variant="outline"
+                  >
+                    <Link
+                      href={ `/c/${community.name}/manage` }
+                      className="flex w-full items-center justify-center gap-2"
+                    >
+                      <FolderKanban className="h-4 w-4" />
+                      Manage this community
+                    </Link>
+                  </Button>
+                ) }
 
-                  {/* Manage Members - available to moderators & owners (if active) */ }
-                  {
-                    canManage && (
-                      <Button
-                        asChild
-                        className="w-full"
-                        variant="outline"
-                      >
-                        <Link
-                          href={ `/c/${community.name}/manage/members` }
-                          className="flex items-center justify-center gap-2 w-full"
-                        >
-                          <UserPlus className="h-4 w-4" />
-                          Manage Members
-                        </Link>
-                      </Button>
-                    )
-                  }
+                {/* Manage Members - available to moderators & owners (if active) */ }
+                { canManage && (
+                  <Button
+                    asChild
+                    className="w-full justify-start"
+                    variant="outline"
+                  >
+                    <Link
+                      href={ `/c/${community.name}/manage/members` }
+                      className="flex w-full items-center justify-center gap-2"
+                    >
+                      <UserPlus className="h-4 w-4" />
+                      Manage Members
+                    </Link>
+                  </Button>
+                ) }
 
-                  {/* Manage Contents - available to moderators & owners (if active) */ }
-                  {
-                    canManage && (
-                      <Button
-                        asChild
-                        className="w-full"
-                        variant="outline"
-                      >
-                        <Link
-                          href={ `/c/${community.name}/manage/contents` }
-                          className="flex items-center justify-center gap-2 w-full"
-                        >
-                          <FileText className="h-4 w-4" />
-                          Manage Contents
-                        </Link>
-                      </Button>
-                    )
-                  }
+                {/* Manage Contents - available to moderators & owners (if active) */ }
+                { canManage && (
+                  <Button
+                    asChild
+                    className="w-full justify-start"
+                    variant="outline"
+                  >
+                    <Link
+                      href={ `/c/${community.name}/manage/contents` }
+                      className="flex w-full items-center justify-center gap-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      Manage Contents
+                    </Link>
+                  </Button>
+                ) }
 
-                  {/* Edit Community - available only to owner */ }
-                  {
-                    isOwner && (
-                      <UpdateCommunityDialog
-                        community={ community }
-                        onUpdate={ handleUpdate }
-                      />
-                    )
-                  }
-                </div>
-              </>
-            )
-          }
+                {/* Edit Community - available only to owner */ }
+                { isOwner && (
+                  <Button
+                    asChild
+                    className="w-full justify-start"
+                    variant="outline"
+                  >
+                    <Link
+                      href={ `/c/${community.name}/edit` }
+                      className="flex w-full items-center justify-center gap-2"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Edit Community Details
+                    </Link>
+                  </Button>
+                ) }
+              </div>
+            </>
+          ) }
         </CardContent>
       </Card>
     </>
-  )
+  );
 }

@@ -1,15 +1,16 @@
-import axios from "axios"
-import { authService } from "@/modules/services/auth-service"
-
+import axios from "axios";
+import { authService } from "@/modules/services/auth-service";
 
 // Base URLs
 const AUTH_SERVICE_URL =
-  process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || "http://localhost:4000/api/auth"
+  process.env.NEXT_PUBLIC_AUTH_SERVICE_URL ||
+  "http://localhost:4000/api/auth";
 const USER_SERVICE_URL =
-  process.env.NEXT_PUBLIC_USER_SERVICE_URL || "http://localhost:4002/api/users"
+  process.env.NEXT_PUBLIC_USER_SERVICE_URL ||
+  "http://localhost:4002/api/users";
 const COMMUNITY_SERVICE_URL =
-  process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL || "http://localhost:4003/api/communities"
-
+  process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL ||
+  "http://localhost:4003/api/communities";
 
 const createApiClient = (baseURL: string) => {
   const apiClient = axios.create({
@@ -18,18 +19,22 @@ const createApiClient = (baseURL: string) => {
       "Content-Type": "application/json",
     },
     withCredentials: true,
-  })
-  return apiClient
-}
+  });
+  return apiClient;
+};
 
-const authApiClient = createApiClient(AUTH_SERVICE_URL)
-const userApiClient = createApiClient(USER_SERVICE_URL)
-const communityApiClient = createApiClient(COMMUNITY_SERVICE_URL)
+const authApiClient = createApiClient(AUTH_SERVICE_URL);
+const userApiClient = createApiClient(USER_SERVICE_URL);
+const communityApiClient = createApiClient(
+  COMMUNITY_SERVICE_URL
+);
 
 // --------------------
 // Interceptors
 // --------------------
-const setupInterceptors = (client: typeof authApiClient) => {
+const setupInterceptors = (
+  client: typeof authApiClient
+) => {
   // No need to manually attach Authorization header or handle accessToken
 
   // Handle 401 responses (optional: redirect to login)
@@ -39,24 +44,20 @@ const setupInterceptors = (client: typeof authApiClient) => {
       if (error.response?.status === 401) {
         // Optionally, call refresh endpoint or redirect to login
         try {
-          await authService.refreshToken()
+          await authService.refreshToken();
           // After refresh, you may want to reload the page or retry the request
-          window.location.reload()
+          window.location.reload();
         } catch {
-          window.location.href = "/login"
+          window.location.href = "/login";
         }
       }
-      return Promise.reject(error)
+      return Promise.reject(error);
     }
-  )
-}
+  );
+};
 
-setupInterceptors(authApiClient)
-setupInterceptors(userApiClient)
-setupInterceptors(communityApiClient)
+setupInterceptors(authApiClient);
+setupInterceptors(userApiClient);
+setupInterceptors(communityApiClient);
 
-export {
-  authApiClient,
-  userApiClient,
-  communityApiClient
-}
+export { authApiClient, userApiClient, communityApiClient };

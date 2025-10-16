@@ -1,7 +1,9 @@
 export function NoMoreResults() {
   return (
-    <div className='flex justify-center mt-4'>
-      <span className='text-muted-foreground text-lg'>No more results</span>
+    <div className="mt-4 flex justify-center">
+      <span className="text-muted-foreground text-lg">
+        No more results
+      </span>
     </div>
-  )
+  );
 }

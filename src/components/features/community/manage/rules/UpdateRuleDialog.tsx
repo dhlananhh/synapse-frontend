@@ -1,24 +1,24 @@
-"use client"
+"use client";
 
 
-import React from "react"
-import { toast } from "sonner"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { CommunityRule } from "@/types/services/community"
-import { communityService } from "@/modules/services/community-service"
+import React from "react";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { CommunityRule } from "@/types/services/community";
+import { communityService } from "@/modules/services/community-service";
 import {
   TRuleSchema,
-  RuleSchema
-} from "@/libs/validators/community-validator"
-import { Button } from "@/components/ui/button"
+  RuleSchema,
+} from "@/libs/validators/community-validator";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogFooter,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 import {
   Form,
   FormControl,
@@ -26,19 +26,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 
 interface UpdateRuleDialogProps {
-  communityId: string
-  rule: CommunityRule
-  isOpen: boolean
-  onOpenChange: (open: boolean) => void
-  onRuleUpdated: (updatedRule: any) => void
+  communityId: string;
+  rule: CommunityRule;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onRuleUpdated: (updatedRule: any) => void;
 }
-
 
 export function UpdateRuleDialog({
   communityId,
@@ -53,20 +52,24 @@ export function UpdateRuleDialog({
       title: rule.title || "",
       description: rule.description || "",
     },
-  })
+  });
 
   const onSubmit = async (data: TRuleSchema) => {
     try {
-      const response = await communityService.updateRule(communityId, rule.id, data)
-      toast.success("Rule updated successfully!")
-      onRuleUpdated(response)
-      onOpenChange(false)
+      const response = await communityService.updateRule(
+        communityId,
+        rule.id,
+        data
+      );
+      toast.success("Rule updated successfully!");
+      onRuleUpdated(response);
+      onOpenChange(false);
     } catch (error: any) {
       toast.error("Failed to update rule.", {
         description: error.response?.data?.message,
-      })
+      });
     }
-  }
+  };
 
   return (
     <Dialog
@@ -75,7 +78,9 @@ export function UpdateRuleDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Rule</DialogTitle>
+          <DialogTitle>
+            Edit Rule
+          </DialogTitle>
         </DialogHeader>
         <Form
           { ...form }
@@ -92,7 +97,9 @@ export function UpdateRuleDialog({
                   <FormItem>
                     <FormLabel>Title</FormLabel>
                     <FormControl>
-                      <Input { ...field } />
+                      <Input
+                        { ...field }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -105,9 +112,13 @@ export function UpdateRuleDialog({
               render={
                 ({ field }) => (
                   <FormItem>
-                    <FormLabel>Description (Optional)</FormLabel>
+                    <FormLabel>
+                      Description (Optional)
+                    </FormLabel>
                     <FormControl>
-                      <Textarea { ...field } />
+                      <Textarea
+                        { ...field }
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -126,5 +137,5 @@ export function UpdateRuleDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

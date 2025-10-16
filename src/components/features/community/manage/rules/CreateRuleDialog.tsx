@@ -8,7 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { communityService } from "@/modules/services/community-service";
 import {
   TRuleSchema,
-  RuleSchema
+  RuleSchema,
 } from "@/libs/validators/community-validator";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -24,7 +24,7 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage
+  FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -42,25 +42,25 @@ export function CreateRuleDialog({
   communityId,
   isOpen,
   onOpenChange,
-  onRuleCreated
+  onRuleCreated,
 }: CreateRuleDialogProps) {
   const form = useForm<TRuleSchema>({
     resolver: zodResolver(RuleSchema),
     defaultValues: {
       title: "",
-      description: ""
-    }
+      description: "",
+    },
   });
 
   const onSubmit = async (data: TRuleSchema) => {
     try {
-      const response = await communityService.createCommunityRule(communityId, data);
+      const response = await communityService.createRule(communityId, data);
       toast.success("Rule created successfully!");
-      onRuleCreated(response.data);
+      onRuleCreated(response);
       onOpenChange(false);
     } catch (error: any) {
       toast.error("Failed to create rule.", {
-        description: error.response?.data?.message
+        description: error.response?.data?.message,
       });
     }
   };
@@ -72,7 +72,9 @@ export function CreateRuleDialog({
     >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create a New Rule</DialogTitle>
+          <DialogTitle>
+            Create a New Rule
+          </DialogTitle>
         </DialogHeader>
         <Form
           { ...form }

@@ -1,6 +1,5 @@
 "use client";
 
-
 import React from "react";
 import Link from "next/link";
 
@@ -10,11 +9,10 @@ import { UserProfile } from "@/types/services/user";
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage
+  AvatarImage,
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Lock } from "lucide-react";
-
 
 interface PrivateProfileViewProps {
   user: UserProfile;
@@ -22,72 +20,70 @@ interface PrivateProfileViewProps {
   isPending: boolean;
 }
 
-
 export function PrivateProfileView({
   user,
   isFollowing,
-  isPending
+  isPending,
 }: PrivateProfileViewProps) {
   const { user: currentUser } = useAuth();
 
   return (
     <div className="w-full">
-      <div className="flex flex-col md:flex-row items-center md:items-start gap-6 p-6 bg-card border rounded-lg">
-        <Avatar className="w-24 h-24 md:w-32 md:h-32">
+      <div className="bg-card flex flex-col items-center gap-6 rounded-lg border p-6 md:flex-row md:items-start">
+        <Avatar className="h-24 w-24 md:h-32 md:w-32">
           <AvatarImage
-            src={ user.avatarUrl || undefined }
-            alt={ user.username }
+            src={user.avatarUrl || undefined}
+            alt={user.username}
           />
           <AvatarFallback>
-            { user.username.charAt(0).toUpperCase() }
+            {user.username.charAt(0).toUpperCase()}
           </AvatarFallback>
         </Avatar>
         <div className="flex-1 text-center md:text-left">
           <h1 className="text-3xl font-bold">
-            { `${user.firstName} ${user.lastName}` }
+            {`${user.firstName} ${user.lastName}`}
           </h1>
           <p className="text-muted-foreground">
-            @{ user.username }
+            @{user.username}
           </p>
-          <div className="flex gap-4 my-3 justify-center md:justify-start">
+          <div className="my-3 flex justify-center gap-4 md:justify-start">
             <span className="font-semibold">
-              { user.followerCount } Followers
+              {user.followerCount} Followers
             </span>
             <span className="font-semibold">
-              { user.followingCount } Following
+              {user.followingCount} Following
             </span>
           </div>
         </div>
         <Button>
-          {
-            isPending
-              ? "Requested"
-              : (isFollowing ? "Following" : "Follow")
-          }
+          {isPending
+            ? "Requested"
+            : isFollowing
+              ? "Following"
+              : "Follow"}
         </Button>
       </div>
 
       <div className="mt-8 border-t border-dashed py-16 text-center">
-        <Lock className="mx-auto h-12 w-12 text-muted-foreground" />
+        <Lock className="text-muted-foreground mx-auto h-12 w-12" />
         <h3 className="mt-4 text-lg font-semibold">
           This Account is Private
         </h3>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Follow this account to see their posts and activities.
+        <p className="text-muted-foreground mt-2 text-sm">
+          Follow this account to see their posts and
+          activities.
         </p>
-        {
-          !currentUser && (
-            <p className="mt-1 text-sm text-muted-foreground">
-              Already follow?
-              <Link
-                href="/login"
-                className="font-semibold text-primary hover:underline"
-              >
-                Log in
-              </Link>
-            </p>
-          )
-        }
+        {!currentUser && (
+          <p className="text-muted-foreground mt-1 text-sm">
+            Already follow?
+            <Link
+              href="/login"
+              className="text-primary font-semibold hover:underline"
+            >
+              Log in
+            </Link>
+          </p>
+        )}
       </div>
     </div>
   );
