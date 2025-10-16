@@ -112,7 +112,9 @@ export function ManageFlairsDialog({
 
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Community Flairs</DialogTitle>
+            <DialogTitle>
+              Community Flairs
+            </DialogTitle>
             <DialogDescription>
               Create, edit, and delete flairs for c/{ community.name }
             </DialogDescription>
