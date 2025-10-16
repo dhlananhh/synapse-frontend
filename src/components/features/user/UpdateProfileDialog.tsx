@@ -1,6 +1,5 @@
 "use client";
 
-
 import React, { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,102 +16,118 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-  DialogFooter
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-
+import { AvatarUpload } from "./AvatarUpload";
 
 interface UpdateProfileDialogProps {
-  user: UserProfile;
-  onProfileUpdate: (updatedUser: UserProfile) => void;
+  profile: UserProfile;
+  onProfileUpdate: (updatedProfile: UserProfile) => void;
 }
 
+export function UpdateProfileDialog({
+  profile,
+  onProfileUpdate,
+}: UpdateProfileDialogProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
-export function UpdateProfileDialog({ user, onProfileUpdate }: UpdateProfileDialogProps) {
-  const [ isOpen, setIsOpen ] = useState(false);
-  const [ isSubmitting, setIsSubmitting ] = useState(false);
-  const [ isConfirmingPrivacy, setIsConfirmingPrivacy ] = useState(false);
-
-  const [ isPrivate, setIsPrivate ] = useState(user.isPrivate);
+  const [isPrivate, setIsPrivate] = useState(
+    profile.isPrivate
+  );
+  const userId = profile.id;
 
   const handleFormSubmit = async (data: any) => {
     setIsSubmitting(true);
     try {
-      const updatedUser = await userService.updateUserProfile(user.id, data);
+      const updatedProfile =
+        await userService.updateUserProfile(data);
       toast.success("Profile updated successfully!");
-      onProfileUpdate(updatedUser);
+      onProfileUpdate(updatedProfile);
       setIsOpen(false);
     } catch (error: any) {
       toast.error("Failed to update profile.", {
-        description: error.response?.data?.message
+        description: error.response?.data?.message,
       });
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const handleConfirmPrivacy = async () => {
-    try {
-      await userService.togglePrivacy(user.id);
-      const newPrivacyState = !isPrivate;
-      setIsPrivate(newPrivacyState);
-      onProfileUpdate({ ...user, isPrivate: newPrivacyState });
-      toast.success(`Your profile is now ${newPrivacyState ? "private" : "public"}.`);
-    } catch (error: any) {
-      toast.error("Failed to update privacy setting.");
+  const handleOpenChange = (open: boolean) => {
+    if (!open) {
+      setShowConfirm(true);
+    } else {
+      setIsOpen(open);
     }
-  }
+  };
 
   return (
     <>
-      <Dialog
-        open={ isOpen }
-        onOpenChange={ setIsOpen }
-      >
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
         <DialogTrigger asChild>
-          <Button variant="outline">
-            Edit Profile
-          </Button>
+          <Button variant="outline">Edit Profile</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
             <DialogTitle>Edit Your Profile</DialogTitle>
           </DialogHeader>
 
+          <AvatarUpload
+            currentAvatarUrl={profile.avatarUrl}
+            onUploaded={(newAvatarUrl) => {
+              onProfileUpdate({
+                ...profile,
+                avatarUrl: newAvatarUrl,
+              });
+            }}
+          />
+
           <div className="py-4">
             <UpdateProfileForm
-              initialData={ user }
-              onSubmit={ handleFormSubmit }
-              isSubmitting={ isSubmitting }
+              initialData={profile}
+              onSubmit={handleFormSubmit}
+              isSubmitting={isSubmitting}
             />
           </div>
-
-          <DialogFooter className="flex-col items-start border-t pt-4">
-            <Label className="font-semibold">
-              Privacy Settings
-            </Label>
-            <div className="flex items-center space-x-2 mt-2 w-full justify-between">
-              <Label htmlFor="privacy-mode">
-                Private Account
-              </Label>
-              <Switch
-                id="privacy-mode"
-                checked={ isPrivate }
-                onCheckedChange={ () => setIsConfirmingPrivacy(true) }
-              />
-            </div>
-          </DialogFooter>
         </DialogContent>
       </Dialog>
-
-
-      <PrivacyConfirmDialog
-        isOpen={ isConfirmingPrivacy }
-        onOpenChange={ setIsConfirmingPrivacy }
-        onConfirm={ handleConfirmPrivacy }
-        isMakingPrivate={ !isPrivate }
-      />
+      {showConfirm && (
+        <Dialog
+          open={showConfirm}
+          onOpenChange={setShowConfirm}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Discard changes?</DialogTitle>
+            </DialogHeader>
+            <div>
+              You have unsaved changes. Are you sure you
+              want to discard them?
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => setShowConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                onClick={() => {
+                  setShowConfirm(false);
+                  setIsOpen(false);
+                }}
+              >
+                Discard
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </>
   );
 }

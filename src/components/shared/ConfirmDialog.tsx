@@ -1,6 +1,5 @@
 "use client";
 
-
 import React from "react";
 import {
   AlertDialog,
@@ -15,7 +14,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-
 interface ConfirmDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -27,7 +25,6 @@ interface ConfirmDialogProps {
   isConfirming?: boolean;
 }
 
-
 export default function ConfirmDialog({
   open,
   onOpenChange,
@@ -38,38 +35,34 @@ export default function ConfirmDialog({
   isDestructive = true,
   isConfirming = false,
 }: ConfirmDialogProps) {
-
   return (
-    <AlertDialog
-      open={ open }
-      onOpenChange={ onOpenChange }
-    >
+    <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>
-            { title }
-          </AlertDialogTitle>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
           <AlertDialogDescription>
-            { description }
+            {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction
-            onClick={
-              (e) => {
-                e.preventDefault();
-                onConfirm();
-              }
-            }
+            onClick={(e) => {
+              e.preventDefault();
+              onConfirm();
+            }}
             asChild
           >
             <Button
-              variant={ isDestructive ? "destructive" : "default" }
-              disabled={ isConfirming }
+              variant={
+                isDestructive ? "destructive" : "default"
+              }
+              disabled={isConfirming}
             >
-              { isConfirming && <Loader2 className="mr-2 h-4 w-4 animate-spin" /> }
-              { confirmText }
+              {isConfirming && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
+              {confirmText}
             </Button>
           </AlertDialogAction>
         </AlertDialogFooter>

@@ -12,17 +12,20 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { BrainCircuit, Home, LogIn, Menu, UserPlus } from "lucide-react";
-import UserNav from "./UserNav";
-import SearchBar from "./SearchBar";
-
+import {
+  BrainCircuit,
+  Home,
+  LogIn,
+  Menu,
+  UserPlus,
+} from "lucide-react";
 
 export default function MobileNav() {
-  const [ isOpen, setIsOpen ] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const { user, logout } = useAuth();
 
   return (
-    <Sheet open={ isOpen } onOpenChange={ setIsOpen }>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
         <Button variant="ghost" size="icon">
           <Menu className="h-6 w-6" />
@@ -35,82 +38,90 @@ export default function MobileNav() {
             <Link
               href="/"
               className="flex items-center gap-2"
-              onClick={ () => setIsOpen(false) }
+              onClick={() => setIsOpen(false)}
             >
-              <BrainCircuit className="h-7 w-7 text-primary" />
-              <span className="text-xl font-bold">Synapse</span>
+              <BrainCircuit className="text-primary h-7 w-7" />
+              <span className="text-xl font-bold">
+                Synapse
+              </span>
             </Link>
           </SheetTitle>
         </SheetHeader>
 
         <div className="p-4">
-          <Suspense fallback={ <div className="text-center text-muted-foreground mt-10">Searching...</div> }>
-            <SearchBar />
-          </Suspense>
+          <Suspense
+            fallback={
+              <div className="text-muted-foreground mt-10 text-center">
+                Searching...
+              </div>
+            }
+          ></Suspense>
         </div>
         <Separator />
 
         <div className="mt-6 flex flex-col gap-2">
           <Link
             href="/"
-            className="flex items-center p-2 rounded-md hover:bg-secondary text-foreground"
-            onClick={ () => setIsOpen(false) }
+            className="hover:bg-secondary text-foreground flex items-center rounded-md p-2"
+            onClick={() => setIsOpen(false)}
           >
-            <Home className="h-5 w-5 mr-3" />
+            <Home className="mr-3 h-5 w-5" />
             Home
           </Link>
 
           <Separator className="my-2" />
 
-          {
-            user ? (
-              <>
-                <div className="p-2">
-                  <h4 className="font-semibold mb-2">My Stuff</h4>
-                  <Link
-                    href={ `/u/${user.email}` }
-                    className="flex items-center p-2 rounded-md hover:bg-secondary"
-                    onClick={ () => setIsOpen(false) }
-                  >
-                    Profile
-                  </Link>
-                  <Link
-                    href="/settings"
-                    className="flex items-center p-2 rounded-md hover:bg-secondary"
-                    onClick={ () => setIsOpen(false) }
-                  >
-                    Settings
-                  </Link>
-                  <button
-                    onClick={ () => { logout(); setIsOpen(false); } }
-                    className="w-full text-left flex items-center p-2 rounded-md hover:bg-secondary"
-                  >
-                    Log Out
-                  </button>
-                </div>
-
-              </>
-            ) : (
-              <>
+          {user ? (
+            <>
+              <div className="p-2">
+                <h4 className="mb-2 font-semibold">
+                  My Stuff
+                </h4>
                 <Link
-                  href="/login"
-                  className="flex items-center p-2 rounded-md hover:bg-secondary text-foreground"
-                  onClick={ () => setIsOpen(false) }
+                  href={`/u/${user.email}`}
+                  className="hover:bg-secondary flex items-center rounded-md p-2"
+                  onClick={() => setIsOpen(false)}
                 >
-                  <LogIn className="h-5 w-5 mr-3" />
-                  Log In
+                  Profile
                 </Link>
                 <Link
-                  href="/register"
-                  className="flex items-center p-2 rounded-md hover:bg-secondary text-foreground"
-                  onClick={ () => setIsOpen(false) }
+                  href="/settings"
+                  className="hover:bg-secondary flex items-center rounded-md p-2"
+                  onClick={() => setIsOpen(false)}
                 >
-                  <UserPlus className="h-5 w-5 mr-3" />
-                  Sign Up
+                  Settings
                 </Link>
-              </>
-            )
-          }
+                <button
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                  }}
+                  className="hover:bg-secondary flex w-full items-center rounded-md p-2 text-left"
+                >
+                  Log Out
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="hover:bg-secondary text-foreground flex items-center rounded-md p-2"
+                onClick={() => setIsOpen(false)}
+              >
+                <LogIn className="mr-3 h-5 w-5" />
+                Log In
+              </Link>
+              <Link
+                href="/register"
+                className="hover:bg-secondary text-foreground flex items-center rounded-md p-2"
+                onClick={() => setIsOpen(false)}
+              >
+                <UserPlus className="mr-3 h-5 w-5" />
+                Sign Up
+              </Link>
+            </>
+          )}
         </div>
       </SheetContent>
     </Sheet>

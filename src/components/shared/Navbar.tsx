@@ -1,10 +1,10 @@
 "use client";
 
-
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 import { useAuth } from "@/context/AuthContext";
+import { userService } from "@/modules/services/user-service";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,10 +12,21 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { UserNav } from "./UserNav";
 import { BrainCircuit } from "lucide-react";
 import MobileNav from "@/components/shared/MobileNav";
-
+import SearchBar from "@/components/shared/SearchBar";
+import { UserProfile } from "@/types/services/user";
 
 export function Navbar() {
   const { user, isLoading } = useAuth();
+  const [ profile, setProfile ] =
+    useState<UserProfile | null>(null);
+
+  useEffect(() => {
+    if (user?.id) {
+      userService.getUserProfile(user.id).then(setProfile);
+    } else {
+      setProfile(null);
+    }
+  }, [ user?.id ]);
 
   const renderAuthSection = () => {
     if (isLoading) {
@@ -27,10 +38,8 @@ export function Navbar() {
       );
     }
 
-    if (user) {
-      return (
-        <UserNav user={ user } />
-      )
+    if (user && profile) {
+      return <UserNav user={ profile } />;
     }
 
     return (
@@ -46,34 +55,32 @@ export function Navbar() {
   };
 
   return (
-    <header
-      className="fixed top-0 inset-x-0 h-16 z-50 border-b bg-background/80 backdrop-blur-lg"
-    >
-      <div className="container h-full max-w-7xl mx-auto flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+    <header className="bg-background/80 fixed inset-x-0 top-0 z-50 h-16 border-b backdrop-blur-lg">
+      <div className="container mx-auto flex h-full max-w-7xl items-center gap-4">
+        {/* Left: Logo & App Name */ }
+        <div className="flex flex-shrink-0 items-center gap-2">
           <div className="md:hidden">
             <MobileNav />
           </div>
-
           <Link
             href="/"
-            className="hidden md:flex items-center gap-2"
+            className="hidden items-center gap-2 md:flex"
           >
-            <BrainCircuit
-              className="h-8 w-8 text-primary"
-            />
-            <p className="hidden lg:block text-xl font-bold text-foreground">
+            <BrainCircuit className="text-primary h-8 w-8" />
+            <p className="text-foreground hidden text-xl font-bold lg:block">
               Synapse
             </p>
           </Link>
         </div>
 
-        <div className="flex flex-1 items-center justify-between space-x-2 md:justify-end">
-          <div className="w-full flex-1 md:w-auto md:flex-none">
-          </div>
-          <nav className="flex items-center">
-            { renderAuthSection() }
-          </nav>
+        {/* Center: Search Bar */ }
+        <div className="flex flex-1 justify-center px-4">
+          <SearchBar />
+        </div>
+
+        {/* Right: Auth/User Nav */ }
+        <div className="flex flex-shrink-0 items-center gap-2">
+          { renderAuthSection() }
         </div>
       </div>
     </header>

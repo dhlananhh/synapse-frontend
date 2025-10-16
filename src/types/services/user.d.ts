@@ -28,29 +28,37 @@ export interface UpdateUserPreferencesPayload {
   };
 }
 
-
 // =================================
 // Responses from API
 // =================================
 
+export interface FollowRelationship {
+  id: string;
+  followerId: string;
+  followingId: string;
+  status: "PENDING" | "ACCEPTED" | "REJECTED"; // add other statuses if needed
+  createdAt?: string;
+  // add other fields if your backend includes them
+}
+
 export interface UserProfile {
   id: string;
-  accountId: string;
   username: string;
   firstName: string;
   lastName: string;
-  email?: string;
   gender: "MALE" | "FEMALE";
   bio: string | null;
   location: string | null;
   avatarUrl: string | null;
   isPrivate: boolean;
-  createdAt: string;
-  updatedAt: string;
-  _count?: {
-    followers: number;
-    following: number;
+  createdAt?: string;
+  followerCount?: number;
+  followingCount?: number;
+  relationshipStatus?: {
+    requesterToTarget: FollowRelationship | null;
+    targetToRequester: FollowRelationship | null;
   };
+  createdAt: string;
 }
 
 export interface UserPreferences {
@@ -67,9 +75,8 @@ export interface SearchUserResult {
   firstName: string;
   lastName: string;
   avatarUrl: string | null;
-  _count: {
-    followers: number;
-  };
+  isPrivate: boolean;
+  followerCount: number;
 }
 
 export interface FollowInfo {
@@ -90,6 +97,30 @@ export interface FollowingResponse {
   createdAt: string;
 }
 
+export interface FollowerRecord {
+  id: string;
+  follower: {
+    id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string | null;
+  };
+  createdAt: string;
+}
+
+export interface FollowingRecord {
+  id: string;
+  following: {
+    id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string | null;
+  };
+  createdAt: string;
+}
+
 export interface TogglePrivacyResponse {
   id: string;
   isPrivate: boolean;
@@ -98,4 +129,32 @@ export interface TogglePrivacyResponse {
 export interface FollowResponse {
   message: string;
   status: "PENDING" | "ACCEPTED";
+}
+
+export interface PendingFollowRequest {
+  id: string;
+  createdAt: string;
+  requester: {
+    id: string;
+    username: string;
+    firstName: string;
+    lastName: string;
+    avatarUrl: string | null;
+  };
+}
+
+export interface PendingFollowRequestsResponse {
+  requests: PendingFollowRequest[];
+  pagination: {
+    hasMore: boolean;
+    nextCursor: string | null;
+  };
+}
+
+export interface SimpleProfile {
+  id: string;
+  username: string;
+  firstName: string;
+  lastName: string;
+  avatarUrl: string | null;
 }

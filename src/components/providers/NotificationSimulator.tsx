@@ -1,27 +1,23 @@
 "use client";
 
-
 import React, { useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNotificationStore } from "@/store/useNotificationStore";
-import {
-  mockPosts,
-  allMockUsers
-} from "@/libs/mock-data";
-import {
-  Notification,
-  NotificationType,
-} from "@/types";
-
+import { mockPosts, allMockUsers } from "@/libs/mock-data";
+import { Notification, NotificationType } from "@/types";
 
 const generateRandomNotification = (): Notification => {
-  const actor = allMockUsers[ Math.floor(Math.random() * allMockUsers.length) ];
-  const randomPost = mockPosts[ Math.floor(Math.random() * mockPosts.length) ];
+  const actor =
+    allMockUsers[
+      Math.floor(Math.random() * allMockUsers.length)
+    ];
+  const randomPost =
+    mockPosts[Math.floor(Math.random() * mockPosts.length)];
   const type: NotificationType = [
     "NEW_COMMENT",
     "POST_UPVOTE",
-    "NEW_FOLLOWER"
-  ][ Math.floor(Math.random() * 3) ] as NotificationType;
+    "NEW_FOLLOWER",
+  ][Math.floor(Math.random() * 3)] as NotificationType;
 
   let message = "";
   let entityUrl = "";
@@ -50,8 +46,7 @@ const generateRandomNotification = (): Notification => {
     isRead: false,
     createdAt: new Date().toISOString(),
   };
-}
-
+};
 
 export default function NotificationSimulator() {
   const { user } = useAuth();
@@ -76,7 +71,7 @@ export default function NotificationSimulator() {
         clearInterval(intervalRef.current);
       }
     };
-  }, [ user, addNotification ]);
+  }, [user, addNotification]);
 
   return null;
 }

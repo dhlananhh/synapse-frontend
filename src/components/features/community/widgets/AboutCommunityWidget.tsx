@@ -1,49 +1,94 @@
-"use client";
-
-
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
-import { useAuth } from "@/context/MockAuthContext";
-import { Community } from "@/types";
-import EditCommunityDialog from "../manage/dialogs/EditCommunityDialog";
-import ModeratorListWidget from "./ModeratorListWidget";
+import { format } from "date-fns";
+import { useAuth } from "@/context/AuthContext";
+import { useMembership } from "@/context/MembershipContext";
+import {
+  useCommunity,
+  useSetCommunity,
+} from "@/context/CommunityContext";
+import type { Community } from "@/types/services/community";
+import { UpdateCommunityDialog } from "@/components/features/community/dialogs/UpdateCommunityDialog";
 import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle
+  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { format } from "date-fns";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Cake,
   Users,
-  Settings
+  Settings,
+  Globe,
+  Lock,
+  Info,
+  UserPlus,
+  FileText,
+  TriangleAlert,
+  ShieldCheck,
+  FolderKanban,
 } from "lucide-react";
 
-
-interface AboutCommunityWidgetProps {
-  community: Community;
-}
-
-
-export default function AboutCommunityWidget({ community }: AboutCommunityWidgetProps) {
+export default function AboutCommunityWidget() {
+  const community = useCommunity();
+  const setCommunity = useSetCommunity();
   const { user } = useAuth();
-  const isOwner = user?.id === community.ownerId;
+  const membershipContext = useMembership();
 
-  const [ isEditDialogOpen, setIsEditDialogOpen ] = useState(false);
+  const createdAtDate = useMemo(() => {
+    if (!community?.createdAt) return null;
+    const d = new Date(community.createdAt);
+    return Number.isNaN(d.getTime()) ? null : d;
+  }, [ community?.createdAt ]);
+
+  if (!community) {
+    return (
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-6 w-3/4" />
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <div className="space-y-2 pt-4">
+            <Skeleton className="h-5 w-1/2" />
+            <Skeleton className="h-5 w-1/2" />
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const membership = membershipContext?.membership ?? null;
+  const role =
+    membership?.role ??
+    (user?.id === community.ownerId ? "OWNER" : undefined);
+  const membershipStatus = membership?.status ?? undefined;
+
+  const isOwner = role === "OWNER";
+  const isModerator = role === "MODERATOR";
+  const canManage =
+    membershipStatus === "ACTIVE" &&
+    (isModerator || isOwner);
+
+  const handleUpdate = (updated: Community) => {
+    setCommunity(updated);
+  };
 
   return (
     <>
       <Card>
         <CardHeader>
           <CardTitle>
-            About c/{ community.slug }
+            <Info className="mr-2 inline h-5 w-5" />
+            <span>About c/{ community.name }</span>
           </CardTitle>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             { community.description }
           </p>
 
@@ -51,81 +96,135 @@ export default function AboutCommunityWidget({ community }: AboutCommunityWidget
             <div className="flex items-center gap-2">
               <Cake className="h-5 w-5" />
               <span>
-                Created { format(new Date(community.createdAt), "MMM d, yyyy") }
+                Created { " " }
+                { createdAtDate
+                  ? format(createdAtDate, "MMM d, yyyy")
+                  : "Unknown" }
               </span>
+            </div>
+            <div className="flex items-center gap-2">
+              { community.isPrivate ? (
+                <span className="inline-flex items-center gap-2 rounded bg-indigo-600 px-2 py-1 text-sm font-semibold text-white">
+                  <Lock className="h-4 w-4 text-white" />
+                  Private
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-2 rounded bg-green-600 px-2 py-1 text-sm font-semibold text-white">
+                  <Globe className="h-4 w-4 text-white" />
+                  Public
+                </span>
+              ) }
+
+              { community.isNSFW && (
+                <span className="inline-flex items-center gap-1 rounded bg-purple-600 px-2 py-1 text-xs font-bold text-white">
+                  <TriangleAlert className="h-4 w-4 text-white" />
+                  NSFW
+                </span>
+              ) }
+
+              { community.moderationMode && (
+                <span className="inline-flex items-center gap-2 rounded bg-amber-600 px-2 py-1 text-sm font-semibold text-white">
+                  <ShieldCheck className="h-4 w-4 text-white" />
+                  Moderated
+                </span>
+              ) }
             </div>
             <hr />
 
             <Link
-              href={ `/c/${community.slug}/members` }
-              className="flex items-center gap-2 hover:text-primary"
+              href={ `/c/${community.name}/manage/members` }
+              className="hover:text-primary flex cursor-pointer items-center gap-2 font-medium"
             >
               <Users className="h-5 w-5" />
               <span>
-                { community.memberCount.toLocaleString() } members
+                { community.memberCount.toLocaleString() }{ " " }
+                members
               </span>
             </Link>
           </div>
 
-          <div>
-            <hr className="my-3" />
-            <h4 className="font-semibold text-sm mb-2">
-              Moderators
-            </h4>
-            <ModeratorListWidget community={ community } />
-          </div>
+          { (canManage || isOwner) && (
+            <>
+              <hr />
+              <div className="space-y-2">
+                <h4 className="text-sm font-semibold">
+                  { isOwner
+                    ? "Owner Actions"
+                    : "Moderator Actions" }
+                </h4>
 
-          <Button
-            asChild
-            className="w-full mt-2"
-          >
-            <Link href={ `/c/${community.slug}/members` }>
-              View All Members
-            </Link>
-          </Button>
-
-          {
-            isOwner && (
-              <>
-                <hr />
-                <div className="space-y-2">
-                  <h4 className="font-semibold text-sm">
-                    Owner Actions
-                  </h4>
-                  <Button
-                    onClick={ () => setIsEditDialogOpen(true) }
-                    variant="secondary"
-                    className="w-full"
-                  >
-                    <Settings className="h-4 w-4 mr-2" />
-                    Edit Community
-                  </Button>
+                {/* Community Management - available to moderators & owners (if active) */ }
+                { canManage && (
                   <Button
                     asChild
-                    className="w-full"
+                    className="w-full justify-start"
                     variant="outline"
                   >
-                    <Link href={ `/c/${community.slug}/manage` }>
+                    <Link
+                      href={ `/c/${community.name}/manage` }
+                      className="flex w-full items-center justify-center gap-2"
+                    >
+                      <FolderKanban className="h-4 w-4" />
+                      Manage this community
+                    </Link>
+                  </Button>
+                ) }
+
+                {/* Manage Members - available to moderators & owners (if active) */ }
+                { canManage && (
+                  <Button
+                    asChild
+                    className="w-full justify-start"
+                    variant="outline"
+                  >
+                    <Link
+                      href={ `/c/${community.name}/manage/members` }
+                      className="flex w-full items-center justify-center gap-2"
+                    >
+                      <UserPlus className="h-4 w-4" />
                       Manage Members
                     </Link>
                   </Button>
-                </div>
-              </>
-            )
-          }
+                ) }
+
+                {/* Manage Contents - available to moderators & owners (if active) */ }
+                { canManage && (
+                  <Button
+                    asChild
+                    className="w-full justify-start"
+                    variant="outline"
+                  >
+                    <Link
+                      href={ `/c/${community.name}/manage/contents` }
+                      className="flex w-full items-center justify-center gap-2"
+                    >
+                      <FileText className="h-4 w-4" />
+                      Manage Contents
+                    </Link>
+                  </Button>
+                ) }
+
+                {/* Edit Community - available only to owner */ }
+                { isOwner && (
+                  <Button
+                    asChild
+                    className="w-full justify-start"
+                    variant="outline"
+                  >
+                    <Link
+                      href={ `/c/${community.name}/edit` }
+                      className="flex w-full items-center justify-center gap-2"
+                    >
+                      <Settings className="h-4 w-4" />
+                      Edit Community Details
+                    </Link>
+                  </Button>
+                ) }
+              </div>
+            </>
+          ) }
         </CardContent>
       </Card>
-
-
-      {
-        isOwner && (
-          <EditCommunityDialog
-            community={ community }
-            isOpen={ isEditDialogOpen }
-            onOpenChange={ setIsEditDialogOpen }
-          />
-        )
-      }
     </>
-  )
+  );
 }

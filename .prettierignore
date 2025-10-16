@@ -1,0 +1,25 @@
+# Ignore dependency directories
+node_modules
+
+# Ignore build output folders
+dist
+build
+.next
+.vercel
+coverage
+
+# Ignore lockfiles, as they are auto-generated
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore generated test files
+*.snap
+
+# Ignore environment variables
+.env
+.env.local
+
+# Ignore miscellaneous configuration and log files
+CHANGELOG.md
+README.md
