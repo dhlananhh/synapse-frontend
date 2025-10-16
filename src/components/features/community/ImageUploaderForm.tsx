@@ -16,7 +16,7 @@ interface ImageUploaderProps {
 }
 
 
-export function ImageUploader({
+export function ImageUploaderForm({
   label,
   description,
   currentImageUrl,

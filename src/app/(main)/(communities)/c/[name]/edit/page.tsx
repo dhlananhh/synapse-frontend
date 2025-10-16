@@ -17,7 +17,7 @@ import { Community } from "@/types/services/community";
 import { TUpdateCommunityDetailsSchema } from "@/libs/validators/community-validator";
 import { communityService } from "@/modules/services/community-service";
 import UpdateCommunityForm from "@/components/features/community/UpdateCommunityForm";
-import { ImageUploader } from "@/components/features/community/ImageUploader";
+import { ImageUploaderForm } from "@/components/features/community/ImageUploaderForm";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -174,7 +174,7 @@ export default function EditCommunityPage() {
           </CardHeader>
           <CardContent className="space-y-6">
             {/* Avatar Uploader */ }
-            <ImageUploader
+            <ImageUploaderForm
               label="Community Avatar"
               description="Appears on your community's page and in feeds."
               currentImageUrl={ community.avatarUrl }
@@ -194,7 +194,7 @@ export default function EditCommunityPage() {
             />
             <Separator />
             {/* Banner Uploader */ }
-            <ImageUploader
+            <ImageUploaderForm
               label="Community Banner"
               description="Appears at the top of your community page."
               currentImageUrl={ community.bannerUrl }
