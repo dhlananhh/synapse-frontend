@@ -1,5 +1,6 @@
 "use client";
 
+
 import React from "react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -29,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+
 interface UpdateRuleDialogProps {
   communityId: string;
   rule: CommunityRule;
@@ -54,14 +56,13 @@ export function UpdateRuleDialog({
 
   const onSubmit = async (data: TRuleSchema) => {
     try {
-      const response =
-        await communityService.updateCommunityRule(
-          communityId,
-          rule.id,
-          data
-        );
+      const response = await communityService.updateRule(
+        communityId,
+        rule.id,
+        data
+      );
       toast.success("Rule updated successfully!");
-      onRuleUpdated(response.data);
+      onRuleUpdated(response);
       onOpenChange(false);
     } catch (error: any) {
       toast.error("Failed to update rule.", {
@@ -71,48 +72,63 @@ export function UpdateRuleDialog({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog
+      open={ isOpen }
+      onOpenChange={ onOpenChange }
+    >
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Rule</DialogTitle>
+          <DialogTitle>
+            Edit Rule
+          </DialogTitle>
         </DialogHeader>
-        <Form {...form}>
+        <Form
+          { ...form }
+        >
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={ form.handleSubmit(onSubmit) }
             className="space-y-4 py-4"
           >
             <FormField
-              control={form.control}
+              control={ form.control }
               name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Title</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={
+                ({ field }) => (
+                  <FormItem>
+                    <FormLabel>Title</FormLabel>
+                    <FormControl>
+                      <Input
+                        { ...field }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }
             />
             <FormField
-              control={form.control}
+              control={ form.control }
               name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>
-                    Description (Optional)
-                  </FormLabel>
-                  <FormControl>
-                    <Textarea {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+              render={
+                ({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      Description (Optional)
+                    </FormLabel>
+                    <FormControl>
+                      <Textarea
+                        { ...field }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )
+              }
             />
             <DialogFooter>
               <Button
                 type="submit"
-                disabled={form.formState.isSubmitting}
+                disabled={ form.formState.isSubmitting }
               >
                 Save Changes
               </Button>

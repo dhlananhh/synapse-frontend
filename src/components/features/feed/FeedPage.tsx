@@ -3,7 +3,7 @@
 import React from "react";
 import CreatePostWidget from "@/components/shared/CreatePostWidget";
 import { Navbar } from "@/components/shared/Navbar";
-import TopCommunitiesWidget from "@/components/features/community/TopCommunitiesWidget";
+import TopCommunitiesWidget from "@/components/features/community/widgets/TopCommunitiesWidget";
 
 export default function FeedPage() {
   return (

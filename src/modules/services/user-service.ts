@@ -40,7 +40,7 @@ export const userService = {
     userId: string
   ): Promise<UserPreferences> => {
     return userApiClient
-      .get(`/${userId}/preferences`)
+      .get(`/me/preferences`)
       .then((res) => res.data);
   },
 
@@ -49,7 +49,7 @@ export const userService = {
     payload: UpdateUserPreferencesPayload
   ): Promise<UserPreferences> => {
     return userApiClient
-      .patch(`/${userId}/preferences`, payload)
+      .patch(`/me/preferences`, payload)
       .then((res) => res.data);
   },
 

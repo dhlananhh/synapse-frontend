@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { HexColorPicker } from "react-colorful";
@@ -57,41 +57,41 @@ export function CommunityFlairForm({
   });
 
   return (
-    <Form {...form}>
+    <Form { ...form }>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={ form.handleSubmit(onSubmit) }
         className="space-y-4 rounded-md border p-4"
       >
         <FormField
-          control={form.control}
+          control={ form.control }
           name="name"
-          render={({ field }) => (
+          render={ ({ field }) => (
             <FormItem>
               <FormLabel>Flair Name</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input { ...field } />
               </FormControl>
               <FormMessage />
             </FormItem>
-          )}
+          ) }
         />
         <FormField
-          control={form.control}
+          control={ form.control }
           name="description"
-          render={({ field }) => (
+          render={ ({ field }) => (
             <FormItem>
               <FormLabel>Description (Optional)</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input { ...field } />
               </FormControl>
               <FormMessage />
             </FormItem>
-          )}
+          ) }
         />
         <FormField
-          control={form.control}
+          control={ form.control }
           name="color"
-          render={({ field }) => (
+          render={ ({ field }) => (
             <FormItem>
               <FormLabel>Color</FormLabel>
               <Popover>
@@ -103,40 +103,45 @@ export function CommunityFlairForm({
                     <div className="flex items-center gap-2">
                       <div
                         className="h-4 w-4 rounded-full border"
-                        style={{
+                        style={ {
                           backgroundColor:
                             field.value ?? undefined,
-                        }}
+                        } }
                       />
-                      <span>{field.value}</span>
+                      <span>{ field.value }</span>
                     </div>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto border-0 p-0">
                   <HexColorPicker
-                    color={field.value ?? ""}
-                    onChange={field.onChange}
+                    color={ field.value ?? "" }
+                    onChange={ field.onChange }
                   />
                 </PopoverContent>
               </Popover>
               <FormMessage />
             </FormItem>
-          )}
+          ) }
         />
         <div className="flex justify-end gap-2">
           <Button
             type="button"
             variant="ghost"
-            onClick={onCancel}
+            onClick={ onCancel }
           >
             Cancel
           </Button>
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting
-              ? "Saving..."
-              : initialData
-                ? "Save Changes"
-                : "Create Flair"}
+          <Button
+            type="submit"
+            disabled={ isSubmitting }
+          >
+            {
+              isSubmitting
+                ? "Saving..."
+                : initialData
+                  ? "Save Changes"
+                  : "Create Flair"
+            }
           </Button>
         </div>
       </form>

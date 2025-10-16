@@ -85,26 +85,26 @@ export default function CommunityManagePage() {
       permission: "all",
     },
     {
-      title: "Community Settings",
+      title: "Edit Community Details",
       description:
-        "Update community details like name, description, and privacy settings.",
-      href: `/c/${community.name}/settings`,
+        "Update community details like name, description, avatar, banner, and privacy settings.",
+      href: `/c/${community.name}/edit`,
       icon: Settings,
       permission: "owner",
     },
     {
-      title: "Community Rules",
+      title: "Manage Community Rules",
       description:
         "Create and edit the rules for your community.",
-      href: "#",
+      href: `/c/${community.name}/manage/rules`,
       icon: ShieldCheck,
       permission: "all",
     },
     {
-      title: "Post Flairs",
+      title: "Manage Community Flairs",
       description:
         "Manage the flairs that members can add to their posts.",
-      href: "#",
+      href: `/c/${community.name}/manage/flairs`,
       icon: Hash,
       permission: "all",
     },
@@ -120,42 +120,42 @@ export default function CommunityManagePage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold">
-          Moderation Tools
+          Moderation & Management Tools
         </h1>
         <p className="text-muted-foreground text-lg">
-          Manage your community{" "}
+          Manage your community { " " }
           <span className="text-primary font-semibold">
-            c/{community.name}
+            c/{ community.name }
           </span>
         </p>
       </div>
 
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {availableTools.map((tool) => (
+        { availableTools.map((tool) => (
           <Link
-            href={tool.href}
-            key={tool.title}
+            href={ tool.href }
+            key={ tool.title }
             className="group"
           >
             <Card className="hover:border-primary h-full transition-colors hover:shadow-lg">
               <CardHeader className="flex-row items-center gap-4">
                 <tool.icon className="text-primary h-8 w-8" />
                 <div>
-                  <CardTitle>{tool.title}</CardTitle>
+                  <CardTitle>{ tool.title }</CardTitle>
                 </div>
               </CardHeader>
               <CardContent>
                 <CardDescription>
-                  {tool.description}
+                  { tool.description }
                 </CardDescription>
                 <div className="text-primary mt-4 flex items-center text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100">
-                  Go to {tool.title}
+                  Go to { tool.title }
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </div>
               </CardContent>
             </Card>
           </Link>
-        ))}
+        )) }
       </div>
     </div>
   );
@@ -169,18 +169,20 @@ function ManagementDashboardSkeleton() {
         <Skeleton className="h-6 w-1/2" />
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {[...Array(6)].map((_, i) => (
-          <Card key={i} className="h-[180px]">
-            <CardHeader className="flex-row items-center gap-4">
-              <Skeleton className="h-8 w-8 rounded-full" />
-              <Skeleton className="h-6 w-2/3" />
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-5/6" />
-            </CardContent>
-          </Card>
-        ))}
+        {
+          [ ...Array(6) ].map((_, i) => (
+            <Card key={ i } className="h-[180px]">
+              <CardHeader className="flex-row items-center gap-4">
+                <Skeleton className="h-8 w-8 rounded-full" />
+                <Skeleton className="h-6 w-2/3" />
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+              </CardContent>
+            </Card>
+          ))
+        }
       </div>
     </div>
   );

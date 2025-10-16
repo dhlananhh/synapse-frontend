@@ -42,8 +42,9 @@ export interface Community {
   moderatorIds: string[];
   rules: CommunityRule[];
   flairs: CommunityFlair[];
-  userMembership: any; // define more specifically if needed
+  userMembership: any;
   createdAt: string;
+  updatedAt: string;
 }
 
 // Define the type for a community membership

@@ -41,6 +41,8 @@ export const VerifyEmailSchema = z.object({
 });
 export type TVerifyEmailSchema = z.infer<typeof VerifyEmailSchema>;
 
+
+// Reset password schema
 export const ResetPasswordSchema = z.object({
   email: z.string().email(),
   code: z.string().min(6, "The reset code must be 6 digits."),
@@ -51,3 +53,16 @@ export const ResetPasswordSchema = z.object({
   path: [ "confirmPassword" ],
 });
 export type TResetPasswordSchema = z.infer<typeof ResetPasswordSchema>;
+
+
+// Change password schema
+export const ChangePasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Current password is required."),
+  newPassword: z.string().min(8, "New password must be at least 8 characters."),
+  confirmPassword: z.string()
+}).refine(data => data.newPassword === data.confirmPassword, {
+  message: "New passwords don't match",
+  path: [ "confirmPassword" ],
+});
+
+export type TChangePasswordSchema = z.infer<typeof ChangePasswordSchema>;

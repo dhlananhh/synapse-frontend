@@ -11,7 +11,7 @@ export default function MainLayout({
     <div className="relative flex min-h-screen flex-col">
       <Navbar />
       <main className="container mx-auto mb-14 max-w-7xl flex-grow pt-8">
-        {children}
+        { children }
       </main>
       <Footer />
       <ChatTray />
