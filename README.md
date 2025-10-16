@@ -130,123 +130,341 @@ This name was chosen because it perfectly encapsulates the core mission of this 
 - **State Management:** React Context API (for low-frequency updates) & Zustand (for high-frequency updates like chat and notifications).
 - **Forms:** React Hook Form & Zod (for validation).
 - **Internationalization (i18n):** `react-i18next` & `i18next`.
-- **UX Libraries:** `next-themes`, `nextjs-toploader`, `sonner`, `lucide-react`.
+- **UX Libraries:** `next-themes`, `nextjs-toploader`, `sonner`, `lucide-react`, `react-colorful`, & `react-confetti`.
 
 ## 📁 Project Structure
 
 The project follows a feature-centric architecture within the Next.js App Router paradigm. This structure is designed for scalability, maintainability, and clear separation of concerns. It incorporates modern best practices, including a clear distinction between different types of components, hooks, and state management strategies.
 
 ```
-synapse-client/
-├── public/                                   # 🏞️ Static assets (images, fonts, favicons). Files here are served at the root.
-└── src/                                      # 🗺️ Next.js App Router: The core of the application's routing and pages.
-    ├── app/                                  # - Route Group for authentication pages (login, register). Has a simple, centered layout.
-    │   ├── (auth)/
-    │   │   ├── login
-    │   │   │     └── page.tsx
-    │   │   └── register
-    │   │        └── page.tsx
-    │   ├── (landing)/                        # - Route Group for the public, unauthenticated marketing page.
-    │   │   └── page.tsx                      # -> Handles the root "/" URL for new visitors.
-    │   ├── reset-password/
-    │   │   └── page.tsx                      # - Handles the complete password reset flow.
-    │   ├── (main)/                           # - Group for the main application layout (with Navbar, Footer, etc.)
-    │   │   ├── (communities)/
-    │   │   │   └── c/[slug]/                 # - Dynamic route for viewing a single community.
-    │   │   │     └── page.tsx
-    │   │   ├── (posts)/
-    │   │   │   └── p/[postId]/               # - Dynamic routes for posts (viewing and editing).
-    │   │   ├── (user)/
-    │   │   │   └── u/[username]/             # - Dynamic route for viewing a user profile.
-    │   │   │     └── page.tsx
-    │   │   ├── feed/                         # - The main post feed page (/feed), with its own two-column layout.
-    │   │   │     └── page.tsx
-    │   │   ├── settings/                     # - User settings page (/settings)
-    │   │   │     └── page.tsx
-    │   │   └── submit/                       # - The page for creating a new post (/submit).
-    │   │         └── page.tsx
-    │   ├── search/                           # - Search results page (/search)
-    │   │         └── page.tsx
-    │   ├── layout.tsx                        # - The root layout for the ENTIRE application (<html>, <body> tags).
-    │   └── not-found.tsx                     # - Custom, globally applied 404 error page. (/not-found)
-    │
-    ├── components/                           # 🧩 React Components: The building blocks of the UI.
-    │   ├── features/                         # - Large, "smart" components, specific to a business feature (e.g., the complete PostFeed, LoginForm).
-    │   │   ├── auth/                         # - LoginForm, RegisterForm, VerifyEmailForm,...
-    │   │   ├── award/                        # - AwardDisplay, AwardSelectionDialog
-    │   │   ├── chat/                         # - ChatWidget
-    │   │   ├── command/                      # - CommandMenu
-    │   │   ├── comment/                      # - CommentSection, CommentItem, CommentForm
-    │   │   ├── community/                    # - CommunityHeader, TopCommunitiesWidget
-    │   │   ├── feed/                         # - FeedPage
-    │   │   ├── landing/                      # - LandingPage
-    │   │   ├── notifications/                # - NotificationBell, NotificationItem
-    │   │   ├── onboarding/                   # - OnboardingModal
-    │   │   ├── post/                         # - PostFeed, PostCard, VoteClient, CreatePostForm, etc.
-    │   │   ├── report/                       # - ReportDialog
-    │   │   ├── report/                       # - ReportDialog
-    │   │   ├── settings/                     # - SettingsRow, UpdateProfileForm
-    │   │   │  └── dialogs/
-    │   │   │  └── tabs/
-    │   │   └── user/                         # - UserProfile, ProfileHeader, ActivityCalendar, etc.
-    │   ├── providers/                        # - Global "wrapper" components & headless logic (Theme, I18nProvider).
-    │   │   ├── NotificationSimulator.tsx
-    │   │   ├── ThemeProvider.tsx
-    │   │   ├── I18nProvider.tsx
-    │   │   └── TopProgressBar.tsx
-    │   ├── shared/                           # - "Dumb", highly reusable components used across multiple features
-    │   │   ├── ConfirmDialog.tsx
-    │   │   ├── MobileNav.tsx
-    │   │   ├── Navbar.tsx
-    │   │   ├── SearchBar.tsx
-    │   │   ├── UserAvatar.tsx
-    │   │   ├── UserNav.tsx
-    │   │   ├── EmptyState.tsx
-    │   │   ├── ErrorDisplay.tsx
-    │   │   └── Footer.tsx
-    │   └── ui/                               # - Primitive UI components from Shadcn UI. The lowest level of the UI.
-    │
-    ├── context/                              # 🧠 Global State Management (React Context): For state that updates infrequently.
-    │   ├── AuthContext.tsx                   # - Manages user session, permissions, votes, and triggers for global modals.
-    │   └── CommandMenuContext.tsx            # - Manages the open/closed state and keyboard listeners for the Cmd+K menu.
-    │
-    ├── hooks/                                # 🎣 Custom React Hooks: For reusable stateful logic.
-    │   └── useIntersectionObserver.ts        # - Encapsulates the logic for detecting when an element is visible (for infinite scroll).
-    │
-    ├── libs/                                 # 📚 Libraries & Core Business Logic
-    │   ├── apiClient.ts                      # - The centralized Axios instance with interceptors for auth/token refresh.
-    │   ├── mock-data.ts                      # - The in-memory "database" with mock users, posts, and communities.
-    │   ├── paths.ts                          # - Centralized, type-safe route constants to prevent broken links.
-    │   ├── utils.ts                          # - General utility functions (e.g., `cn` for classnames)
-    │   └── validators/                       # - Zod schemas for all form validation (auth, post, user).
-    │
-    ├── modules/                              # 🧱 Encapsulates communication logic with backend microservices.
-    │     └── services/                       # - Houses API service clients. Each file maps to a microservice.
-    │       └── auth-service.ts
-    │       └── user-service.ts
-    │
-    ├── locales/                              # 🌐 Internationalization (i18n): For multi-language support.
-    │   ├── en.json                           # - English language translation strings.
-    │   └── vn.json                           # - Vietnamese language translation strings.
-    │
-    ├── store/                                # 🏪 Global State Management (Zustand): For state that updates frequently.
-    │   ├── useChatStore.ts                   # - Manages all state for the high-frequency real-time chat feature.
-    │   └── useNotificationStore.ts           # - Manages the state for the global real-time notification system.
-    │
-    ├── styles/                               # 🎨 Styling: Global styles and theme configuration.
-    │   └── globals.css                       # - Core global styles and custom CSS for libraries.
-    │
-    ├── types/                                # 📝 TypeScript Type Definitions
-    │   ├── services/
-    │     ├── auth.d.ts
-    │     └── auth.d.ts
-    │   ├── globals.d.ts                      # - Global type declarations, if needed for third-party libraries.
-    │   └── index.d.ts                        # - Centralized definitions for all custom application types (User, Post, Comment, etc.).
-    │
-    ├── utils/                                # 🛠️ General Utilities: Small, stateless helper functions.
-    │     └── index.ts                        # - Can re-export functions or contain general helpers (e.g., the `cn` function for classnames).
-    ├── middleware.ts
-    └── tailwind.config.ts                    # - Tailwind CSS theme configuration (colors, fonts, plugins).
+└── 📁synapse-frontend
+    └── 📁.vscode
+        ├── settings.json
+    └── 📁public
+        └── 📁images
+            ├── .gitkeep
+        └── 📁screenshots
+            ├── .gitkeep
+            ├── LogInPage.png
+            ├── RegisterPage.png
+            ├── ResetPasswordPage.png
+        ├── file.svg
+        ├── globe.svg
+        ├── next.svg
+        ├── vercel.svg
+        ├── window.svg
+    └── 📁src
+        └── 📁app
+            └── 📁(auth)
+                └── 📁login
+                    ├── page.tsx
+                └── 📁register
+                    ├── page.tsx
+                └── 📁reset-password
+                    ├── page.tsx
+                └── 📁verify-email
+                    ├── page.tsx
+                ├── layout.tsx
+            └── 📁(landing)
+                ├── layout.tsx
+            └── 📁(main)
+                └── 📁(communities)
+                    └── 📁c
+                        └── 📁[name]
+                            └── 📁edit
+                                ├── page.tsx
+                            └── 📁manage
+                                └── 📁flairs
+                                    ├── page.tsx
+                                └── 📁members
+                                    ├── page.tsx
+                                └── 📁rules
+                                    ├── page.tsx
+                                ├── page.tsx
+                            ├── layout.tsx
+                            ├── page.tsx
+                        └── 📁create
+                            ├── page.tsx
+                └── 📁(user)
+                    └── 📁profile
+                        └── 📁[userId]
+                            ├── layout.tsx
+                            ├── page.tsx
+                        └── 📁me
+                            ├── layout.tsx
+                            ├── page.tsx
+                └── 📁feed
+                    ├── page.tsx
+                └── 📁forbidden
+                    ├── page.tsx
+                └── 📁not-found
+                    ├── page.tsx
+                └── 📁preferences
+                    └── 📁me
+                        ├── page.tsx
+                └── 📁search
+                    ├── page.tsx
+                ├── layout.tsx
+                ├── page.tsx
+            ├── favicon.ico
+            ├── layout.tsx
+            ├── page.tsx
+            ├── sitemap.ts
+        └── 📁components
+            └── 📁features
+                └── 📁auth
+                    ├── LoginForm.tsx
+                    ├── RegisterForm.tsx
+                    ├── RequestPasswordResetForm.tsx
+                    ├── ResetPasswordFlow.tsx
+                    ├── ResetPasswordForm.tsx
+                    ├── SetNewPasswordForm.tsx
+                    ├── VerifyEmailForm.tsx
+                    ├── VerifyEmailSkeleton.tsx
+                    ├── VerifyResetCodeForm.tsx
+                └── 📁chat
+                    ├── ChatMessage.tsx
+                    ├── ChatTray.tsx
+                    ├── ChatWindow.tsx
+                    ├── ThreadsList.tsx
+                └── 📁command
+                    ├── CommandMenu.tsx
+                └── 📁comment
+                    ├── CommentForm.tsx
+                    ├── CommentItem.tsx
+                    ├── CommentSection.tsx
+                └── 📁community
+                    └── 📁create
+                        ├── CommunityCreationWizard.tsx
+                        ├── CommunityImageForm.tsx
+                        ├── CommunityInfoForm.tsx
+                        ├── CreationSuccess.tsx
+                    └── 📁dialogs
+                        ├── ActionConfirmDialog.tsx
+                        ├── AllModeratorsDialog.tsx
+                        ├── DeleteCommunityDialog.tsx
+                        ├── ManageFlairsDialog.tsx
+                        ├── UpdateCommunityDialog.tsx
+                    └── 📁forms
+                        ├── CommunityFlairForm.tsx
+                        ├── ImageUploaderForm.tsx
+                        ├── UpdateCommunityForm.tsx
+                    └── 📁manage
+                        └── 📁flairs
+                            ├── CreateFlairDialog.tsx
+                            ├── ManageFlairsDialog.tsx
+                            ├── UpdateFlairDialog.tsx
+                        └── 📁members
+                            ├── BannedMembersTab.tsx
+                            ├── CurrentMembersTab.tsx
+                            ├── MemberCard.tsx
+                            ├── MemberCardSkeleton.tsx
+                            ├── PendingMembersTab.tsx
+                        └── 📁rules
+                            ├── CreateRuleDialog.tsx
+                            ├── ManageRulesDialog.tsx
+                            ├── UpdateRuleDialog.tsx
+                    └── 📁widgets
+                        ├── AboutCommunityWidget.tsx
+                        ├── CommunityFlairsWidget.tsx
+                        ├── CommunityFlairsWidgetSkeleton.tsx
+                        ├── CommunityRulesWidget.tsx
+                        ├── ModeratorListWidget.tsx
+                        ├── TopCommunitiesWidget.tsx
+                    ├── CommunityHeader.tsx
+                └── 📁feed
+                    ├── FeedPage.tsx
+                └── 📁landing
+                    ├── LandingPage.tsx
+                └── 📁notifications
+                    ├── NotificationBell.tsx
+                    ├── NotificationItem.tsx
+                └── 📁post
+                    ├── CreatePostForm.tsx
+                    ├── SavePostButton.tsx
+                    ├── VoteClient.tsx
+                └── 📁report
+                    ├── ReportDialog.tsx
+                └── 📁search
+                    ├── CommunitySearchResultem.tsx
+                    ├── LoadMoreButton.tsx
+                    ├── NoMoreResults.tsx
+                    ├── ResourceTypeSelector.tsx
+                    ├── SearchResultsList.tsx
+                    ├── UserSearchResultItem.tsx
+                └── 📁settings
+                    ├── ChangePasswordForm.tsx
+                    ├── PreferencesForm.tsx
+                    ├── SettingsPageSkeleton.tsx
+                    ├── SettingsRow.tsx
+                └── 📁user
+                    ├── ActivityCalendar.tsx
+                    ├── AvatarUpload.tsx
+                    ├── FollowCard.tsx
+                    ├── FollowerItem.tsx
+                    ├── FollowerList.tsx
+                    ├── FollowingItem.tsx
+                    ├── FollowingList.tsx
+                    ├── FollowingTab.tsx
+                    ├── FollowList.tsx
+                    ├── FollowListSkeleton.tsx
+                    ├── GeneralProfileCard.tsx
+                    ├── OtherProfileHeader.tsx
+                    ├── OtherProfilePage.tsx
+                    ├── OwnProfileHeader.tsx
+                    ├── OwnProfilePage.tsx
+                    ├── PendingRequestItem.tsx
+                    ├── PendingRequestsDialog.tsx
+                    ├── PrivacyConfirmDialog.tsx
+                    ├── PrivacyToggle.tsx
+                    ├── PrivateProfileView.tsx
+                    ├── UpdateProfileDialog.tsx
+                    ├── UpdateProfileForm.tsx
+                    ├── UserCommentFeed.tsx
+                    ├── UserPostFeed.tsx
+                    ├── UserProfileInterface.tsx
+                    ├── UserProfileLayout.tsx
+                    ├── UserProfileSkeleton.tsx
+                    ├── UserProfileTabs.tsx
+            └── 📁providers
+                ├── I18nProvider.tsx
+                ├── NotificationSimulator.tsx
+                ├── ThemeProvider.tsx
+                ├── TopProgressBar.tsx
+            └── 📁shared
+                ├── ConfirmDialog.tsx
+                ├── CreatePostWidget.tsx
+                ├── Editor.tsx
+                ├── EmptyState.tsx
+                ├── ErrorDisplay.tsx
+                ├── Footer.tsx
+                ├── ForbiddenDisplay.tsx
+                ├── LogoutConfirmDialog.tsx
+                ├── MobileNav.tsx
+                ├── Navbar.tsx
+                ├── NotFoundDisplay.tsx
+                ├── SearchBar.tsx
+                ├── ThemeToggle.tsx
+                ├── UserAvatar.tsx
+                ├── UserNav.tsx
+            └── 📁ui
+                ├── accordion.tsx
+                ├── alert-dialog.tsx
+                ├── aspect-ratio.tsx
+                ├── avatar.tsx
+                ├── badge.tsx
+                ├── breadcrumb.tsx
+                ├── button.tsx
+                ├── calendar.tsx
+                ├── card.tsx
+                ├── carousel.tsx
+                ├── checkbox.tsx
+                ├── collapsible.tsx
+                ├── command.tsx
+                ├── context-menu.tsx
+                ├── dialog.tsx
+                ├── dropdown-menu.tsx
+                ├── form.tsx
+                ├── hover-card.tsx
+                ├── input-otp.tsx
+                ├── input.tsx
+                ├── label.tsx
+                ├── menubar.tsx
+                ├── navigation-menu.tsx
+                ├── popover.tsx
+                ├── progress.tsx
+                ├── radio-group.tsx
+                ├── scroll-area.tsx
+                ├── select.tsx
+                ├── separator.tsx
+                ├── sheet.tsx
+                ├── sidebar.tsx
+                ├── skeleton.tsx
+                ├── slider.tsx
+                ├── sonner.tsx
+                ├── switch.tsx
+                ├── table.tsx
+                ├── tabs.tsx
+                ├── textarea.tsx
+                ├── toggle-group.tsx
+                ├── toggle.tsx
+                ├── tooltip.tsx
+        └── 📁context
+            ├── AuthContext.tsx
+            ├── CommandMenuContext.tsx
+            ├── CommunityContext.tsx
+            ├── MembershipContext.tsx
+        └── 📁hooks
+            ├── use-mobile.ts
+            ├── useDebounce.ts
+            ├── useIntersectionObserver.ts
+            ├── useWindowSize.ts
+        └── 📁libs
+            └── 📁validators
+                ├── auth-validator.ts
+                ├── community-validator.ts
+                ├── post-validator.ts
+                ├── report-validator.ts
+                ├── user-validator.ts
+            ├── api.ts
+            ├── apiClient.ts
+            ├── i18n.ts
+            ├── languages.ts
+            ├── mock-api.ts
+            ├── mock-data.ts
+            ├── paths.ts
+            ├── sessionStorageManager.ts
+            ├── utils.ts
+        └── 📁locales
+            ├── .gitkeep
+            ├── de.json
+            ├── en.json
+            ├── fr.json
+            ├── it.json
+            ├── vi.json
+        └── 📁modules
+            └── 📁services
+                ├── .gitkeep
+                ├── auth-service.ts
+                ├── chat-service.ts
+                ├── community-service.ts
+                ├── post-service.ts
+                ├── user-service.ts
+            ├── .gitkeep
+        └── 📁store
+            ├── useChatStore.ts
+            ├── useNotificationStore.ts
+            ├── useUserStore.ts
+        └── 📁styles
+            ├── .gitkeep
+            ├── globals.css
+        └── 📁types
+            └── 📁services
+                ├── auth.d.ts
+                ├── chat.d.ts
+                ├── community.d.ts
+                ├── user.d.ts
+            ├── globals.d.ts
+            ├── index.d.ts
+        └── 📁utils
+            ├── .gitkeep
+    ├── .env.example
+    ├── .env.local
+    ├── .gitignore
+    ├── .prettierignore
+    ├── .prettierrc
+    ├── bun.lock
+    ├── bunfig.toml
+    ├── components.json
+    ├── eslint.config.js
+    ├── next-env.d.ts
+    ├── next.config.ts
+    ├── package-lock.json
+    ├── package.json
+    ├── postcss.config.mjs
+    ├── README.md
+    ├── tailwind.config.ts
+    └── tsconfig.json
 ```
 
 ### Architectural Decisions Explained:
