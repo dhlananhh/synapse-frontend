@@ -123,14 +123,35 @@ This name was chosen because it perfectly encapsulates the core mission of this 
 
 ## 🛠️ Technology Stack
 
-- **Framework:** Next.js 15 (App Router)
-- **Language:** TypeScript
-- **UI:** React, Tailwind CSS
-- **Component Library:** Shadcn UI (Radix UI + Tailwind)
-- **State Management:** React Context API (for low-frequency updates) & Zustand (for high-frequency updates like chat and notifications).
-- **Forms:** React Hook Form & Zod (for validation).
-- **Internationalization (i18n):** `react-i18next` & `i18next`.
-- **UX Libraries:** `next-themes`, `nextjs-toploader`, `sonner`, `lucide-react`, `react-colorful`, & `react-confetti`.
+This project is built with a modern, scalable, and type-safe technology stack, designed for a great developer experience and a robust final product.
+
+### Core Framework & Language
+- **Framework**: **Next.js 15** (with App Router & Turbopack)
+- **Language**: **TypeScript**
+
+### Frontend Architecture
+- **UI Rendering**: **React 19**
+- **State Management**: 
+    - **React Context API**: For low-frequency global state like authentication (`AuthContext`) and theme.
+    - **Zustand**: A lightweight, fast store for high-frequency, complex global state (e.g., real-time chat, notifications).
+- **Data Fetching & Caching**: **Axios** with custom interceptors for automated refresh token logic.
+- **Forms & Validation**: **React Hook Form** (for performance and DX) combined with **Zod** (for schema-based validation).
+- **Internationalization (i18n)**: **`react-i18next`** and **`i18next`** for multi-language support.
+
+### UI & Styling
+- **Styling**: **Tailwind CSS** (Utility-First CSS Framework).
+- **Component Library**: **Shadcn UI**, built on top of **Radix UI** (for accessible, unstyled primitives) and styled with Tailwind CSS.
+- **Icons**: **Lucide React** for a beautiful and consistent set of icons.
+
+### User Experience (UX) & Enhancement Libraries
+- **Theming**: **`next-themes`** for seamless light/dark mode switching.
+- **Routing Feedback**: **`nextjs-toploader`** for a slim progress bar during page navigation.
+- **Notifications**: **`sonner`** for elegant, non-intrusive toast notifications.
+- **File Uploads**: **`react-dropzone`** for modern drag 'n' drop functionality.
+- **UI Enhancements**:
+    - **`react-colorful`**: A lightweight and simple color picker for flair management.
+    - **`react-confetti`**: For celebratory UI effects (e.g., after creating a community).
+    - **`react-textarea-autosize`**: To create textareas that grow with content.
 
 ## 📁 Project Structure
 
