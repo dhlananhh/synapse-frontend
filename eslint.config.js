@@ -38,7 +38,7 @@ module.exports = [
     files: ["**/*.{ts,tsx}"],
     plugins: {
       "@next/next": nextPlugin,
-      "react": reactPlugin,
+      react: reactPlugin,
       "react-hooks": hooksPlugin,
       "@typescript-eslint": tsPlugin,
     },
@@ -68,8 +68,8 @@ module.exports = [
     },
     settings: {
       react: {
-        version: "detect"
-      }
-    }
+        version: "detect",
+      },
+    },
   },
 ];

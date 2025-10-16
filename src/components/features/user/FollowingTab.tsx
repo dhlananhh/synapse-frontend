@@ -1,6 +1,5 @@
 "use client";
 
-
 import React, { useEffect, useState } from "react";
 import { useAuth } from "@/context/MockAuthContext";
 import { User } from "@/types";
@@ -13,44 +12,40 @@ import { UserAvatar } from "@/components/shared/UserAvatar";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-
 function UserListCard({ user }: { user: User }) {
   return (
     <Card>
-      <CardContent className="p-4 flex items-center justify-between">
+      <CardContent className="flex items-center justify-between p-4">
         <Link
-          href={ `/u/${user.username}` }
-          className="flex items-center gap-4 group"
+          href={`/u/${user.username}`}
+          className="group flex items-center gap-4"
         >
-          <UserAvatar user={ user } className="h-10 w-10" />
+          <UserAvatar user={user} className="h-10 w-10" />
           <div>
             <p className="font-bold group-hover:underline">
-              { user.displayName || user.username }
+              {user.displayName || user.username}
             </p>
-            <p className="text-sm text-muted-foreground">
-              u/{ user.username }
+            <p className="text-muted-foreground text-sm">
+              u/{user.username}
             </p>
           </div>
         </Link>
-        <Button
-          asChild
-          variant="outline"
-          size="sm"
-        >
-          <Link href={ `/u/${user.username}` }>
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/u/${user.username}`}>
             View Profile
           </Link>
         </Button>
       </CardContent>
     </Card>
-  )
+  );
 }
-
 
 export default function FollowingTab() {
   const { followingUserIds } = useAuth();
-  const [ followedUsers, setFollowedUsers ] = useState<User[]>([]);
-  const [ isLoading, setIsLoading ] = useState(true);
+  const [followedUsers, setFollowedUsers] = useState<
+    User[]
+  >([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const loadFollowedUsers = async () => {
@@ -61,21 +56,28 @@ export default function FollowingTab() {
       }
       setIsLoading(true);
       try {
-        const users = await fetchUsersByIds(followingUserIds);
+        const users = await fetchUsersByIds(
+          followingUserIds
+        );
         setFollowedUsers(users);
       } catch (error) {
-        console.error("Failed to fetch followed users:", error);
+        console.error(
+          "Failed to fetch followed users:",
+          error
+        );
       } finally {
         setIsLoading(false);
       }
     };
     loadFollowedUsers();
-  }, [ followingUserIds ]);
+  }, [followingUserIds]);
 
   if (isLoading) {
     return (
-      <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-        { Array.from({ length: 4 }).map((_, i) => <Skeleton key={ i } className="h-20 w-full" />) }
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-20 w-full" />
+        ))}
       </div>
     );
   }
@@ -84,21 +86,19 @@ export default function FollowingTab() {
     return (
       <div className="mt-6">
         <EmptyState
-          Icon={ Users }
+          Icon={Users}
           title="Not Following Anyone"
-          description={ `When you follow users, you'll see them listed here. Find interesting people to follow!` }
+          description={`When you follow users, you'll see them listed here. Find interesting people to follow!`}
         />
       </div>
     );
   }
 
   return (
-    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-      {
-        followedUsers.map(user =>
-          <UserListCard key={ user.id } user={ user } />
-        )
-      }
+    <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {followedUsers.map((user) => (
+        <UserListCard key={user.id} user={user} />
+      ))}
     </div>
   );
 }

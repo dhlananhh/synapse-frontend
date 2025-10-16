@@ -1,84 +1,197 @@
 import { create } from "zustand";
 import {
+  User,
   Message,
-  Conversation,
-  ChatState
-} from "@/types";
+  Thread,
+} from "@/types/services/chat";
 
+interface ChatState {
+  threads: Thread[];
+  openThreads: Thread[];
+  minimizedThreads: Thread[];
+  isThreadsListOpen: boolean;
 
-export const useChatStore = create<ChatState>((set, get) => ({
-  conversations: [],
-  activeConversationId: null,
-  isWidgetOpen: false,
+  // Actions
+  initializeThreads: (myUserId: string) => void;
+  toggleThreadsList: () => void;
+  openChat: (threadId: string) => void;
+  closeChat: (threadId: string) => void;
+  minimizeChat: (threadId: string) => void;
+  sendMessage: (
+    threadId: string,
+    messageText: string,
+    myUserId: string
+  ) => void;
+}
 
-  openChat: (contact) => {
-    set(state => {
-      const existingConvo = state.conversations.find(c => c.contact.id === contact.id);
-      if (existingConvo) {
-        return { isWidgetOpen: true, activeConversationId: contact.id };
-      }
-      const newConvo: Conversation = {
-        contact,
-        messages: [ {
-          id: `msg_auto_${Date.now()}`,
-          text: `You are now connected with ${contact.username}.`,
-          senderId: "system",
-          timestamp: new Date().toISOString()
-        } ],
+// ---- MOCK DATA ----
+const mockUserAlice: User = {
+  id: "user001",
+  username: "Alice",
+  avatarUrl: null,
+  isOnline: true,
+};
+const mockUserBob: User = {
+  id: "user002",
+  username: "Bob",
+  avatarUrl: null,
+  isOnline: false,
+};
+const mockUserCandace: User = {
+  id: "user003",
+  username: "Candace",
+  avatarUrl: null,
+  isOnline: true,
+};
+
+const createMockThreads = (myUserId: string): Thread[] => {
+  const meAsUserObject = [
+    mockUserAlice,
+    mockUserBob,
+    mockUserCandace,
+  ].find((u) => u.id === myUserId) || {
+    id: myUserId,
+    username: "Me",
+    isOnline: true,
+  };
+
+  return [
+    {
+      id: "thread-1",
+      participants: [meAsUserObject, mockUserBob],
+      messages: [
+        {
+          id: "msg-2",
+          text: "Pretty good!",
+          senderId: "user002",
+          timestamp: new Date().toISOString(),
+        },
+      ],
+      lastMessage: {
+        id: "msg-2",
+        text: "Pretty good!",
+        senderId: "user002",
+        timestamp: new Date().toISOString(),
+      },
+    },
+    {
+      id: "thread-2",
+      participants: [meAsUserObject, mockUserCandace],
+      messages: [
+        {
+          id: "msg-3",
+          text: "Did you see the latest update?",
+          senderId: "user003",
+          timestamp: new Date().toISOString(),
+        },
+      ],
+      lastMessage: {
+        id: "msg-3",
+        text: "Did you see the latest update?",
+        senderId: "user003",
+        timestamp: new Date().toISOString(),
+      },
+    },
+  ];
+};
+
+export const useChatStore = create<ChatState>(
+  (set, get) => ({
+    threads: [],
+    openThreads: [],
+    minimizedThreads: [],
+    isThreadsListOpen: false,
+
+    initializeThreads: (myUserId: string) => {
+      set({ threads: createMockThreads(myUserId) });
+    },
+
+    toggleThreadsList: () =>
+      set((state) => ({
+        isThreadsListOpen: !state.isThreadsListOpen,
+      })),
+
+    openChat: (threadId: string) => {
+      const threadToOpen = get().threads.find(
+        (t) => t.id === threadId
+      );
+      if (!threadToOpen) return;
+
+      set((state) => ({
+        openThreads: [
+          threadToOpen,
+          ...state.openThreads.filter(
+            (t) => t.id !== threadId
+          ),
+        ],
+        minimizedThreads: state.minimizedThreads.filter(
+          (t) => t.id !== threadId
+        ),
+        isThreadsListOpen: false,
+      }));
+    },
+
+    closeChat: (threadId: string) => {
+      set((state) => ({
+        openThreads: state.openThreads.filter(
+          (t) => t.id !== threadId
+        ),
+        minimizedThreads: state.minimizedThreads.filter(
+          (t) => t.id !== threadId
+        ),
+      }));
+    },
+
+    minimizeChat: (threadId: string) => {
+      const threadToMinimize = get().openThreads.find(
+        (t) => t.id === threadId
+      );
+      if (!threadToMinimize) return;
+
+      set((state) => ({
+        openThreads: state.openThreads.filter(
+          (t) => t.id !== threadId
+        ),
+        minimizedThreads: [
+          ...state.minimizedThreads,
+          threadToMinimize,
+        ],
+      }));
+    },
+
+    sendMessage: (
+      threadId: string,
+      messageText: string,
+      myUserId: string
+    ) => {
+      const newMessage: Message = {
+        id: `msg-${Date.now()}`,
+        text: messageText,
+        senderId: myUserId,
+        timestamp: new Date().toISOString(),
       };
-      return {
-        isWidgetOpen: true,
-        activeConversationId: contact.id,
-        conversations: [ ...state.conversations, newConvo ]
+
+      const updateThreadWithNewMessage = (
+        thread: Thread
+      ) => {
+        if (thread.id === threadId) {
+          return {
+            ...thread,
+            messages: [...thread.messages, newMessage],
+            lastMessage: newMessage,
+          };
+        }
+        return thread;
       };
-    });
-  },
 
-  closeChat: () => set({ isWidgetOpen: false }),
-
-  sendMessage: (text, user) => {
-    const activeId = get().activeConversationId;
-    if (!activeId) return;
-
-    const newMessage: Message = {
-      id: `msg_sent_${Date.now()}`,
-      text,
-      senderId: user.id,
-      timestamp: new Date().toISOString()
-    };
-
-    set(state => ({
-      conversations: state.conversations.map(convo =>
-        convo.contact.id === activeId
-          ? { ...convo, messages: [ ...convo.messages, newMessage ] }
-          : convo
-      )
-    }));
-
-    get()._receiveSimulatedReply(activeId, text);
-  },
-
-  _receiveSimulatedReply: (contactId, originalText) => {
-    setTimeout(() => {
-      set(state => {
-        const convo = state.conversations.find(c => c.contact.id === contactId);
-        if (!convo) return state;
-
-        const replyMessage: Message = {
-          id: `msg_reply_${Date.now()}`,
-          text: `This is a simulated reply to your message about "${originalText.substring(0, 15)}..."`,
-          senderId: contactId,
-          timestamp: new Date().toISOString()
-        };
-
-        return {
-          conversations: state.conversations.map(c =>
-            c.contact.id === contactId
-              ? { ...c, messages: [ ...c.messages, replyMessage ] }
-              : c
-          )
-        };
-      });
-    }, 1500);
-  }
-}));
+      set((state) => ({
+        threads: state.threads.map(
+          updateThreadWithNewMessage
+        ),
+        openThreads: state.openThreads.map(
+          updateThreadWithNewMessage
+        ),
+      }));
+    },
+  })
+);

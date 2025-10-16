@@ -4,13 +4,17 @@
 import React, {
   useState,
   useEffect,
-  useCallback
+  useCallback,
 } from "react";
 import { toast } from "sonner";
 import { CommunityMember } from "@/types/services/community";
 import { communityService } from "@/modules/services/community-service";
-import { MemberCard } from "./MemberCard";
-import { Loader2, UserRoundPlus } from "lucide-react";
+import { MemberCard } from "@/components/features/community/manage/members/MemberCard";
+import { ActionConfirmDialog } from "@/components/features/community/dialogs/ActionConfirmDialog";
+import {
+  Loader2,
+  UserRoundPlus
+} from "lucide-react";
 
 
 interface PendingMembersTabProps {
@@ -18,10 +22,23 @@ interface PendingMembersTabProps {
   currentUserRole?: "OWNER" | "MODERATOR" | "MEMBER";
 }
 
+interface ActionState {
+  type: "approve" | "reject";
+  userId: string;
+  username: string;
+}
 
-export function PendingMembersTab({ communityId, currentUserRole }: PendingMembersTabProps) {
-  const [ requests, setRequests ] = useState<CommunityMember[]>([]);
+
+export function PendingMembersTab({
+  communityId,
+  currentUserRole,
+}: PendingMembersTabProps) {
+  const [ requests, setRequests ] = useState<
+    CommunityMember[]
+  >([]);
   const [ isLoading, setIsLoading ] = useState(true);
+  const [ actionState, setActionState ] = useState<ActionState | null>(null);
+  const [ isConfirming, setIsConfirming ] = useState(false);
 
   const fetchRequests = useCallback(async () => {
     setIsLoading(true);
@@ -40,66 +57,114 @@ export function PendingMembersTab({ communityId, currentUserRole }: PendingMembe
     fetchRequests();
   }, [ fetchRequests ]);
 
-  const handleAction = async (
+  const handleTriggerAction = (
     userId: string,
     username: string,
     action: "approve" | "reject"
   ) => {
-    const originalRequests = [ ...requests ];
+    if (action === "approve") {
+      performAction(userId, username, action);
+    } else {
+      setActionState({ type: action, userId, username });
+    }
+  };
 
-    setRequests(prev => prev.filter(req => req.userId !== userId));
+  const performAction = async (
+    userId: string,
+    username: string,
+    action: ActionState[ "type" ],
+    reason?: string
+  ) => {
+    setIsConfirming(true);
+    const originalRequests = [ ...requests ];
+    const actionToastId = toast.loading(`Processing request...`);
+
+    setRequests((prev) => prev.filter((req) => req.userId !== userId));
 
     try {
       if (action === "approve") {
         await communityService.approveJoinRequest(communityId, userId);
-        toast.success(`Approved ${username}"s request to join.`);
+        toast.success(
+          `The join request from @${username} has been successfully approved!`,
+          { id: actionToastId }
+        );
       } else {
-        await communityService.rejectJoinRequest(communityId, userId);
-        toast.success(`Rejected ${username}'s request successfully!`);
+        await communityService.rejectJoinRequest(communityId, userId, { reason });
+        toast.success(
+          `The join request from @${username} has been successfully rejected!`,
+          { id: actionToastId }
+        );
       }
     } catch (error: any) {
-      toast.error(`Failed to ${action} request.`, {
-        description: error.response?.data?.message || "Please try again.",
-      });
       setRequests(originalRequests);
+      toast.error(`Failed to ${action} request.`, {
+        description: error.response?.data?.message,
+        id: actionToastId
+      });
+    } finally {
+      setIsConfirming(false);
+      setActionState(null);
     }
-  }
+  };
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center p-8">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (requests.length === 0) {
     return (
-      <div className="text-center p-8">
-        <UserRoundPlus className="mx-auto h-12 w-12 text-muted-foreground" />
+      <div className="p-8 text-center">
+        <UserRoundPlus className="text-muted-foreground mx-auto h-12 w-12" />
         <h3 className="mt-4 text-lg font-semibold">
           All Caught Up!
         </h3>
-        <p className="mt-1 text-sm text-muted-foreground">
+        <p className="text-muted-foreground mt-1 text-sm">
           There are no pending requests to join this community.
         </p>
       </div>
     );
   }
 
+
   return (
     <div>
       {
-        requests.map(request => (
+        requests.map((request) => (
           <MemberCard
             key={ request.id }
             member={ request }
             currentUserRole={ currentUserRole }
-            onApprove={ (userId, username) => handleAction(userId, username, "approve") }
-            onReject={ (userId, username) => handleAction(userId, username, "reject") }
+            onApprove={ (userId, username) => handleTriggerAction(userId, username, "approve") }
+            onReject={ (userId, username) => handleTriggerAction(userId, username, "reject") }
           />
         ))
       }
+
+      <ActionConfirmDialog
+        isOpen={ actionState?.type === "reject" }
+        onOpenChange={ () => setActionState(null) }
+        title={ `Reject join request from @${actionState?.username}?` }
+        description="You can provide an optional reason. The user will not be notified."
+        actionLabel="Confirm Reject"
+        isConfirming={ isConfirming }
+        withReason={ {
+          label: "Reason (optional)",
+          placeholder: "e.g., Account seems suspicious..."
+        } }
+        onConfirm={
+          (reason) =>
+            performAction(
+              actionState!.userId,
+              actionState!.username,
+              "reject",
+              reason
+            )
+        }
+      />
     </div>
   );
 }

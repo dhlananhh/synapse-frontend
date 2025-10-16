@@ -3,13 +3,9 @@
 
 import React, { useState } from "react";
 import { toast } from "sonner";
-import {
-  Community,
-  UpdateCommunityPayload
-} from "@/types/services/community";
+import { Community } from "@/types/services/community";
 import { communityService } from "@/modules/services/community-service";
 import { TUpdateCommunityDetailsSchema } from "@/libs/validators/community-validator";
-import UpdateCommunityForm from "./UpdateCommunityForm";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -20,6 +16,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Settings } from "lucide-react";
+import UpdateCommunityForm from "@/components/features/community/forms/UpdateCommunityForm";
 
 
 interface UpdateCommunityDialogProps {
@@ -27,27 +24,40 @@ interface UpdateCommunityDialogProps {
   onUpdate: (updatedCommunity: Community) => void;
 }
 
+
 export function UpdateCommunityDialog({
   community,
-  onUpdate
+  onUpdate,
 }: UpdateCommunityDialogProps) {
   const [ isOpen, setIsOpen ] = useState(false);
   const [ isSubmitting, setIsSubmitting ] = useState(false);
 
-  const handleFormSubmit = async (formData: TUpdateCommunityDetailsSchema) => {
+  const handleFormSubmit = async (
+    formData: TUpdateCommunityDetailsSchema
+  ) => {
     setIsSubmitting(true);
 
     try {
-      const response = await communityService.updateCommunityDetails(community.id, formData);
-      toast.success("Community details updated successfully!");
-      onUpdate(response.data);
-      setIsOpen(false);
-
-    } catch (error: any) {
-      toast.error("Failed to update community details. Try again later!", {
-        description: error.response?.data?.errors?.[ 0 ]?.message
-          || "An unexpected error occurred.",
+      const response =
+        await communityService.updateCommunity(
+          community.id,
+          formData
+        );
+      toast.success("Community details updated successfully!", {
+        duration: 5000,
       });
+      onUpdate(response);
+      setIsOpen(false);
+    } catch (error: any) {
+      toast.error(
+        "Failed to update community details. Try again later!",
+        {
+          description:
+            error.response?.data?.errors?.[ 0 ]?.message ||
+            "An unexpected error occurred.",
+          duration: 5000,
+        }
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -61,17 +71,17 @@ export function UpdateCommunityDialog({
       <DialogTrigger asChild>
         <Button
           variant="outline"
-          size="sm"
+          className="w-full"
         >
-          <Settings className="h-4 w-4" />
-          Update this community
+          <div className="flex w-full items-center justify-center gap-2">
+            <Settings className="h-4 w-4" />
+            <span>Edit community details</span>
+          </div>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>
-            Community Settings
-          </DialogTitle>
+          <DialogTitle>Community Settings</DialogTitle>
           <DialogDescription>
             Update your community&apos;s details. Changes will be visible to everyone.
           </DialogDescription>

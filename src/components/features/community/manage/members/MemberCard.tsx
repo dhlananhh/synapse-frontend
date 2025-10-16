@@ -7,7 +7,7 @@ import { CommunityMember } from "@/types/services/community";
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage
+  AvatarImage,
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
-  DropdownMenuLabel
+  DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import {
   MoreHorizontal,
@@ -26,7 +26,7 @@ import {
   ShieldOff,
   Trash2,
   Shield,
-  Star
+  Star,
 } from "lucide-react";
 
 
@@ -46,19 +46,27 @@ interface MemberCardProps {
   onBan?: (userId: string, username: string) => void;
   onRemove?: (userId: string, username: string) => void;
   onPromote?: (userId: string, username: string) => void; // Owner only
-  onDemote?: (userId: string, username: string) => void;  // Owner only
+  onDemote?: (userId: string, username: string) => void; // Owner only
 }
 
 
 export function MemberCard({
   member,
   currentUserRole,
-  onApprove, onReject, onUnban,
-  onBan, onRemove, onPromote, onDemote
+  onApprove,
+  onReject,
+  onUnban,
+  onBan,
+  onRemove,
+  onPromote,
+  onDemote,
 }: MemberCardProps) {
-
-  const canManageModerator = currentUserRole === "OWNER" && member.role === "MODERATOR";
-  const canManageMember = currentUserRole === "OWNER" || currentUserRole === "MODERATOR";
+  const canManageModerator =
+    currentUserRole === "OWNER" &&
+    member.role === "MODERATOR";
+  const canManageMember =
+    currentUserRole === "OWNER" ||
+    currentUserRole === "MODERATOR";
 
   const renderActions = () => {
     // --- Context: PENDING TAB ---
@@ -68,16 +76,20 @@ export function MemberCard({
           <Button
             size="sm"
             variant="outline"
-            onClick={ () => onReject(member.userId, member.username) }
+            onClick={ () =>
+              onReject(member.userId, member.username)
+            }
           >
-            <UserX className="h-4 w-4 mr-2" />
+            <UserX className="mr-2 h-4 w-4" />
             Reject
           </Button>
           <Button
             size="sm"
-            onClick={ () => onApprove(member.userId, member.username) }
+            onClick={ () =>
+              onApprove(member.userId, member.username)
+            }
           >
-            <UserCheck className="h-4 w-4 mr-2" />
+            <UserCheck className="mr-2 h-4 w-4" />
             Approve
           </Button>
         </div>
@@ -90,9 +102,11 @@ export function MemberCard({
         <Button
           size="sm"
           variant="outline"
-          onClick={ () => onUnban(member.userId, member.username) }
+          onClick={ () =>
+            onUnban(member.userId, member.username)
+          }
         >
-          <ShieldOff className="h-4 w-4 mr-2" />
+          <ShieldOff className="mr-2 h-4 w-4" />
           Unban
         </Button>
       );
@@ -100,7 +114,11 @@ export function MemberCard({
 
     // --- Context: CURRENT MEMBERS TAB ---
     // Only show the actions menu if the user has permission and the member is not the Owner
-    const canShowActionsMenu = (canManageModerator || (canManageMember && member.role === "MEMBER")) && member.role !== "OWNER";
+    const canShowActionsMenu =
+      (
+        canManageModerator ||
+        (canManageMember && member.role === "MEMBER")
+      ) && member.role !== "OWNER";
 
     if (canShowActionsMenu) {
       return (
@@ -112,7 +130,9 @@ export function MemberCard({
               className="h-8 w-8"
             >
               <MoreHorizontal className="h-4 w-4" />
-              <span className="sr-only">Member Actions</span>
+              <span className="sr-only">
+                Member Actions
+              </span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -121,55 +141,72 @@ export function MemberCard({
 
             {/* Owner-Only Actions */ }
             {
-              currentUserRole === "OWNER" && member.role === "MEMBER" && (
+              currentUserRole === "OWNER" &&
+              member.role === "MEMBER" && (
                 <DropdownMenuItem
-                  onClick={ () => onPromote?.(member.userId, member.username) }
+                  onClick={ () =>
+                    onPromote?.(
+                      member.userId,
+                      member.username
+                    )
+                  }
                 >
-                  <Shield className="h-4 w-4 mr-2" />
+                  <Shield className="mr-2 h-4 w-4" />
                   Promote to Moderator
                 </DropdownMenuItem>
               )
             }
             {
-              currentUserRole === "OWNER" && member.role === "MODERATOR" && (
+              currentUserRole === "OWNER" &&
+              member.role === "MODERATOR" && (
                 <DropdownMenuItem
-                  onClick={ () => onDemote?.(member.userId, member.username) }
+                  onClick={ () =>
+                    onDemote?.(
+                      member.userId,
+                      member.username
+                    )
+                  }
                 >
-                  <UserCheck className="h-4 w-4 mr-2" />
+                  <UserCheck className="mr-2 h-4 w-4" />
                   Demote to Member
                 </DropdownMenuItem>
               )
             }
             {
-              currentUserRole === "OWNER" && <DropdownMenuSeparator />
+              currentUserRole === "OWNER" && (
+                <DropdownMenuSeparator />
+              )
             }
 
             {/* Dangerous actions */ }
             <DropdownMenuItem
-              onClick={ () => onBan?.(member.userId, member.username) }
+              onClick={ () =>
+                onBan?.(member.userId, member.username)
+              }
               className="text-destructive focus:bg-destructive/10"
             >
-              <Gavel className="h-4 w-4 mr-2" />
+              <Gavel className="mr-2 h-4 w-4" />
               Ban Member
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={ () => onRemove?.(member.userId, member.username) }
+              onClick={ () =>
+                onRemove?.(member.userId, member.username)
+              }
               className="text-destructive focus:bg-destructive/10"
             >
-              <Trash2 className="h-4 w-4 mr-2" />
+              <Trash2 className="mr-2 h-4 w-4" />
               Remove from Community
             </DropdownMenuItem>
-
           </DropdownMenuContent>
         </DropdownMenu>
       );
     }
 
     return null;
-  }
+  };
 
   return (
-    <div className="flex items-center justify-between p-3 border-b last:border-b-0 hover:bg-muted/50 transition-colors">
+    <div className="hover:bg-muted/50 flex items-center justify-between border-b p-3 transition-colors last:border-b-0">
       <div className="flex items-center gap-4">
         <Link
           href={ `/u/${member.userId}` }
@@ -214,13 +251,14 @@ export function MemberCard({
               )
             }
           </div>
-          {
-            member.joinedAt && (
-              <p className="text-xs text-muted-foreground">
-                Joined { " " } { new Date(member.joinedAt).toLocaleDateString() }
-              </p>
-            )
-          }
+          { member.joinedAt && (
+            <p className="text-muted-foreground text-xs">
+              Joined{ " " }
+              { new Date(
+                member.joinedAt
+              ).toLocaleDateString() }
+            </p>
+          ) }
         </div>
       </div>
       <div className="shrink-0">
