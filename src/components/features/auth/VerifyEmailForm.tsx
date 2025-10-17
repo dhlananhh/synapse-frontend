@@ -46,8 +46,8 @@ export default function VerifyEmailForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const [isClient, setIsClient] = useState(false);
-  const [isResending, setIsResending] = useState(false);
+  const [ isClient, setIsClient ] = useState(false);
+  const [ isResending, setIsResending ] = useState(false);
   const email = searchParams.get("email");
 
   useEffect(() => {
@@ -143,61 +143,61 @@ export default function VerifyEmailForm() {
           Verify Your Email
         </CardTitle>
         <CardDescription>
-          We&apos;ve sent a 6-digit verification code to{" "}
-          <strong>{email}</strong>. <br />
+          We&apos;ve sent a 6-digit verification code to{ " " }
+          <strong>{ email }</strong>. <br />
           Please enter it below to activate your account.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <Form {...form}>
+        <Form { ...form }>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={ form.handleSubmit(onSubmit) }
             className="space-y-6"
           >
             <FormField
-              control={form.control}
+              control={ form.control }
               name="code"
-              render={({ field }) => (
+              render={ ({ field }) => (
                 <FormItem className="flex flex-col items-center">
                   <FormLabel>Verification Code</FormLabel>
                   <FormControl>
-                    <InputOTP maxLength={6} {...field}>
+                    <InputOTP maxLength={ 6 } { ...field }>
                       <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
+                        <InputOTPSlot index={ 0 } />
+                        <InputOTPSlot index={ 1 } />
+                        <InputOTPSlot index={ 2 } />
+                        <InputOTPSlot index={ 3 } />
+                        <InputOTPSlot index={ 4 } />
+                        <InputOTPSlot index={ 5 } />
                       </InputOTPGroup>
                     </InputOTP>
                   </FormControl>
                 </FormItem>
-              )}
+              ) }
             />
             <Button
               type="submit"
               className="w-full"
-              disabled={isSubmitting}
+              disabled={ isSubmitting }
             >
-              {isSubmitting ? (
+              { isSubmitting ? (
                 <Loader2 className="animate-spin" />
               ) : (
                 "Verify Account"
-              )}
+              ) }
             </Button>
           </form>
         </Form>
         <div className="text-muted-foreground mt-4 text-center text-sm">
-          Didn&apos;t receive a code?{" "}
+          Didn&apos;t receive a code?{ " " }
           <Button
             variant="link"
             className="h-auto p-0"
-            onClick={handleResendCode}
-            disabled={isResending}
+            onClick={ handleResendCode }
+            disabled={ isResending }
           >
-            {isResending ? "Sending..." : "Resend Code"}
+            { isResending ? "Sending..." : "Resend Code" }
           </Button>
         </div>
       </CardContent>

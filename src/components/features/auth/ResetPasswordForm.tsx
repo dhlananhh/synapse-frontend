@@ -80,7 +80,8 @@ export default function ResetPasswordForm() {
 
     } catch (error: any) {
       toast.error("Failed to Reset Password", {
-        description: error.response?.data?.message || "The reset code may be expired or invalid. Please request a new one.",
+        description: error.response?.data?.message
+          || "The reset code may be expired or invalid. Please request a new one.",
       });
     }
   };

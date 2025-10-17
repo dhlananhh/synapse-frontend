@@ -90,50 +90,52 @@ export function VerifyResetCodeForm({
           Enter Verification Code
         </CardTitle>
         <CardDescription>
-          We&apos;ve sent a 6-digit code to {email}. It
+          We&apos;ve sent a 6-digit code to { email }. It
           expires in 5 minutes.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <Form {...form}>
+        <Form { ...form }>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={ form.handleSubmit(onSubmit) }
             className="space-y-6"
           >
             <FormField
-              control={form.control}
+              control={ form.control }
               name="code"
-              render={({ field }) => (
+              render={ ({ field }) => (
                 <FormItem>
                   <FormLabel>
                     Enter your verification code
                   </FormLabel>
                   <FormControl>
-                    <InputOTP maxLength={6} {...field}>
+                    <InputOTP maxLength={ 6 } { ...field }>
                       <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
+                        <InputOTPSlot index={ 0 } />
+                        <InputOTPSlot index={ 1 } />
+                        <InputOTPSlot index={ 2 } />
+                        <InputOTPSlot index={ 3 } />
+                        <InputOTPSlot index={ 4 } />
+                        <InputOTPSlot index={ 5 } />
                       </InputOTPGroup>
                     </InputOTP>
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              )}
+              ) }
             />
 
             <Button
               type="submit"
               className="w-full"
-              disabled={form.formState.isSubmitting}
+              disabled={ form.formState.isSubmitting }
             >
-              {form.formState.isSubmitting
-                ? "Verifying..."
-                : "Verify Code"}
+              {
+                form.formState.isSubmitting
+                  ? "Verifying..."
+                  : "Verify Code"
+              }
             </Button>
           </form>
         </Form>

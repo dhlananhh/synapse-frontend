@@ -89,36 +89,38 @@ export function RequestPasswordResetForm({
       </CardHeader>
 
       <CardContent>
-        <Form {...form}>
+        <Form { ...form }>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={ form.handleSubmit(onSubmit) }
             className="space-y-4"
           >
             <FormField
-              control={form.control}
+              control={ form.control }
               name="email"
-              render={({ field }) => (
+              render={ ({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input
                       placeholder="Enter your email"
-                      {...field}
+                      { ...field }
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              )}
+              ) }
             />
 
             <Button
               type="submit"
               className="w-full"
-              disabled={form.formState.isSubmitting}
+              disabled={ form.formState.isSubmitting }
             >
-              {form.formState.isSubmitting
-                ? "Sending..."
-                : "Send Code"}
+              {
+                form.formState.isSubmitting
+                  ? "Sending..."
+                  : "Send Code"
+              }
             </Button>
           </form>
         </Form>
