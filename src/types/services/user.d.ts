@@ -54,6 +54,7 @@ export interface UserProfile {
   createdAt?: string;
   followerCount?: number;
   followingCount?: number;
+  role?: "USER" | "SYSTEM_ADMIN";
   relationshipStatus?: {
     requesterToTarget: FollowRelationship | null;
     targetToRequester: FollowRelationship | null;

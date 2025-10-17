@@ -24,6 +24,7 @@ import {
 import {
   Cog,
   LogOut,
+  ShieldCheck,
   UserRound,
 } from "lucide-react";
 
@@ -100,6 +101,18 @@ export function UserNav({ user }: UserNavProps) {
                 <span>Preferences</span>
               </Link>
             </DropdownMenuItem>
+
+            {
+              user.role === "SYSTEM_ADMIN" && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">
+                    <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
+                    <span>Admin Dashboard</span>
+                  </Link>
+                </DropdownMenuItem>
+              )
+            }
+
           </DropdownMenuGroup>
 
           <DropdownMenuSeparator />

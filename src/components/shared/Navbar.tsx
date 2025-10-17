@@ -17,8 +17,7 @@ import { UserProfile } from "@/types/services/user";
 
 export function Navbar() {
   const { user, isLoading } = useAuth();
-  const [ profile, setProfile ] =
-    useState<UserProfile | null>(null);
+  const [ profile, setProfile ] = useState<UserProfile | null>(null);
 
   useEffect(() => {
     if (user?.id) {
