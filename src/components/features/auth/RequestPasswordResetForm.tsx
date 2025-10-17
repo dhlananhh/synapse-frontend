@@ -68,7 +68,7 @@ export function RequestPasswordResetForm({
   };
 
   return (
-    <Card className="mx-auto w-full max-w-lg">
+    <Card className="mx-auto w-full max-w-lg shadow-xl">
       <CardHeader className="items-center text-center">
         <Link
           href="/"

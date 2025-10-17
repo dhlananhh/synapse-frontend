@@ -70,7 +70,7 @@ export default function LoginForm() {
   };
 
   return (
-    <Card className="w-full max-w-lg border-0 shadow-xl">
+    <Card className="mx-auto w-full max-w-lg shadow-xl">
       <CardHeader className="text-center mt-1">
         <Link
           href="/"

@@ -10,7 +10,7 @@ import {
 
 export default function VerifyEmailForm() {
   return (
-    <Card className="mx-auto w-full max-w-lg">
+    <Card className="mx-auto w-full max-w-lg shadow-xl">
       <CardHeader className="items-center text-center">
         <Skeleton className="mb-4 h-10 w-10 rounded-full" />
         <Skeleton className="h-7 w-48" />

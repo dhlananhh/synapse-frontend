@@ -88,7 +88,7 @@ export default function ResetPasswordForm() {
 
   if (!email) {
     return (
-      <Card className="mx-auto max-w-lg w-full">
+      <Card className="mx-auto w-full max-w-lg shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-destructive">Error</CardTitle>
           <CardDescription>

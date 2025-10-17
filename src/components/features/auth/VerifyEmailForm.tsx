@@ -107,7 +107,7 @@ export default function VerifyEmailForm() {
 
   if (!email) {
     return (
-      <Card className="mx-auto w-full max-w-lg">
+      <Card className="mx-auto w-full max-w-lg shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-destructive">
             Error
@@ -127,7 +127,7 @@ export default function VerifyEmailForm() {
   }
 
   return (
-    <Card className="mx-auto w-full max-w-lg">
+    <Card className="mx-auto w-full max-w-lg shadow-xl">
       <CardHeader className="items-center text-center">
         <Link
           href="/"
