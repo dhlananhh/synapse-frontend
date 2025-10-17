@@ -1,32 +1,42 @@
 "use client";
 
+
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import {
+  useForm,
+  FormProvider
+} from "react-hook-form";
 import { toast } from "sonner";
-
 import { zodResolver } from "@hookform/resolvers/zod";
-
 import { useAuth } from "@/context/AuthContext";
-import { authService } from "@/modules/services/auth-service";
-import { LoginPayload } from "@/types/services/auth";
 import {
   LoginSchema,
-  TLoginSchema,
+  TLoginSchema
 } from "@/libs/validators/auth-validator";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { BrainCircuit, Loader2 } from "lucide-react";
+import {
+  BrainCircuit,
+  Loader2
+} from "lucide-react";
+
 
 export default function LoginForm() {
   const router = useRouter();
@@ -40,110 +50,120 @@ export default function LoginForm() {
     },
   });
 
-  const { isSubmitting } = form.formState;
-
-  const { register, handleSubmit } = useForm<LoginPayload>({
-    resolver: zodResolver(LoginSchema),
-  });
+  const { formState: { isSubmitting } } = form;
 
   const onSubmit = async (values: TLoginSchema) => {
     try {
       await login(values);
       toast.success("Login successful!", {
         description: "Redirecting to your feed...",
-        duration: 2000,
       });
-
       router.push("/feed");
       router.refresh();
     } catch (error: any) {
-      toast.error("Failed to login", {
+      toast.error("Failed to login: ", {
         description:
           error.response?.data?.message ||
           "Invalid credentials.",
-        duration: 2000,
       });
     }
   };
 
   return (
-    <Card className="mx-auto w-full max-w-lg">
-      <CardHeader className="items-center text-center">
+    <Card className="w-full max-w-lg border-0 shadow-xl">
+      <CardHeader className="text-center mt-1">
         <Link
           href="/"
-          className="mb-2 flex flex-col items-center gap-2"
+          className="mb-4 flex items-center justify-center gap-2"
         >
-          <BrainCircuit className="text-primary h-10 w-10" />
-          <CardTitle className="text-2xl">
-            Synapse
-          </CardTitle>
+          <BrainCircuit className="h-8 w-8 text-primary" />
+          <span className="text-2xl font-bold">Synapse</span>
         </Link>
-        <CardTitle className="mt-5 text-2xl uppercase">
-          Log In
-        </CardTitle>
+        <CardTitle className="text-3xl font-bold">Log In</CardTitle>
         <CardDescription>
-          Enter your email and password below to log in to
-          your account.
+          Welcome back! Please enter your email and password to log in.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className="grid gap-4"
+        <FormProvider
+          { ...form }
         >
-          {/* Email */}
-          <div className="grid gap-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              {...register("email")}
-              id="email"
-              type="email"
-              placeholder="Enter your email address"
-            />
-          </div>
-
-          {/* Password */}
-          <div className="grid gap-2">
-            <div className="flex items-center justify-between">
-              <Label htmlFor="password">Password</Label>
-
-              <Link
-                href="/reset-password"
-                className="text-muted-foreground hover:text-primary ml-auto inline-block text-sm hover:underline"
-                tabIndex={-1}
-              >
-                Forgot your password? Reset now!
-              </Link>
-            </div>
-
-            <Input
-              {...register("password")}
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-            />
-          </div>
-
-          <Button
-            type="submit"
-            className="w-full"
-            disabled={isSubmitting}
+          <Form
+            { ...form }
           >
-            {isSubmitting ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              "Log In"
-            )}
-          </Button>
-        </form>
+            <form
+              onSubmit={ form.handleSubmit(onSubmit) }
+              className="space-y-4"
+            >
+              <FormField
+                control={ form.control }
+                name="email"
+                render={
+                  ({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="Enter your email"
+                          { ...field }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }
+              />
+              <FormField
+                control={ form.control }
+                name="password"
+                render={
+                  ({ field }) => (
+                    <FormItem>
+                      <div className="flex items-center justify-between">
+                        <FormLabel>Password</FormLabel>
+                        <Link
+                          href="/reset-password"
+                          className="text-sm font-semibold text-muted-foreground hover:underline hover:text-primary"
+                          tabIndex={ -1 }
+                        >
+                          Forgot Password? Reset now!
+                        </Link>
+                      </div>
+                      <FormControl>
+                        <Input
+                          type="password"
+                          placeholder="Enter your password"
+                          { ...field }
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )
+                }
+              />
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={ isSubmitting }
+              >
+                {
+                  isSubmitting
+                    ? <Loader2 className="animate-spin" />
+                    : "Log In"
+                }
+              </Button>
+            </form>
+          </Form>
+        </FormProvider>
 
         <div className="mt-4 text-center text-sm">
-          Don&apos;t have an account?{" "}
+          Don&apos;t have an account? { " " }
           <Link
             href="/register"
-            className="text-muted-foreground hover:text-primary ml-auto inline-block text-sm hover:underline"
-            passHref
+            className="font-semibold text-muted-foreground hover:underline hover:text-primary ml-auto inline-block text-sm"
+            tabIndex={ -1 }
           >
             Register now!
           </Link>
