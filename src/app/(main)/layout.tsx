@@ -1,6 +1,7 @@
 import { Navbar } from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
-import { ChatTray } from "@/components/features/chat/ChatTray";
+import { GlobalChatManager } from "@/components/features/chat/GlobalChatManager";
+
 
 export default function MainLayout({
   children,
@@ -16,7 +17,7 @@ export default function MainLayout({
       </main>
 
       <Footer />
-      <ChatTray />
+      <GlobalChatManager />
     </div>
   );
 }

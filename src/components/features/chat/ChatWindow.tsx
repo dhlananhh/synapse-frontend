@@ -36,7 +36,7 @@ export function ChatWindow({
 }: ChatWindowProps) {
   const { minimizeChat, closeChat, sendMessage } =
     useChatStore();
-  const [messageText, setMessageText] = useState("");
+  const [ messageText, setMessageText ] = useState("");
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const otherParticipant = thread.participants.find(
     (p) => p.id !== myUserId
@@ -49,7 +49,7 @@ export function ChatWindow({
         behavior: "smooth",
       });
     }
-  }, [thread.messages]);
+  }, [ thread.messages ]);
 
   const handleSend = (e: FormEvent) => {
     e.preventDefault();
@@ -68,16 +68,16 @@ export function ChatWindow({
           <div className="relative">
             <Avatar className="h-8 w-8">
               <AvatarImage
-                src={otherParticipant.avatarUrl ?? ""}
+                src={ otherParticipant.avatarUrl ?? "" }
               />
               <AvatarFallback>
-                {otherParticipant.username
+                { otherParticipant.username
                   .charAt(0)
-                  .toUpperCase()}
+                  .toUpperCase() }
               </AvatarFallback>
             </Avatar>
             <span
-              className={`ring-background absolute right-0 bottom-0 block h-2.5 w-2.5 rounded-full ring-2 ${otherParticipant.isOnline ? "bg-green-500" : "bg-gray-400"}`}
+              className={ `ring-background absolute right-0 bottom-0 block h-2.5 w-2.5 rounded-full ring-2 ${otherParticipant.isOnline ? "bg-green-500" : "bg-gray-400"}` }
               title={
                 otherParticipant.isOnline
                   ? "Online"
@@ -87,12 +87,12 @@ export function ChatWindow({
           </div>
           <div>
             <p className="text-sm font-semibold">
-              {otherParticipant.username}
+              { otherParticipant.username }
             </p>
             <p className="text-muted-foreground text-xs">
-              {otherParticipant.isOnline
+              { otherParticipant.isOnline
                 ? "Active now"
-                : "Offline"}
+                : "Offline" }
             </p>
           </div>
         </div>
@@ -102,7 +102,7 @@ export function ChatWindow({
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={() => minimizeChat(thread.id)}
+            onClick={ () => minimizeChat(thread.id) }
             title="Minimize"
           >
             <Minus className="h-4 w-4" />
@@ -111,7 +111,7 @@ export function ChatWindow({
             variant="ghost"
             size="icon"
             className="h-8 w-8"
-            onClick={() => closeChat(thread.id)}
+            onClick={ () => closeChat(thread.id) }
             title="Close"
           >
             <X className="h-4 w-4" />
@@ -122,28 +122,28 @@ export function ChatWindow({
       <CardContent className="flex-1 overflow-hidden p-0">
         <ScrollArea
           className="h-full p-3"
-          ref={scrollAreaRef}
+          ref={ scrollAreaRef }
         >
           <div className="space-y-4">
-            {thread.messages.map((msg) => (
+            { thread.messages.map((msg) => (
               <ChatMessage
-                key={msg.id}
-                message={msg}
-                isMe={msg.senderId === myUserId}
+                key={ msg.id }
+                message={ msg }
+                isMe={ msg.senderId === myUserId }
               />
-            ))}
+            )) }
           </div>
         </ScrollArea>
       </CardContent>
 
       <CardFooter className="border-t p-2">
         <form
-          onSubmit={handleSend}
+          onSubmit={ handleSend }
           className="flex w-full gap-2"
         >
           <Input
-            value={messageText}
-            onChange={(e) => setMessageText(e.target.value)}
+            value={ messageText }
+            onChange={ (e) => setMessageText(e.target.value) }
             placeholder="Type a message..."
             autoComplete="off"
           />

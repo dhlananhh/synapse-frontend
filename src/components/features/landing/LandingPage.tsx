@@ -1,9 +1,11 @@
 "use client";
 
+
 import React from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { BrainCircuit, Compass, Users } from "lucide-react";
+
 
 export default function LandingPage() {
   return (
@@ -12,7 +14,7 @@ export default function LandingPage() {
         <div className="container py-20 text-center">
           <BrainCircuit className="text-primary mx-auto mb-6 h-20 w-20" />
           <h1 className="text-4xl font-extrabold tracking-tight md:text-6xl">
-            Welcome to{" "}
+            Welcome to { " " }
             <span className="text-primary">Synapse</span>
           </h1>
           <p className="text-muted-foreground mx-auto mt-4 max-w-2xl text-lg">
