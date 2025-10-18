@@ -54,8 +54,8 @@ export function Navbar() {
   };
 
   return (
-    <header className="bg-background/80 fixed inset-x-0 top-0 z-50 h-16 border-b backdrop-blur-lg">
-      <div className="container mx-auto flex h-full max-w-7xl items-center gap-4">
+    <header className="bg-background/80 w-full fixed inset-x-0 top-0 z-50 h-16 border-b backdrop-blur-lg">
+      <div className="flex h-full items-center justify-between px-4 md:px-6 lg:px-8">
         {/* Left: Logo & App Name */ }
         <div className="flex flex-shrink-0 items-center gap-2">
           <div className="md:hidden">
