@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react"
+import Image from "next/image"
 import {
   ArrowUp,
   ArrowDown,
@@ -8,30 +9,30 @@ import {
   Pencil,
   Trash2,
   Flag,
-} from 'lucide-react'
-import { userService } from '@/modules/services/user-service'
+} from "lucide-react"
+import { userService } from "@/modules/services/user-service"
 import {
   fetchCommentReplies,
   deleteComment,
   voteComment,
   unvoteComment,
   VoteType,
-} from '@/modules/services/comment-service'
-import type { CommentNode } from '@/app/(main)/(communities)/c/[name]/posts/[postId]/page'
-import type { SimpleProfile } from '@/types/services/user'
-import { formatDistanceToNow } from 'date-fns'
-import CommentForm from './CommentForm'
-import CommentList from './CommentList'
-import EditCommentForm from './EditCommentForm'
+} from "@/modules/services/comment-service"
+import type { CommentNode } from "@/app/(main)/(communities)/c/[name]/posts/[postId]/page"
+import type { SimpleProfile } from "@/types/services/user"
+import { formatDistanceToNow } from "date-fns"
+import CommentForm from "./CommentForm"
+import CommentList from "./CommentList"
+import EditCommentForm from "./EditCommentForm"
 import {
   DropdownMenu,
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-} from '@/components/ui/dropdown-menu'
-import { useAuth } from '@/context/AuthContext'
-import ActionConfirmDialog from '@/components/shared/ActionConfirmDialog'
-import { toast } from 'sonner'
+} from "@/components/ui/dropdown-menu"
+import { useAuth } from "@/context/AuthContext"
+import ActionConfirmDialog from "@/components/shared/ActionConfirmDialog"
+import { toast } from "sonner"
 
 interface CommentProps {
   comment: CommentNode
@@ -47,25 +48,25 @@ export default function Comment({
   onRepliesChanged,
 }: CommentProps) {
   const { user: authUser } = useAuth()
-  const [profile, setProfile] = useState<SimpleProfile | null>(null)
-  const [showReply, setShowReply] = useState(false)
-  const [showReplies, setShowReplies] = useState(false)
-  const [replies, setReplies] = useState<CommentNode[] | null>(null)
-  const [loadingReplies, setLoadingReplies] = useState(false)
-  const [editMode, setEditMode] = useState(false)
-  const [content, setContent] = useState(comment.content)
-  const [deleting, setDeleting] = useState(false)
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [voting, setVoting] = useState<VoteType | null>(null)
-  const [localScore, setLocalScore] = useState(comment.score)
+  const [ profile, setProfile ] = useState<SimpleProfile | null>(null)
+  const [ showReply, setShowReply ] = useState(false)
+  const [ showReplies, setShowReplies ] = useState(false)
+  const [ replies, setReplies ] = useState<CommentNode[] | null>(null)
+  const [ loadingReplies, setLoadingReplies ] = useState(false)
+  const [ editMode, setEditMode ] = useState(false)
+  const [ content, setContent ] = useState(comment.content)
+  const [ deleting, setDeleting ] = useState(false)
+  const [ confirmOpen, setConfirmOpen ] = useState(false)
+  const [ voting, setVoting ] = useState<VoteType | null>(null)
+  const [ localScore, setLocalScore ] = useState(comment.score)
   // Initialize voted state from currentUserVote field
-  const [voted, setVoted] = useState<'UPVOTE' | 'DOWNVOTE' | null>(comment.currentUserVote ?? null)
+  const [ voted, setVoted ] = useState<"UPVOTE" | "DOWNVOTE" | null>(comment.currentUserVote ?? null)
 
   useEffect(() => {
-    userService.getSimpleProfiles([comment.authorId]).then((profiles) => {
-      setProfile(profiles[0])
+    userService.getSimpleProfiles([ comment.authorId ]).then((profiles) => {
+      setProfile(profiles[ 0 ])
     })
-  }, [comment.authorId])
+  }, [ comment.authorId ])
 
   const handleShowReplies = async () => {
     if (!replies) {
@@ -85,8 +86,8 @@ export default function Comment({
     try {
       await deleteComment(comment.id)
       setConfirmOpen(false)
-      toast.success('Comment deleted', {
-        description: 'Your comment has been removed successfully.',
+      toast.success("Comment deleted", {
+        description: "Your comment has been removed successfully.",
       })
       if (comment.parentCommentId && onRepliesChanged) {
         // Tell parent to reload its replies
@@ -96,8 +97,8 @@ export default function Comment({
         onCommentAdded()
       }
     } catch {
-      toast.error('Failed to delete comment', {
-        description: 'Something went wrong. Please try again.',
+      toast.error("Failed to delete comment", {
+        description: "Something went wrong. Please try again.",
       })
     } finally {
       setDeleting(false)
@@ -125,7 +126,7 @@ export default function Comment({
       setLocalScore(updated.score)
       setVoted(type)
     } catch {
-      toast.error('Failed to vote', { description: 'Please try again.' })
+      toast.error("Failed to vote", { description: "Please try again." })
     } finally {
       setVoting(null)
     }
@@ -139,7 +140,7 @@ export default function Comment({
         setLocalScore(updated.score)
         setVoted(null)
       } catch {
-        toast.error('Failed to remove vote', { description: 'Please try again.' })
+        toast.error("Failed to remove vote", { description: "Please try again." })
       } finally {
         setVoting(null)
       }
@@ -150,145 +151,147 @@ export default function Comment({
 
   // Helper to get removed message
   function getRemovedMessage() {
-    if (comment.status === 'REMOVED_AUTHOR') {
-      return 'This comment was removed by the author.'
+    if (comment.status === "REMOVED_AUTHOR") {
+      return "This comment was removed by the author."
     }
-    if (comment.status === 'REMOVED_MOD') {
-      return 'This comment was removed by a moderator.'
+    if (comment.status === "REMOVED_MOD") {
+      return "This comment was removed by a moderator."
     }
     return null
   }
 
-  const isRemoved = comment.status === 'REMOVED_AUTHOR' || comment.status === 'REMOVED_MOD'
+  const isRemoved = comment.status === "REMOVED_AUTHOR" || comment.status === "REMOVED_MOD"
 
   return (
-    <div className='flex gap-3 py-4 border-b'>
+    <div className="flex gap-3 py-4 border-b">
       <div>
-        {profile?.avatarUrl ? (
-          <img src={profile.avatarUrl} alt={profile.username} className='w-8 h-8 rounded-full' />
+        { profile?.avatarUrl ? (
+          <Image
+            src={ profile.avatarUrl }
+            alt={ profile.username }
+            className="w-8 h-8 rounded-full"
+          />
         ) : (
-          <div className='w-8 h-8 rounded-full bg-muted' />
-        )}
+          <div className="w-8 h-8 rounded-full bg-muted" />
+        ) }
       </div>
-      <div className='flex-1'>
-        <div className='flex items-center gap-2 text-sm'>
-          <span className='font-semibold'>u/{profile?.username ?? comment.authorId}</span>
-          <span className='text-muted-foreground'>
-            • {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+      <div className="flex-1">
+        <div className="flex items-center gap-2 text-sm">
+          <span className="font-semibold">u/{ profile?.username ?? comment.authorId }</span>
+          <span className="text-muted-foreground">
+            • { formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true }) }
           </span>
-          {comment.isEdited && <span className='ml-2 text-xs text-muted-foreground'>(edited)</span>}
-          {!isRemoved && (
-            <div className='ml-auto'>
+          { comment.isEdited && <span className="ml-2 text-xs text-muted-foreground">(edited)</span> }
+          { !isRemoved && (
+            <div className="ml-auto">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <button className='p-1 rounded-full hover:bg-muted' aria-label='Comment options'>
-                    <MoreHorizontal className='w-5 h-5' />
+                  <button className="p-1 rounded-full hover:bg-muted" aria-label="Comment options">
+                    <MoreHorizontal className="w-5 h-5" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  {currentUserId === comment.authorId && (
+                <DropdownMenuContent align="end">
+                  { currentUserId === comment.authorId && (
                     <>
-                      <DropdownMenuItem onClick={() => setEditMode(true)}>
-                        <Pencil className='w-4 h-4 mr-2' />
+                      <DropdownMenuItem onClick={ () => setEditMode(true) }>
+                        <Pencil className="w-4 h-4 mr-2" />
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className='text-destructive'
-                        onClick={() => setConfirmOpen(true)}
-                        disabled={deleting}
+                        className="text-destructive"
+                        onClick={ () => setConfirmOpen(true) }
+                        disabled={ deleting }
                       >
-                        <Trash2 className='w-4 h-4 mr-2' />
-                        {deleting ? 'Deleting...' : 'Delete'}
+                        <Trash2 className="w-4 h-4 mr-2" />
+                        { deleting ? "Deleting..." : "Delete" }
                       </DropdownMenuItem>
                     </>
-                  )}
+                  ) }
                   <DropdownMenuItem>
-                    <Flag className='w-4 h-4 mr-2' />
+                    <Flag className="w-4 h-4 mr-2" />
                     Report
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-          )}
+          ) }
         </div>
-        <div className='mt-6'>
-          {comment.status === 'PUBLISHED' ? (
+        <div className="mt-6">
+          { comment.status === "PUBLISHED" ? (
             editMode ? (
               <EditCommentForm
-                commentId={comment.id}
-                initialContent={content}
-                onSuccess={(newContent) => {
+                commentId={ comment.id }
+                initialContent={ content }
+                onSuccess={ (newContent) => {
                   setContent(newContent)
                   setEditMode(false)
-                }}
-                onCancel={() => setEditMode(false)}
+                } }
+                onCancel={ () => setEditMode(false) }
               />
             ) : (
               content
             )
           ) : (
-            <span className='italic text-muted-foreground'>{getRemovedMessage()}</span>
-          )}
+            <span className="italic text-muted-foreground">{ getRemovedMessage() }</span>
+          ) }
         </div>
-        {!isRemoved && (
-          <div className='flex items-center gap-2 mt-2 text-sm text-muted-foreground'>
+        { !isRemoved && (
+          <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
             <button
-              className={`rounded-full p-1 hover:bg-muted ${
-                voted === 'UPVOTE' ? 'text-destructive' : ''
-              }`}
-              aria-label='Upvote'
-              disabled={voting !== null}
-              onClick={() => (voted === 'UPVOTE' ? handleUnvote() : handleVote('UPVOTE'))}
+              className={ `rounded-full p-1 hover:bg-muted ${voted === "UPVOTE" ? "text-destructive" : ""
+                }` }
+              aria-label="Upvote"
+              disabled={ voting !== null }
+              onClick={ () => (voted === "UPVOTE" ? handleUnvote() : handleVote("UPVOTE")) }
             >
-              <ArrowUp className='w-4 h-4' />
+              <ArrowUp className="w-4 h-4" />
             </button>
-            <span className='font-semibold text-foreground'>{localScore}</span>
+            <span className="font-semibold text-foreground">{ localScore }</span>
             <button
-              className={`rounded-full p-1 hover:bg-muted ${
-                voted === 'DOWNVOTE' ? 'text-destructive' : ''
-              }`}
-              aria-label='Downvote'
-              disabled={voting !== null}
-              onClick={() => (voted === 'DOWNVOTE' ? handleUnvote() : handleVote('DOWNVOTE'))}
+              className={ `rounded-full p-1 hover:bg-muted ${voted === "DOWNVOTE" ? "text-destructive" : ""
+                }` }
+              aria-label="Downvote"
+              disabled={ voting !== null }
+              onClick={ () => (voted === "DOWNVOTE" ? handleUnvote() : handleVote("DOWNVOTE")) }
             >
-              <ArrowDown className='w-4 h-4' />
+              <ArrowDown className="w-4 h-4" />
             </button>
             <button
-              className='ml-2 text-xs underline flex items-center gap-1'
-              onClick={() => setShowReply((v) => !v)}
-              type='button'
+              className="ml-2 text-xs underline flex items-center gap-1"
+              onClick={ () => setShowReply((v) => !v) }
+              type="button"
             >
-              <MessageCircle className='w-4 h-4' />
+              <MessageCircle className="w-4 h-4" />
               Reply
             </button>
-            {comment.hasReplies && (
+            { comment.hasReplies && (
               <button
-                className='ml-2 text-xs underline flex items-center gap-1'
-                onClick={handleShowReplies}
-                type='button'
+                className="ml-2 text-xs underline flex items-center gap-1"
+                onClick={ handleShowReplies }
+                type="button"
               >
-                <CornerDownRight className='w-4 h-4' />
-                {showReplies ? 'Hide replies' : loadingReplies ? 'Loading...' : 'Show replies'}
+                <CornerDownRight className="w-4 h-4" />
+                { showReplies ? "Hide replies" : loadingReplies ? "Loading..." : "Show replies" }
               </button>
-            )}
+            ) }
           </div>
-        )}
-        {showReply && !isRemoved && (
-          <div className='mt-2'>
+        ) }
+        { showReply && !isRemoved && (
+          <div className="mt-2">
             <CommentForm
-              postId={postId}
-              parentCommentId={comment.id}
-              onSuccess={handleReplyAdded}
+              postId={ postId }
+              parentCommentId={ comment.id }
+              onSuccess={ handleReplyAdded }
             />
           </div>
-        )}
-        {showReplies && replies && !isRemoved && (
-          <div className='ml-6 border-l pl-4 mt-2'>
+        ) }
+        { showReplies && replies && !isRemoved && (
+          <div className="ml-6 border-l pl-4 mt-2">
             <CommentList
-              comments={replies}
-              postId={postId}
-              onCommentAdded={onCommentAdded}
-              onRepliesChanged={async () => {
+              comments={ replies }
+              postId={ postId }
+              onCommentAdded={ onCommentAdded }
+              onRepliesChanged={ async () => {
                 setLoadingReplies(true)
                 try {
                   const res = await fetchCommentReplies(comment.id)
@@ -296,19 +299,19 @@ export default function Comment({
                 } finally {
                   setLoadingReplies(false)
                 }
-              }}
+              } }
             />
           </div>
-        )}
+        ) }
         <ActionConfirmDialog
-          open={confirmOpen}
-          onOpenChange={setConfirmOpen}
-          onConfirm={handleDelete}
-          title='Delete Comment'
-          description='Are you sure you want to delete this comment? This action cannot be undone.'
-          confirmText='Delete'
+          open={ confirmOpen }
+          onOpenChange={ setConfirmOpen }
+          onConfirm={ handleDelete }
+          title="Delete Comment"
+          description="Are you sure you want to delete this comment? This action cannot be undone."
+          confirmText="Delete"
           isDestructive
-          isConfirming={deleting}
+          isConfirming={ deleting }
         />
       </div>
     </div>

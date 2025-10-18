@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import type { PostDetails } from '@/types/services/post'
@@ -23,9 +24,9 @@ interface PostCardProps {
 
 const PostCard = React.forwardRef<HTMLDivElement, PostCardProps>(
   ({ post, authorProfile, flair }, ref) => {
-    const [voting, setVoting] = React.useState<PostVoteType | null>(null)
-    const [localScore, setLocalScore] = React.useState(post.score)
-    const [voted, setVoted] = React.useState<'UPVOTE' | 'DOWNVOTE' | null>(
+    const [ voting, setVoting ] = React.useState<PostVoteType | null>(null)
+    const [ localScore, setLocalScore ] = React.useState(post.score)
+    const [ voted, setVoted ] = React.useState<'UPVOTE' | 'DOWNVOTE' | null>(
       post.currentUserVote ?? null
     )
 
@@ -59,58 +60,58 @@ const PostCard = React.forwardRef<HTMLDivElement, PostCardProps>(
     }
 
     return (
-      <Card ref={ref} className='w-full rounded-2xl border bg-card'>
+      <Card ref={ ref } className='w-full rounded-2xl border bg-card'>
         <CardHeader className='px-4 sm:px-4'>
           <div className='text-xs text-muted-foreground flex items-center gap-2'>
-            {/* Avatar */}
+            {/* Avatar */ }
             <div className='w-7 h-7 rounded-full overflow-hidden bg-muted flex items-center justify-center'>
-              {authorProfile?.avatarUrl ? (
-                <img
-                  src={authorProfile.avatarUrl}
-                  alt={authorProfile.username}
+              { authorProfile?.avatarUrl ? (
+                <Image
+                  src={ authorProfile.avatarUrl }
+                  alt={ authorProfile.username }
                   className='w-full h-full object-cover'
                 />
               ) : (
                 <span className='text-muted-foreground text-base'>
-                  {authorProfile?.username?.[0]?.toUpperCase() || post.authorId[0]?.toUpperCase()}
+                  { authorProfile?.username?.[ 0 ]?.toUpperCase() || post.authorId[ 0 ]?.toUpperCase() }
                 </span>
-              )}
+              ) }
             </div>
-            {authorProfile?.username ? (
+            { authorProfile?.username ? (
               <Link
-                href={`/u/${authorProfile.id}`}
+                href={ `/u/${authorProfile.id}` }
                 className='font-medium text-foreground hover:underline'
               >
-                u/{authorProfile.username}
+                u/{ authorProfile.username }
               </Link>
             ) : (
-              <span className='font-medium text-foreground'>{post.authorId}</span>
-            )}
-            • {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
-            {flair && (
+              <span className='font-medium text-foreground'>{ post.authorId }</span>
+            ) }
+            • { formatDistanceToNow(new Date(post.createdAt), { addSuffix: true }) }
+            { flair && (
               <span
                 className='ml-2 rounded px-2 py-0.5   text-xs font-medium'
-                style={{
+                style={ {
                   backgroundColor: flair.color || '#eee',
                   color: '#fff',
-                }}
+                } }
               >
-                {flair.name}
+                { flair.name }
               </span>
-            )}
+            ) }
           </div>
           <CardTitle className='mt-0 text-2xl sm:text-3xl font-semibold leading-tight break-words'>
-            <Link href={`/c/${post.community.name}/posts/${post.id}`} className='hover:underline'>
-              {post.title}
+            <Link href={ `/c/${post.community.name}/posts/${post.id}` } className='hover:underline'>
+              { post.title }
             </Link>
           </CardTitle>
-          <PostBadges isNSFW={post.isNSFW} isSpoiler={post.isSpoiler} />
+          <PostBadges isNSFW={ post.isNSFW } isSpoiler={ post.isSpoiler } />
         </CardHeader>
 
         <CardContent className='p-3 sm:p-4 flex-grow mt-0'>
-          {post.type === 'TEXT' && <TextPost post={post} />}
-          {post.type === 'MEDIA' && <MediaPost post={post} />}
-          {post.type === 'LINK' && <LinkPost post={post} />}
+          { post.type === 'TEXT' && <TextPost post={ post } /> }
+          { post.type === 'MEDIA' && <MediaPost post={ post } /> }
+          { post.type === 'LINK' && <LinkPost post={ post } /> }
         </CardContent>
 
         <div className='flex flex-wrap items-center justify-between gap-2 sm:gap-4 text-sm font-medium text-muted-foreground p-2 sm:px-4 border-t'>
@@ -118,27 +119,25 @@ const PostCard = React.forwardRef<HTMLDivElement, PostCardProps>(
             <Button
               variant='ghost'
               size='icon'
-              className={`rounded-full flex items-center justify-center px-2 ${
-                voted === 'UPVOTE' ? 'text-destructive' : ''
-              }`}
+              className={ `rounded-full flex items-center justify-center px-2 ${voted === 'UPVOTE' ? 'text-destructive' : ''
+                }` }
               aria-label='Upvote'
               type='button'
-              disabled={voting !== null}
-              onClick={() => (voted === 'UPVOTE' ? handleUnvote() : handleVote('UPVOTE'))}
+              disabled={ voting !== null }
+              onClick={ () => (voted === 'UPVOTE' ? handleUnvote() : handleVote('UPVOTE')) }
             >
               <ArrowUp className='h-5 w-5' />
             </Button>
-            <span className='mx-1 font-semibold text-foreground'>{localScore}</span>
+            <span className='mx-1 font-semibold text-foreground'>{ localScore }</span>
             <Button
               variant='ghost'
               size='icon'
-              className={`rounded-full flex items-center justify-center px-2 ${
-                voted === 'DOWNVOTE' ? 'text-destructive' : ''
-              }`}
+              className={ `rounded-full flex items-center justify-center px-2 ${voted === 'DOWNVOTE' ? 'text-destructive' : ''
+                }` }
               aria-label='Downvote'
               type='button'
-              disabled={voting !== null}
-              onClick={() => (voted === 'DOWNVOTE' ? handleUnvote() : handleVote('DOWNVOTE'))}
+              disabled={ voting !== null }
+              onClick={ () => (voted === 'DOWNVOTE' ? handleUnvote() : handleVote('DOWNVOTE')) }
             >
               <ArrowDown className='h-5 w-5' />
             </Button>
@@ -149,7 +148,7 @@ const PostCard = React.forwardRef<HTMLDivElement, PostCardProps>(
             size='lg'
             className='rounded-full flex items-center gap-1.5 px-2'
           >
-            <Link href={`/p/${post.id}`}>
+            <Link href={ `/p/${post.id}` }>
               <MessageCircle className='h-5 w-5' />
               <span className='hidden sm:inline'>Comments</span>
             </Link>
