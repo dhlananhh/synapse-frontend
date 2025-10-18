@@ -1,23 +1,27 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import Link from "next/link";
 
+import React, {
+  useEffect,
+  useState
+} from "react";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { userService } from "@/modules/services/user-service";
-
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
 import { UserNav } from "./UserNav";
-import { BrainCircuit } from "lucide-react";
+import { Bell, BrainCircuit, MessageSquare } from "lucide-react";
 import MobileNav from "@/components/shared/MobileNav";
 import SearchBar from "@/components/shared/SearchBar";
 import { UserProfile } from "@/types/services/user";
+import { useChatStore } from "@/store/useChatStore";
+
 
 export function Navbar() {
   const { user, isLoading } = useAuth();
   const [ profile, setProfile ] = useState<UserProfile | null>(null);
+  const { toggleThreadsList } = useChatStore();
 
   useEffect(() => {
     if (user?.id) {
@@ -38,7 +42,29 @@ export function Navbar() {
     }
 
     if (user && profile) {
-      return <UserNav user={ profile } />;
+      // return <UserNav user={ profile } />;
+      return (
+        <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+          >
+            <Bell className="h-5 w-5" />
+            <span className="sr-only">Notifications</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={ toggleThreadsList }
+          >
+            <MessageSquare className="h-5 w-5" />
+            <span className="sr-only">Toggle Chats</span>
+          </Button>
+
+          <UserNav user={ profile } />
+        </div>
+      );
     }
 
     return (
