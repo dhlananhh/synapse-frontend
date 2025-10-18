@@ -1,95 +1,74 @@
 'use client'
 
-import React, { useState, useEffect, useCallback } from 'react'
-import { Post } from '@/types'
-import { fetchPosts } from '@/libs/mock-api'
-import { useAuth } from '@/context/AuthContext'
-import { useIntersectionObserver } from '@/hooks/useIntersectionObserver'
-import PostCard from '@/components/features/post/PostCard'
-import PostFeedSkeleton from '@/components/features/post/PostFeedSkeleton'
-import EmptyState from '@/components/shared/EmptyState'
-import { Telescope, Loader2 } from 'lucide-react'
-import { PATHS } from '@/libs/paths'
+import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+import { useCommunity } from '@/context/CommunityContext'
+import { useCommunityPosts } from '@/hooks/useCommunityPosts'
+import type { PostType } from '@/types/services/post'
+import PostCard from '../post/PostCard'
+import { LoadMoreButton } from '@/components/ui/LoadMoreButton'
+import { EmptyState } from '@/components/empty-states/EmptyState'
+import { PostCardSkeleton } from '@/components/skeletons/PostCardSkeleton'
+import type { SimpleProfile } from '@/types/services/user'
+import { communityService } from '@/modules/services/community-service'
+import type { CommunityFlair } from '@/types/services/community'
 
 interface CommunityPostFeedProps {
-  communityId: string
-  flairId?: string | null
+  selectedFlairId?: string | null
+  typesFilter?: PostType[]
 }
 
-export default function CommunityPostFeed({ communityId, flairId }: CommunityPostFeedProps) {
-  const [posts, setPosts] = useState<Post[]>([])
-  const [page, setPage] = useState(1)
-  const [isLoading, setIsLoading] = useState(true)
-  const [hasMore, setHasMore] = useState(true)
-  // const { isBlocked } = useAuth()
+export default function CommunityPostFeed({
+  selectedFlairId,
+  typesFilter,
+}: CommunityPostFeedProps) {
+  const community = useCommunity()
+  const { posts, isLoading, isLoadingMore, hasMore, loadMore, error, authorProfiles } =
+    useCommunityPosts(community?.id, {
+      flairId: selectedFlairId ?? undefined,
+      types: typesFilter?.length ? typesFilter : undefined,
+    })
 
-  const loadPosts = useCallback(
-    async (isNewFilter = false) => {
-      setIsLoading(true)
-      const pageToFetch = isNewFilter ? 1 : page
-
-      try {
-        const { data: newPosts, hasMore: newHasMore } = await fetchPosts(pageToFetch, 'hot', [], {
-          filterByCommunityId: communityId,
-          filterByFlairId: flairId || undefined,
-        })
-        setPosts((prev) => (isNewFilter ? newPosts : [...prev, ...newPosts]))
-        setPage(pageToFetch + 1)
-        setHasMore(newHasMore)
-      } catch (e) {
-        console.error(e)
-      } finally {
-        setIsLoading(false)
-      }
-    },
-    [communityId, flairId, page]
-  )
+  const [flairs, setFlairs] = useState<CommunityFlair[]>([])
 
   useEffect(() => {
-    setPosts([])
-    setPage(1)
-    setHasMore(true)
-    loadPosts(true)
-  }, [communityId, flairId, loadPosts])
+    if (!community?.id) return
+    communityService
+      .getFlairs(community.id)
+      .then(setFlairs)
+      .catch(() => setFlairs([]))
+  }, [community?.id])
 
-  const { lastElementRef } = useIntersectionObserver({
-    onIntersect: () => loadPosts(false),
-    isLoading,
-    hasMore,
-  })
+  useEffect(() => {
+    if (error) {
+      toast.error('Failed to load posts', { description: error })
+    }
+  }, [error])
 
-  if (isLoading && page === 1) {
-    return <PostFeedSkeleton />
+  if (!community?.id) return null
+
+  if (isLoading) {
+    return (
+      <div className='space-y-3'>
+        <PostCardSkeleton />
+        <PostCardSkeleton />
+      </div>
+    )
   }
 
-  // const visiblePosts = posts.filter((post) => !isBlocked(post.author.id))
-
-  // if (visiblePosts.length === 0) {
-  //   return (
-  //     <EmptyState
-  //       Icon={Telescope}
-  //       title={flairId ? 'No Posts with this Flair' : 'Be the First to Post'}
-  //       description={
-  //         flairId
-  //           ? 'There are no posts with this flair yet. Try clearing the filter.'
-  //           : 'This community is quiet... for now.'
-  //       }
-  //       action={{ label: 'Create Post', href: PATHS.submit }}
-  //     />
-  //   )
-  // }
+  if (posts.length === 0) {
+    return <EmptyState>No posts yet.</EmptyState>
+  }
 
   return (
-    <div className='flex flex-col gap-4'>
-      {/* {visiblePosts.map((post, index) => {
-        const ref = index === visiblePosts.length - 1 ? lastElementRef : null
-        return <PostCard ref={ref as any} key={post.id} post={post} />
+    <div className='flex flex-col gap-6'>
+      {posts.map((p) => {
+        const flair = flairs.find((f) => f.id === p.flairId) || null
+        return (
+          <PostCard key={p.id} post={p} authorProfile={authorProfiles[p.authorId]} flair={flair} />
+        )
       })}
-      {isLoading && page > 1 && (
-        <div className='flex justify-center items-center py-8'>
-          <Loader2 className='h-8 w-8 animate-spin text-primary' />
-        </div>
-      )} */}
+      {hasMore && <LoadMoreButton loading={isLoadingMore} onClick={() => void loadMore()} />}
     </div>
   )
 }

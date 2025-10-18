@@ -16,6 +16,6 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
   }
 }
 
-export default function UserProfileLayout({ children, params }: Props) {
+export default function Layout({ children, params }: Props) {
   return <div className='container mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8'>{children}</div>
 }

@@ -65,22 +65,22 @@ export interface UserComment extends Comment {
 // };
 
 // Post type
-export type Post = {
-  id: string
-  title: string
-  content: string
-  author: User
-  community: {
-    id: string
-    slug: string
-    name: string
-  }
-  createdAt: string
-  votes: number
-  comments: Comment[]
-  flair?: Flair
-  receivedAwards?: Award[]
-}
+// export type Post = {
+//   id: string
+//   title: string
+//   content: string
+//   author: User
+//   community: {
+//     id: string
+//     slug: string
+//     name: string
+//   }
+//   createdAt: string
+//   votes: number
+//   comments: Comment[]
+//   flair?: Flair
+//   receivedAwards?: Award[]
+// }
 
 // Flair type
 export type Flair = {

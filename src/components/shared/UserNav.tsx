@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import Link from 'next/link'
-import { LogOut, User as UserIcon } from 'lucide-react'
+import { LogOut, User as UserIcon, List as ListIcon } from 'lucide-react'
 import { UserProfile } from '@/types/services/user'
 
 interface UserNavProps {
@@ -46,9 +46,15 @@ export function UserNav({ user }: UserNavProps) {
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
           <DropdownMenuItem asChild>
-            <Link href={`/profile/me`}>
+            <Link href={`/u/me`}>
               <UserIcon className='mr-2 h-4 w-4' />
               <span>Profile</span>
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <Link href={`/u/me/posts`}>
+              <ListIcon className='mr-2 h-4 w-4' />
+              <span>My Posts</span>
             </Link>
           </DropdownMenuItem>
         </DropdownMenuGroup>

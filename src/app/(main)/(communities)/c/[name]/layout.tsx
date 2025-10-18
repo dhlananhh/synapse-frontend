@@ -3,15 +3,18 @@
 import React, { useEffect, useState } from 'react'
 import { notFound, useSearchParams } from 'next/navigation'
 import { communityService } from '@/modules/services/community-service'
-
-import AboutCommunityWidget from '@/components/features/community/widgets/AboutCommunityWidget'
-import FlairFilterWidget from '@/components/features/community/widgets/CommunityFlairsWidget'
-import { Community, CommunityMembership } from '@/types/services/community'
+import {
+  Community,
+  CommunityMembership,
+  CommunityFlair,
+  CommunityRule,
+} from '@/types/services/community'
 import { CommunityContext } from '@/context/CommunityContext'
 import CommunityRulesWidget from '@/components/features/community/widgets/CommunityRulesWidget'
 import ModeratorListWidget from '@/components/features/community/widgets/ModeratorListWidget'
 import { MembershipContext } from '@/context/MembershipContext'
 import CommunityFlairsWidget from '@/components/features/community/widgets/CommunityFlairsWidget'
+import AboutCommunityWidget from '@/components/features/community/widgets/AboutCommunityWidget'
 
 interface CommunityLayoutProps {
   children: React.ReactNode
@@ -23,6 +26,8 @@ export default function CommunityLayout({ children, params }: CommunityLayoutPro
   const { name } = React.use(params) as { name: string }
   const [community, setCommunity] = useState<Community | null>(null)
   const [membership, setMembership] = useState<CommunityMembership | null>(null)
+  const [flairs, setFlairs] = useState<CommunityFlair[]>([])
+  const [rules, setRules] = useState<CommunityRule[]>([])
   const [loading, setLoading] = useState(true)
   const searchParams = useSearchParams()
   const activeFlairId = searchParams.get('flair')
@@ -30,17 +35,29 @@ export default function CommunityLayout({ children, params }: CommunityLayoutPro
   useEffect(() => {
     let isMounted = true
     setLoading(true)
-    Promise.all([communityService.getCommunityByName(name), communityService.getMembership(name)])
-      .then(([communityData, membershipData]) => {
+    communityService
+      .getCommunityByName(name)
+      .then(async (communityData) => {
+        if (!isMounted) return
+        setCommunity(communityData)
+        // Fetch membership, flairs, and rules using community id
+        const [membershipData, flairsData, rulesData] = await Promise.all([
+          communityService.getMembership(name),
+          communityService.getFlairs(communityData.id),
+          communityService.getRules(communityData.id),
+        ])
         if (isMounted) {
-          setCommunity(communityData)
           setMembership(membershipData)
+          setFlairs(flairsData)
+          setRules(rulesData)
         }
       })
       .catch(() => {
         if (isMounted) {
           setCommunity(null)
           setMembership(null)
+          setFlairs([])
+          setRules([])
         }
       })
       .finally(() => {
@@ -57,10 +74,10 @@ export default function CommunityLayout({ children, params }: CommunityLayoutPro
     return null
   }
 
-  console.log('here is the community ', community)
-
   return (
-    <CommunityContext.Provider value={{ community, setCommunity }}>
+    <CommunityContext.Provider
+      value={{ community, setCommunity, flairs, setFlairs, rules, setRules }}
+    >
       <MembershipContext.Provider value={{ membership, setMembership }}>
         <div className='grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-x-4'>
           <div className='col-span-2'>{children}</div>

@@ -20,6 +20,7 @@ import {
   FileText,
   TriangleAlert,
   ShieldCheck,
+  FolderKanban,
 } from 'lucide-react'
 import type { Community } from '@/types/services/community'
 
@@ -56,10 +57,15 @@ export default function AboutCommunityWidget() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>
-            <Info className='h-5 w-5 inline mr-2' />
-            <span>About c/{community.name}</span>
-          </CardTitle>
+          <Link href={`/c/${community.name}`}>
+            <CardTitle
+              className='cursor-pointer hover:text-primary transition-colors hover:scale-[1.03] hover:bg-muted/40 px-2 py-1 rounded'
+              style={{ display: 'inline-flex', alignItems: 'center' }}
+            >
+              <Info className='h-5 w-5 inline mr-2 transition-transform group-hover:scale-110' />
+              <span>About c/{community.name}</span>
+            </CardTitle>
+          </Link>
         </CardHeader>
 
         <CardContent className='space-y-4'>
@@ -116,10 +122,10 @@ export default function AboutCommunityWidget() {
               <hr />
               <div className='space-y-2'>
                 <h4 className='font-semibold text-sm'>
-                  {isOwner ? 'Owner Actions' : 'Moderator Actions'}
+                  {/* {isOwner ? 'Owner Actions' : 'Moderator Actions'} */}
                 </h4>
 
-                {/* Manage Members - available to moderators & owners (if active) */}
+                {/* Manage Members - available to moderators & owners (if active)
                 {canManage && (
                   <Button asChild className='w-full' variant='outline'>
                     <Link
@@ -130,10 +136,10 @@ export default function AboutCommunityWidget() {
                       Manage Members
                     </Link>
                   </Button>
-                )}
+                )} */}
 
                 {/* Manage Contents - available to moderators & owners (if active) */}
-                {canManage && (
+                {/* {canManage && (
                   <Button asChild className='w-full' variant='outline'>
                     <Link
                       href={`/c/${community.name}/manage/contents`}
@@ -143,10 +149,23 @@ export default function AboutCommunityWidget() {
                       Manage Contents
                     </Link>
                   </Button>
+                )} */}
+
+                {/* Community Management - available to moderators & owners (if active) */}
+                {canManage && (
+                  <Button asChild className='w-full' variant='outline'>
+                    <Link
+                      href={`/c/${community.name}/manage`}
+                      className='flex w-full items-center justify-center gap-2'
+                    >
+                      <FolderKanban className='h-4 w-4' />
+                      Manage this community
+                    </Link>
+                  </Button>
                 )}
 
-                {/* Edit Community - available only to owner */}
-                {isOwner && <UpdateCommunityDialog community={community} onUpdate={handleUpdate} />}
+                {/* Edit Community - available only to owner
+                {isOwner && <UpdateCommunityDialog community={community} onUpdate={handleUpdate} />} */}
               </div>
             </>
           )}

@@ -2,10 +2,16 @@ import axios from 'axios'
 import { authService } from '@/modules/services/auth-service'
 
 // Base URLs
-const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://192.168.1.5:4000/api/auth'
+const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://192.168.1.5:4000/api/auth'
 const USER_SERVICE_URL =
   process.env.NEXT_PUBLIC_USER_SERVICE_URL || 'http://192.168.1.5:4002/api/users'
 const COMMUNITY_SERVICE_URL = process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL || 'HTTP://NOTHING'
+const UPLOAD_SERVICE_URL =
+  process.env.NEXT_PUBLIC_UPLOAD_SERVICE_URL || 'http://192.168.1.5:4003/api/upload'
+const POST_SERVICE_URL =
+  process.env.NEXT_PUBLIC_POST_SERVICE_URL || 'http://localhost:4003/api/posts'
+const COMMENT_SERVICE_URL =
+  process.env.NEXT_PUBLIC_COMMENT_SERVICE_URL || 'http://localhost:4003/api/comments'
 
 const createApiClient = (baseURL: string) => {
   const apiClient = axios.create({
@@ -21,6 +27,9 @@ const createApiClient = (baseURL: string) => {
 const authApiClient = createApiClient(AUTH_SERVICE_URL)
 const userApiClient = createApiClient(USER_SERVICE_URL)
 const communityApiClient = createApiClient(COMMUNITY_SERVICE_URL)
+const uploadApiClient = createApiClient(UPLOAD_SERVICE_URL)
+const postApiClient = createApiClient(POST_SERVICE_URL)
+const commentApiClient = createApiClient(COMMENT_SERVICE_URL)
 
 // --------------------
 // Interceptors
@@ -50,5 +59,15 @@ const setupInterceptors = (client: typeof authApiClient) => {
 setupInterceptors(authApiClient)
 setupInterceptors(userApiClient)
 setupInterceptors(communityApiClient)
+setupInterceptors(uploadApiClient)
+setupInterceptors(postApiClient)
+setupInterceptors(commentApiClient)
 
-export { authApiClient, userApiClient, communityApiClient }
+export {
+  authApiClient,
+  userApiClient,
+  communityApiClient,
+  uploadApiClient,
+  postApiClient,
+  commentApiClient,
+}

@@ -1,4 +1,45 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+@plugin "tailwindcss-animate";
+
+/* ProseMirror base styles */
+@import 'prosemirror-view/style/prosemirror.css';
+
+/* Minimal Tiptap placeholder and block styling so it looks like an editor */
+.ProseMirror {
+  outline: none;
+}
+.ProseMirror > * + * {
+  margin-top: 0.75rem;
+}
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: hsl(var(--muted-foreground));
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
+.ProseMirror code {
+  background: color-mix(in hsl, hsl(var(--muted)) 60%, transparent);
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+}
+.ProseMirror pre {
+  background: hsl(var(--muted));
+  color: inherit;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+}
+.ProseMirror blockquote {
+  border-left: 3px solid hsl(var(--border));
+  padding-left: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 1.25rem;
+}
 
 @custom-variant dark (&:is(.dark *));
 

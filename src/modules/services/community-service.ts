@@ -1,4 +1,5 @@
 import { communityApiClient } from '@/libs/apiClient'
+import type { MyCommunity } from '@/types/services/community'
 import {
   Community,
   CommunityFlair,
@@ -10,8 +11,8 @@ import {
   CreateCommunityFlairPayload,
   CreateCommunityRulePayload,
   UpdateCommunityRulePayload,
+  SearchCommunityResult,
 } from '@/types/services/community'
-import { SearchCommunityResult } from '@/types/services/community'
 
 export const communityService = {
   // Search communities with cursor-based paging
@@ -175,4 +176,130 @@ export const communityService = {
     members: CommunityMember[]
     pagination?: { hasMore: boolean; nextCursor: string | null }
   }> => communityApiClient.get(`/${communityId}/members`, { params }).then((res) => res.data),
+
+  /**
+   * Get communities the current user is a member of or has left.
+   * GET /me
+   * Accepts: statuses?: ('ACTIVE' | 'LEFT')[]
+   * Returns: MyCommunity[]
+   */
+  getMyCommunities: (params?: { statuses?: ('ACTIVE' | 'LEFT')[] }): Promise<MyCommunity[]> =>
+    communityApiClient
+      .get('/me', {
+        params:
+          params?.statuses && params.statuses.length > 0
+            ? { statuses: params.statuses.join(',') }
+            : undefined,
+      })
+      .then((res) => {
+        // The response is expected to be an array of MyCommunity objects
+        return Array.isArray(res.data.items) ? res.data.items : []
+      }),
+
+  // Get pending requests
+  // GET {communityId}/members/pending
+  getPendingRequests: (
+    communityId: string,
+    params?: {
+      cursor?: string | null
+      limit?: number
+    }
+  ): Promise<any> =>
+    communityApiClient.get(`${communityId}/members/pending`, { params }).then((res) => res.data),
+
+  // Approve join request
+  // POST /{communityId}/members/{userId}/approve
+  approveJoinRequest: (communityId: string, userId: string): Promise<any> =>
+    communityApiClient.post(`/${communityId}/members/${userId}/approve`).then((res) => res.data),
+
+  // Reject join request
+  // POST /{communityId}/members/{userId}/reject
+  rejectJoinRequest: (
+    communityId: string,
+    userId: string,
+    params?: {
+      reason?: string | null
+    }
+  ): Promise<any> =>
+    communityApiClient
+      .post(`/${communityId}/members/${userId}/reject`, {
+        reason: params?.reason ?? null,
+      })
+      .then((res) => res.data),
+
+  // Promote a member to moderator
+  // POST /{communityId}/members/{userId}/promote
+  promoteMember: (
+    communityId: string,
+    userId: string,
+    params?: { reason?: string | null }
+  ): Promise<any> =>
+    communityApiClient
+      .post(`/${communityId}/members/${userId}/promote`, {
+        reason: params?.reason?.trim() ? params.reason.trim() : null,
+      })
+      .then((res) => res.data),
+
+  // Demote a moderator to member
+  // POST /{communityId}/members/${userId}/demote
+  demoteMember: (
+    communityId: string,
+    userId: string,
+    params?: { reason?: string | null }
+  ): Promise<any> =>
+    communityApiClient
+      .post(`/${communityId}/members/${userId}/demote`, {
+        reason: params?.reason?.trim() ? params.reason.trim() : null,
+      })
+      .then((res) => res.data),
+
+  // Ban a member
+  // POST /{communityId}/members/{userId}/ban
+  banMember: (
+    communityId: string,
+    userId: string,
+    params?: { reason?: string | null }
+  ): Promise<any> =>
+    communityApiClient
+      .post(`/${communityId}/members/${userId}/ban`, {
+        reason: params?.reason?.trim() ? params.reason.trim() : null,
+      })
+      .then((res) => res.data),
+
+  // Unban a user
+  // POST /{communityId}/members/{userId}/unban
+  unbanMember: (
+    communityId: string,
+    userId: string,
+    params?: { reason?: string | null }
+  ): Promise<any> =>
+    communityApiClient
+      .post(`/${communityId}/members/${userId}/unban`, {
+        reason: params?.reason?.trim() ? params.reason.trim() : null,
+      })
+      .then((res) => res.data),
+
+  // Remove a member
+  // POST /{communityId}/members/{userId}/remove
+  removeMember: (
+    communityId: string,
+    userId: string,
+    params?: { reason?: string | null }
+  ): Promise<any> =>
+    communityApiClient
+      .post(`/${communityId}/members/${userId}/remove`, {
+        reason: params?.reason?.trim() ? params.reason.trim() : null,
+      })
+      .then((res) => res.data),
+
+  // Get banned members
+  // GET {communityId}/members/banned
+  getBannedMembers: (
+    communityId: string,
+    params?: { q?: string; cursor?: string | null; limit?: number }
+  ): Promise<{
+    members: CommunityMember[]
+    pagination?: { hasMore: boolean; nextCursor: string | null }
+  }> =>
+    communityApiClient.get(`/${communityId}/members/banned`, { params }).then((res) => res.data),
 }

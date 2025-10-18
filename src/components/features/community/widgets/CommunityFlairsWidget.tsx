@@ -1,10 +1,9 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { communityService } from '@/modules/services/community-service'
-import type { Community, CommunityFlair } from '@/types/services/community'
+import type { Community } from '@/types/services/community'
 import {
   Accordion,
   AccordionItem,
@@ -14,47 +13,25 @@ import {
 import { Tag, Settings } from 'lucide-react'
 import { useMembership } from '@/context/MembershipContext'
 import { Button } from '@/components/ui/button'
-import { useCommunity } from '@/context/CommunityContext'
+import { useCommunity, useCommunityFlairs, useSetCommunityFlairs } from '@/context/CommunityContext'
 import { ManageCommunityFlairsDialog } from '@/components/features/community/manage/dialogs/ManageCommunityFlairsDialog'
 
 export default function CommunityFlairsWidget() {
   const community = useCommunity()
-  const communityId = community?.id ?? ''
   const communityName = community?.name ?? ''
   const membershipContext = useMembership()
   const membership = membershipContext?.membership ?? null
   const isOwner = membership?.role === 'OWNER'
   const isModerator = membership?.role === 'MODERATOR'
   const canEditFlairs = isOwner || isModerator
-  const [flairs, setFlairs] = useState<CommunityFlair[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    let mounted = true
-    async function load() {
-      setLoading(true)
-      setError(null)
-      try {
-        const res = await communityService.getFlairs(communityId)
-        if (!mounted) return
-        setFlairs((res ?? []) as CommunityFlair[])
-      } catch (err: any) {
-        console.error('Failed to load flairs', err)
-        if (mounted) setError('Failed to load flairs')
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    }
-    if (communityId) load()
-    else {
-      setFlairs([])
-      setLoading(false)
-    }
-    return () => {
-      mounted = false
-    }
-  }, [communityId])
+  // Use flairs from context
+  const flairs = useCommunityFlairs()
+  const setFlairs = useSetCommunityFlairs()
+
+  // No need to fetch flairs here, context already provides them
+  const loading = !community // loading state can be improved if needed
+  const error = null
 
   return (
     <Card className='p-2'>

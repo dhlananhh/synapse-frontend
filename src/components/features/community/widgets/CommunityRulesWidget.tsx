@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import {
   Accordion,
@@ -6,57 +6,26 @@ import {
   AccordionTrigger,
   AccordionContent,
 } from '@/components/ui/accordion'
-import { CommunityRule } from '@/types/services/community'
 import { ListOrdered, Settings } from 'lucide-react'
 import { ManageRulesDialog } from '@/components/features/community/manage/dialogs/ManageRulesDialog'
 import { useMembership } from '@/context/MembershipContext'
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
-import { communityService } from '@/modules/services/community-service'
-import { useCommunity } from '@/context/CommunityContext'
+import { useCommunity, useCommunityRules, useSetCommunityRules } from '@/context/CommunityContext'
 
 export default function CommunityRulesWidget() {
   const community = useCommunity()
-  const communityId = community?.id ?? ''
   const communityName = community?.name ?? ''
-
   const membershipContext = useMembership()
   const membership = membershipContext?.membership ?? null
   const isOwner = membership?.role === 'OWNER'
 
-  const [rules, setRules] = useState<CommunityRule[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string | null>(null)
+  // Use rules from context
+  const rules = useCommunityRules()
+  const setRules = useSetCommunityRules()
 
-  useEffect(() => {
-    let mounted = true
-    const load = async () => {
-      if (!communityId) {
-        if (mounted) {
-          setRules([])
-          setLoading(false)
-        }
-        return
-      }
-
-      setLoading(true)
-      setError(null)
-      try {
-        const res = await communityService.getRules(communityId)
-        if (!mounted) return
-        setRules((res ?? []) as CommunityRule[])
-      } catch (err: any) {
-        console.error('Failed to load rules', err)
-        if (mounted) setError('Failed to load rules.')
-      } finally {
-        if (mounted) setLoading(false)
-      }
-    }
-    load()
-    return () => {
-      mounted = false
-    }
-  }, [communityId])
+  const loading = !community // You can improve this loading state if needed
+  const error = null
 
   const sortedRules = rules.length ? [...rules].sort((a, b) => a.order - b.order) : []
 

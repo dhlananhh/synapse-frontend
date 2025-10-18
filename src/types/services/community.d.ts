@@ -61,11 +61,19 @@ export interface SearchCommunityResult {
   id: string
   name: string
   description: string
-  status: 'PUBLIC' | 'RESTRICTED' | 'PRIVATE'
   ownerId: string
   memberCount: number
   postCount: number
   isNSFW: boolean
+  isPrivate: boolean
+  avatarUrl: string | null
+}
+
+export interface MyCommunity {
+  communityId: string
+  name: string
+  description: string
+  status: 'ACTIVE' | 'LEFT'
   avatarUrl: string | null
 }
 

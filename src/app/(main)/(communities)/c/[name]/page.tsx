@@ -25,7 +25,7 @@ export default function CommunityPage() {
       />
       {/* <CreatePostWidget /> */}
       <div className='mt-6'>
-        {/* <CommunityPostFeed communityId={community.id} flairId={activeFlairId} /> */}
+        <CommunityPostFeed />
       </div>
       <span></span>
     </div>

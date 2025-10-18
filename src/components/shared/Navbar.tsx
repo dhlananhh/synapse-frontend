@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
+import { PlusCircle } from 'lucide-react'
 
 import { useAuth } from '@/context/AuthContext'
 import { userService } from '@/modules/services/user-service'
@@ -38,7 +39,17 @@ export function Navbar() {
     }
 
     if (user && profile) {
-      return <UserNav user={profile} />
+      return (
+        <div className='flex items-center gap-4'>
+          <Button asChild>
+            <Link href='/submit' className='flex items-center gap-2'>
+              <PlusCircle className='w-5 h-5' />
+              Create Post
+            </Link>
+          </Button>
+          <UserNav user={profile} />
+        </div>
+      )
     }
 
     return (

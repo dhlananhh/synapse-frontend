@@ -1,254 +1,365 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useForm, FormProvider, useWatch, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { TPostSchema, PostSchema } from '@/libs/validators/post-validator'
-import { useAuth } from '@/context/AuthContext'
-import { createPost, fetchFlairsForCommunity } from '@/libs/mock-api'
-import { mockCommunities } from '@/libs/mock-data'
-import { Community, Flair, Post, User } from '@/types'
-import { toast } from 'sonner'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { Loader2, Check, ChevronsUpDown } from 'lucide-react'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from '@/components/ui/command'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+import { Link as LinkIcon, Image as ImageIcon, FileText } from 'lucide-react'
+import { CommunitySelector } from './CommunitySelector'
+import { FlairAndTagsDialog } from '@/components/features/post/dialogs/FlairAndTagsDialog'
+import { communityService } from '@/modules/services/community-service'
+import { CommunityFlair } from '@/types/services/community'
 import { Badge } from '@/components/ui/badge'
 import Editor from '@/components/shared/Editor'
-import { cn } from '@/libs/utils'
-import { PATHS } from '@/libs/paths'
-import { FormProvider } from 'react-hook-form'
-import { AuthUser } from '@/types/services/auth'
+import {
+  CreatePostSchema,
+  TCreatePostSchema,
+  MAX_LINKS,
+  TCreatePostInput,
+} from '@/libs/validators/post-validator'
+import { MediaPicker } from './MediaPicker'
+import * as postService from '@/modules/services/post-service'
+import NavigationDialog from '@/components/shared/NavigationDialog'
+import { useRouter } from 'next/navigation'
 
-export default function CreatePostForm() {
+// TEXT, MEDIA or LINK
+type PostType = TCreatePostSchema['type']
+
+interface CreatePostFormProps {
+  selectedCommunityId: string
+  onSelectCommunity: (id: string) => void
+}
+
+export default function CreatePostForm({
+  selectedCommunityId,
+  onSelectCommunity,
+}: CreatePostFormProps) {
+  const [flairs, setFlairs] = useState<CommunityFlair[]>([])
+  const [loadingFlairs, setLoadingFlairs] = useState(false)
   const router = useRouter()
-  const searchParams = useSearchParams()
-  const { user } = useAuth()
+  const [showNavDialog, setShowNavDialog] = useState(false)
+  const [createdPost, setCreatedPost] = useState<any>(null)
 
-  const [flairs, setFlairs] = useState<Flair[]>([])
-  const [isLoadingFlairs, setIsLoadingFlairs] = useState(false)
-
-  const preselectedCommunitySlug = searchParams.get('community')
-  const preselectedCommunity = mockCommunities.find((c) => c.slug === preselectedCommunitySlug)
-
-  const methods = useForm<TPostSchema>({
-    resolver: zodResolver(PostSchema),
+  const methods = useForm<TCreatePostInput, any, TCreatePostSchema>({
+    resolver: zodResolver(CreatePostSchema),
+    mode: 'onChange',
     defaultValues: {
-      communityId: preselectedCommunity?.id || '',
+      type: 'TEXT',
+      title: '',
+      contentHtml: '',
+      contentJson: undefined,
+      mediaTempKeys: [],
+      links: [],
+      flairId: '',
+      taggedUserIds: [],
+      isNSFW: false,
+      isSpoiler: false,
+      isOC: false,
     },
   })
 
   const {
-    control,
-    handleSubmit,
     register,
-    formState: { errors, isSubmitting },
+    handleSubmit,
+    setValue,
+    control,
+    formState: { isSubmitting, isValid, errors },
   } = methods
 
-  const selectedCommunityId = useWatch({
+  const {
+    fields: linkFields,
+    append: appendLink,
+    remove: removeLink,
+  } = useFieldArray({
     control,
-    name: 'communityId',
+    name: 'links',
   })
 
+  const postType = useWatch({ control, name: 'type' })
+
+  // Fetch flairs when external community changes
   useEffect(() => {
     if (!selectedCommunityId) {
       setFlairs([])
       return
     }
-
-    const loadFlairs = async () => {
-      setIsLoadingFlairs(true)
-      try {
-        const fetchedFlairs = await fetchFlairsForCommunity(selectedCommunityId)
-        setFlairs(fetchedFlairs)
-      } catch (error) {
-        console.error('Failed to fetch flairs', error)
-        toast.error('Could not load flairs for this community.')
+    let active = true
+    setLoadingFlairs(true)
+    communityService
+      .getFlairs(selectedCommunityId)
+      .then((res) => {
+        if (!active) return
+        setFlairs((res || []) as CommunityFlair[])
+      })
+      .catch(() => {
+        if (!active) return
         setFlairs([])
-      } finally {
-        setIsLoadingFlairs(false)
-      }
+      })
+      .finally(() => {
+        if (active) setLoadingFlairs(false)
+      })
+    return () => {
+      active = false
     }
-
-    loadFlairs()
   }, [selectedCommunityId])
 
-  const onSubmit = async (data: TPostSchema) => {
-    if (!user) {
-      toast.error('You must be logged in to create a post.')
-      return
-    }
+  const onSubmit = async (data: TCreatePostSchema) => {
+    const created = await postService.createPost(selectedCommunityId, data)
+    setCreatedPost(created)
+    setShowNavDialog(true)
+  }
 
-    try {
-      const newPost = await createPost(data, user as AuthUser)
-      toast.success('Post created successfully!')
-      router.push(PATHS.post(newPost.id))
-    } catch (error: any) {
-      toast.error('Failed to create post', {
-        description:
-          error.message || 'A community with that URL already exists. Please choose another.',
-      })
+  const handleTabChange = (val: string) => {
+    setValue('type', val as PostType, { shouldDirty: true, shouldValidate: true })
+  }
+
+  const FlairTagsSummary = () => {
+    const flairId = methods.watch('flairId')
+    const isNSFW = methods.watch('isNSFW')
+    const isSpoiler = methods.watch('isSpoiler')
+    const isOC = methods.watch('isOC')
+    const flair = flairs.find((f) => f.id === flairId)
+    if (!flair && !isNSFW && !isSpoiler && !isOC) {
+      return <p className='text-xs text-muted-foreground'>No flair or tags selected.</p>
     }
+    return (
+      <div className='flex flex-wrap items-center gap-2 mt-2'>
+        {flair && (
+          <Badge variant='outline' className='pr-2 pl-1 flex items-center gap-1 border-dashed'>
+            <span
+              className='h-3 w-3 rounded-full ring-1 ring-border'
+              style={{ backgroundColor: flair.color || '#CBD5E1' }}
+            />
+            {flair.name}
+          </Badge>
+        )}
+        {isNSFW && (
+          <Badge variant='destructive' className='uppercase tracking-wide'>
+            NSFW
+          </Badge>
+        )}
+        {isSpoiler && (
+          <Badge variant='secondary' className='uppercase tracking-wide'>
+            Spoiler
+          </Badge>
+        )}
+        {isOC && (
+          <Badge variant='outline' className='uppercase tracking-wide'>
+            OC
+          </Badge>
+        )}
+      </div>
+    )
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Card>
-        <CardHeader>
-          <CardTitle>Create a Post</CardTitle>
-          <CardDescription>
-            Choose a community and share your thoughts with the world.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className='space-y-4'>
-          <div>
-            <Label>Choose a Community</Label>
-            <Controller
-              control={control}
-              name='communityId'
-              render={({ field }) => (
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant='outline'
-                      role='combobox'
-                      className='w-full justify-between mt-1'
-                    >
-                      {field.value
-                        ? `c/${mockCommunities.find((c) => c.id === field.value)?.slug}`
-                        : 'Select a community...'}
-                      <ChevronsUpDown className='ml-2 h-4 w-4 shrink-0 opacity-50' />
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className='w-[--radix-popover-trigger-width] p-0'>
-                    <Command>
-                      <CommandInput placeholder='Search communities...' />
-                      <CommandList>
-                        <CommandEmpty>No communities found.</CommandEmpty>
-                        <CommandGroup>
-                          {mockCommunities.map((community) => (
-                            <CommandItem
-                              key={community.id}
-                              value={community.slug}
-                              onSelect={() => field.onChange(community.id)}
-                            >
-                              <Check
-                                className={cn(
-                                  'mr-2 h-4 w-4',
-                                  community.id === field.value ? 'opacity-100' : 'opacity-0'
-                                )}
-                              />
-                              c/{community.slug}
-                            </CommandItem>
-                          ))}
-                        </CommandGroup>
-                      </CommandList>
-                    </Command>
-                  </PopoverContent>
-                </Popover>
-              )}
-            />
-            {errors.communityId && (
-              <p className='text-sm text-destructive mt-1'>{errors.communityId.message}</p>
-            )}
-          </div>
+    <FormProvider {...methods}>
+      <form onSubmit={handleSubmit(onSubmit)} className='space-y-5'>
+        <input type='hidden' {...register('flairId')} />
+        <input type='hidden' {...register('isNSFW')} />
+        <input type='hidden' {...register('isSpoiler')} />
+        <input type='hidden' {...register('isOC')} />
 
-          <div
-            className={cn(
-              'space-y-2 transition-opacity',
-              !selectedCommunityId ? 'opacity-50 pointer-events-none' : 'opacity-100'
-            )}
-          >
-            <Label>Flair (Optional)</Label>
-            <Controller
-              control={control}
-              name='flairId'
-              render={({ field }) => (
-                <Select
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  disabled={!selectedCommunityId || isLoadingFlairs}
-                >
-                  <SelectTrigger>
-                    <SelectValue
-                      placeholder={isLoadingFlairs ? 'Loading flairs...' : 'Select a flair...'}
-                    />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {flairs.length > 0 ? (
-                      flairs.map((flair) => (
-                        <SelectItem key={flair.id} value={flair.id}>
-                          <div className='flex items-center gap-2'>
-                            <div
-                              style={{ backgroundColor: flair.color }}
-                              className='h-4 w-4 rounded-full'
-                            />
-                            {flair.name}
-                          </div>
-                        </SelectItem>
-                      ))
-                    ) : (
-                      <p className='text-sm text-muted-foreground p-2'>
-                        No flairs for this community.
+        <Card>
+          <CardHeader className='pb-3'>
+            <CardTitle className='text-base font-semibold'>Create Post</CardTitle>
+          </CardHeader>
+          <CardContent className='pt-0 space-y-6'>
+            <div className='space-y-2'>
+              <CommunitySelector
+                label='Community'
+                value={selectedCommunityId || ''}
+                onChange={(id) => {
+                  onSelectCommunity(id)
+                }}
+              />
+              <p className='text-xs text-muted-foreground'>
+                You can only post to communities that you are a member of.
+              </p>
+            </div>
+
+            <div
+              className={`space-y-2 ${
+                !selectedCommunityId ? 'opacity-50 pointer-events-none select-none' : ''
+              }`}
+            >
+              <div className='flex items-center gap-3'>
+                <FlairAndTagsDialog
+                  flairs={flairs}
+                  disabled={!selectedCommunityId || loadingFlairs}
+                />
+                {loadingFlairs && (
+                  <span className='text-xs text-muted-foreground flex items-center gap-1'>
+                    Loading…
+                  </span>
+                )}
+              </div>
+              <FlairTagsSummary />
+            </div>
+            <hr />
+
+            <Tabs value={postType} onValueChange={handleTabChange}>
+              <TabsList className='grid w-full grid-cols-3'>
+                <TabsTrigger value='TEXT' className='flex items-center gap-2'>
+                  <FileText className='h-4 w-4' />
+                  Text
+                </TabsTrigger>
+                <TabsTrigger value='MEDIA' className='flex items-center gap-2'>
+                  <ImageIcon className='h-4 w-4' />
+                  Media
+                </TabsTrigger>
+                <TabsTrigger value='LINK' className='flex items-center gap-2'>
+                  <LinkIcon className='h-4 w-4' />
+                  Link
+                </TabsTrigger>
+              </TabsList>
+
+              <div className='mt-5 space-y-2'>
+                <label className='text-sm font-medium' htmlFor='title'>
+                  Title
+                </label>
+                <Input
+                  id='title'
+                  placeholder={`Enter a descriptive ${postType === 'MEDIA' ? 'caption' : 'title'}`}
+                  {...register('title')}
+                />
+                {errors.title && (
+                  <p className='text-xs text-destructive'>{errors.title.message as string}</p>
+                )}
+              </div>
+
+              <TabsContent value='TEXT' className='mt-6 space-y-4'>
+                <div className='space-y-2'>
+                  <label className='text-sm font-medium'>Body</label>
+                  <Editor communityId={selectedCommunityId} disabled={!selectedCommunityId} />
+                  {(errors.contentHtml || errors.contentJson) && (
+                    <p className='text-xs text-destructive'>
+                      {(errors.contentHtml?.message as string) ||
+                        (errors.contentJson?.message as string)}
+                    </p>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value='MEDIA' className='mt-6 space-y-4'>
+                <div className='rounded-md border border-dashed p-6 text-center text-sm text-muted-foreground'>
+                  {/* <p className='mb-3'>Media uploader placeholder (populate mediaTempKeys)</p> */}
+                  <MediaPicker name='mediaTempKeys' multiple />
+                  {errors.mediaTempKeys && (
+                    <p className='mt-2 text-xs text-destructive'>
+                      {errors.mediaTempKeys.message as string}
+                    </p>
+                  )}
+                </div>
+                <div className='space-y-2'>
+                  <label className='text-sm font-medium'>Optional Caption</label>
+                  <Editor communityId={selectedCommunityId} disabled={!selectedCommunityId} />
+                  {(errors.contentHtml || errors.contentJson) && (
+                    <p className='text-xs text-destructive'>
+                      {(errors.contentHtml?.message as string) ||
+                        (errors.contentJson?.message as string)}
+                    </p>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value='LINK' className='mt-6 space-y-4'>
+                <div className='space-y-2'>
+                  <div className='flex items-center justify-between'>
+                    <label className='text-sm font-medium'>Links (max {MAX_LINKS})</label>
+                    {linkFields.length < MAX_LINKS && (
+                      <Button
+                        type='button'
+                        variant='outline'
+                        size='sm'
+                        onClick={() => appendLink('')}
+                      >
+                        Add Link
+                      </Button>
+                    )}
+                  </div>
+                  <div className='space-y-2'>
+                    {linkFields.length === 0 && (
+                      <p className='text-xs text-muted-foreground'>
+                        Add at least one link to post.
                       </p>
                     )}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </div>
+                    {linkFields.map((field, idx) => (
+                      <div key={field.id} className='flex items-center gap-2'>
+                        <Input
+                          placeholder='https://example.com'
+                          {...register(`links.${idx}` as const)}
+                        />
+                        <Button
+                          type='button'
+                          variant='ghost'
+                          size='sm'
+                          onClick={() => removeLink(idx)}
+                        >
+                          ✕
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                  {errors.links && (
+                    <p className='text-xs text-destructive'>{errors.links.message as string}</p>
+                  )}
+                </div>
+                <div className='space-y-2'>
+                  <label className='text-sm font-medium'>Optional Commentary</label>
+                  <Editor communityId={selectedCommunityId} disabled={!selectedCommunityId} />
+                  {(errors.contentHtml || errors.contentJson) && (
+                    <p className='text-xs text-destructive'>
+                      {(errors.contentHtml?.message as string) ||
+                        (errors.contentJson?.message as string)}
+                    </p>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </CardContent>
+        </Card>
 
-          <div className='space-y-2'>
-            <Label htmlFor='title'>Title</Label>
-            <Input id='title' {...register('title')} />
-            {errors.title && (
-              <p className='text-sm text-destructive mt-1'>{errors.title.message}</p>
-            )}
-          </div>
-
-          <div className='space-y-2'>
-            <Label>Content</Label>
-            <FormProvider {...methods}>
-              <Editor name='content' />
-            </FormProvider>
-            {errors.content && (
-              <p className='text-sm text-destructive mt-1'>{(errors.content as any).message}</p>
-            )}
-          </div>
-        </CardContent>
-
-        <CardFooter className='justify-end'>
-          <Button type='submit' disabled={isSubmitting}>
-            {isSubmitting && <Loader2 className='mr-2 h-4 w-4 animate-spin' />}
-            Create Post
+        <div className='flex justify-end gap-3'>
+          <Button type='button' variant='outline' disabled={isSubmitting}>
+            Save Draft (TODO)
           </Button>
-        </CardFooter>
-      </Card>
-    </form>
+          <Button
+            type='submit'
+            disabled={
+              isSubmitting ||
+              !selectedCommunityId ||
+              !isValid ||
+              (postType === 'LINK' && linkFields.length === 0)
+            }
+          >
+            {isSubmitting ? 'Submitting...' : 'Post'}
+          </Button>
+        </div>
+      </form>
+      {/* Navigation Dialog */}
+      <NavigationDialog
+        open={showNavDialog}
+        onOpenChange={setShowNavDialog}
+        options={[
+          {
+            label: 'Go to your post',
+            onClick: () => {
+              if (createdPost?.post.id) {
+                router.push(`/u/me/posts/${createdPost.post.id}`)
+              }
+            },
+          },
+          {
+            label: 'Go to homepage',
+            onClick: () => router.push('/'),
+            variant: 'secondary',
+          },
+        ]}
+      />
+    </FormProvider>
   )
 }

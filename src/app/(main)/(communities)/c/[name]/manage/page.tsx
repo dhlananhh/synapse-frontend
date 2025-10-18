@@ -1,81 +1,166 @@
-// "use client";
+'use client'
 
-// import React from "react";
-// import { useParams, notFound } from "next/navigation";
-// // import { useAuth } from "@/context/MockAuthContext";
-// import { mockCommunities } from "@/libs/mock-data";
-// import ForbiddenDisplay from "@/components/shared/ForbiddenDisplay";
-// import { Skeleton } from "@/components/ui/skeleton";
-// import {
-//   Tabs,
-//   TabsContent,
-//   TabsList,
-//   TabsTrigger
-// } from "@/components/ui/tabs";
-// import ManageMembersTab from "@/components/features/community/manage/tabs/ManageMembersTab";
-// import ManageFlairsTab from "@/components/features/community/manage/tabs/ManageFlairsTab";
-// import DangerZoneTab from "@/components/features/community/manage/tabs/DangerZoneTab";
+import React from 'react'
+import Link from 'next/link'
+import { useCommunity } from '@/context/CommunityContext'
+import { useMembership } from '@/context/MembershipContext'
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import {
+  Users, // Icon for Members
+  ShieldAlert, // Icon for Reports
+  FileText, // Icon for Content
+  Settings, // Icon for Community Settings
+  ShieldCheck, // Icon for Rules
+  Hash, // Icon for Flairs
+  ArrowRight,
+  Ban,
+  Lock,
+} from 'lucide-react'
+import { ArrowLeft } from 'lucide-react'
 
-// export const dynamic = "force-dynamic";
+export default function CommunityManagePage() {
+  const community = useCommunity()
+  const membershipContext = useMembership()
 
-// export default function ManageCommunityPage() {
-//   const params = useParams();
-//   const slug = typeof params.slug === "string" ? params.slug : "";
-//   const { user } = useAuth();
+  const isLoading = !community || !membershipContext
 
-//   const community = mockCommunities.find(c => c.slug === slug);
+  if (isLoading) {
+    return <ManagementDashboardSkeleton />
+  }
 
-//   if (user === undefined || !community) {
-//     return <Skeleton className="h-48 w-full" />;
-//   }
+  const membership = membershipContext.membership
+  const canManage = membership?.role === 'OWNER' || membership?.role === 'MODERATOR'
 
-//   const isOwner = user?.id === community.ownerId;
+  if (!canManage) {
+    return (
+      <div className='py-20 text-center'>
+        <Lock className='text-destructive mx-auto h-16 w-16' />
+        <h1 className='mt-4 text-2xl font-bold'>Access Denied</h1>
+        <p className='text-muted-foreground mt-2'>
+          You do not have the required permissions to access the management tools for this
+          community.
+        </p>
+      </div>
+    )
+  }
 
-//   if (!isOwner) {
-//     return <ForbiddenDisplay
-//       title="Permission Denied"
-//       description="You must be the community owner to access these settings."
-//     />;
-//   }
+  // List of management tools
+  // Both Owner and Moderators have the right to manage the community
+  const managementTools = [
+    {
+      title: 'Manage Members',
+      description: 'View join requests, manage current members, and handle bans.',
+      href: `/c/${community.name}/manage/members`,
+      icon: Users,
+      permission: 'all',
+    },
+    {
+      title: 'Reported Content',
+      description: 'Review posts and comments that have been reported by members.',
+      href: `/c/${community.name}/manage/reports`,
+      icon: ShieldAlert,
+      permission: 'all',
+    },
+    {
+      title: 'Manage Content',
+      description: 'View, approve, or remove posts and comments within the community.',
+      href: `/c/${community.name}/manage/contents`,
+      icon: FileText,
+      permission: 'all',
+    },
+    {
+      title: 'Edit Community Details',
+      description:
+        'Update community details like name, description, avatar, banner, and privacy settings.',
+      href: `/c/${community.name}/manage/edit`,
+      icon: Settings,
+      permission: 'owner',
+    },
+    {
+      title: 'Community Rules',
+      description: 'Create and edit the rules for your community.',
+      href: `/c/${community.name}/manage/rules`,
+      icon: ShieldCheck,
+      permission: 'all',
+    },
+    {
+      title: 'Post Flairs',
+      description: 'Manage the flairs that members can add to their posts.',
+      href: `/c/${community.name}/manage/flairs`,
+      icon: Hash,
+      permission: 'all',
+    },
+  ]
 
-//   if (!community) {
-//     notFound();
-//   }
+  // Filter out the tools that the current user has access to
+  const availableTools = managementTools.filter((tool) => {
+    if (tool.permission === 'all') return true
+    return membership?.role === 'OWNER'
+  })
 
-//   return (
-//     <div className="mt-5">
-//       <h1 className="text-3xl font-bold">
-//         Manage Community
-//       </h1>
-//       <p className="text-muted-foreground mt-2">
-//         You are managing { " " }
-//         <span className="font-semibold text-primary">
-//           c/{ community.slug }
-//         </span>
-//       </p>
+  return (
+    <div className='space-y-8'>
+      <div>
+        <Link href={`/c/${community.name}`}>
+          <button className='flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors mb-4'>
+            <ArrowLeft className='h-5 w-5' />
+            Back to Community
+          </button>
+        </Link>
+        <h1 className='text-3xl font-bold'>Moderation Tools</h1>
+        <p className='text-muted-foreground text-lg'>
+          Manage your community{' '}
+          <span className='text-primary font-semibold'>c/{community.name}</span>
+        </p>
+      </div>
 
-//       <Tabs defaultValue="members" className="w-full mt-6">
-//         <TabsList>
-//           <TabsTrigger value="members">Members & Moderators</TabsTrigger>
-//           <TabsTrigger value="settings">General Settings</TabsTrigger>
-//           <TabsTrigger value="danger">Danger Zone</TabsTrigger>
-//         </TabsList>
+      <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+        {availableTools.map((tool) => (
+          <Link href={tool.href} key={tool.title} className='group'>
+            <Card className='hover:border-primary h-full transition-colors hover:shadow-lg'>
+              <CardHeader className='flex-row items-center gap-4'>
+                <tool.icon className='text-primary h-8 w-8' />
+                <div>
+                  <CardTitle>{tool.title}</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <CardDescription>{tool.description}</CardDescription>
+                <div className='text-primary mt-4 flex items-center text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100'>
+                  Go to {tool.title}
+                  <ArrowRight className='ml-2 h-4 w-4' />
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
+}
 
-//         <TabsContent value="members">
-//           <ManageMembersTab community={ community } />
-//         </TabsContent>
-//         <TabsContent value="flairs">
-//           <ManageFlairsTab community={ community } />
-//         </TabsContent>
-//         <TabsContent value="settings">
-//           <p className="p-4 text-muted-foreground">
-//             Community general settings will be here...
-//           </p>
-//         </TabsContent>
-//         <TabsContent value="danger">
-//           <DangerZoneTab community={ community } />
-//         </TabsContent>
-//       </Tabs>
-//     </div>
-//   );
-// }
+function ManagementDashboardSkeleton() {
+  return (
+    <div className='space-y-8'>
+      <div>
+        <Skeleton className='mb-2 h-10 w-3/4' />
+        <Skeleton className='h-6 w-1/2' />
+      </div>
+      <div className='grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3'>
+        {[...Array(6)].map((_, i) => (
+          <Card key={i} className='h-[180px]'>
+            <CardHeader className='flex-row items-center gap-4'>
+              <Skeleton className='h-8 w-8 rounded-full' />
+              <Skeleton className='h-6 w-2/3' />
+            </CardHeader>
+            <CardContent className='space-y-2'>
+              <Skeleton className='h-4 w-full' />
+              <Skeleton className='h-4 w-5/6' />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
