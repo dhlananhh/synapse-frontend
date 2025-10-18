@@ -1,60 +1,72 @@
-"use client";
+'use client'
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useState } from 'react'
+import { Button } from '@/components/ui/button'
+import { Textarea } from '@/components/ui/textarea'
+import * as commentService from '@/modules/services/comment-service'
 
-const CommentSchema = z.object({
-  text: z.string().min(1, "Comment cannot be empty."),
-});
-type TCommentSchema = z.infer<typeof CommentSchema>;
+const commentSchema = z.object({
+  content: z.string().min(1, 'Comment cannot be empty').max(1000, 'Comment is too long'),
+})
+
+type CommentFormValues = z.infer<typeof commentSchema>
 
 interface CommentFormProps {
-  onCommentSubmit: (text: string) => Promise<void>;
+  postId: string
+  parentCommentId?: string | null
+  onSuccess?: () => void
 }
 
 export default function CommentForm({
-  onCommentSubmit,
+  postId,
+  parentCommentId = null,
+  onSuccess,
 }: CommentFormProps) {
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<TCommentSchema>({
-    resolver: zodResolver(CommentSchema),
-  });
+  } = useForm<CommentFormValues>({
+    resolver: zodResolver(commentSchema),
+  })
 
-  const onSubmit = async (data: TCommentSchema) => {
-    await onCommentSubmit(data.text);
-    reset();
-  };
+  const [error, setError] = useState<string | null>(null)
+
+  async function onSubmit(data: CommentFormValues) {
+    setError(null)
+    try {
+      const comment = await commentService.createComment({
+        postId,
+        parentCommentId,
+        content: data.content,
+      })
+      reset()
+      if (onSuccess) onSuccess()
+    } catch (err) {
+      setError('Failed to submit comment.')
+    }
+  }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <div className="grid w-full gap-2">
-        <Textarea
-          {...register("text")}
-          placeholder="What are your thoughts?"
-          rows={3}
-        />
-        {errors.text && (
-          <p className="text-destructive text-xs">
-            {errors.text.message}
-          </p>
-        )}
-        <div className="mt-2 flex justify-end">
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting && (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            Post Comment
-          </Button>
-        </div>
-      </div>
+    <form onSubmit={handleSubmit(onSubmit)} className='mb-6'>
+      <Textarea
+        {...register('content')}
+        placeholder='Write your comment...'
+        rows={3}
+        className='mb-2'
+        disabled={isSubmitting}
+      />
+      {errors.content && (
+        <div className='text-sm text-destructive mb-2'>{errors.content.message}</div>
+      )}
+      {error && <div className='text-sm text-destructive mb-2'>{error}</div>}
+      <Button type='submit' disabled={isSubmitting}>
+        {isSubmitting ? 'Posting...' : 'Post Comment'}
+      </Button>
     </form>
-  );
+  )
 }

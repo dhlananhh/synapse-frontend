@@ -1,5 +1,6 @@
 import type { Config } from "tailwindcss";
 import tailwindcssAnimate from "tailwindcss-animate";
+import typography from "@tailwindcss/typography"
 
 const config: Config = {
   darkMode: "class",
@@ -61,23 +62,15 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: [
-          "var(--font-lexend)",
-          "ui-sans-serif",
-          "system-ui",
-        ],
+        sans: [ "var(--font-lexend)", "ui-sans-serif", "system-ui" ],
       },
       keyframes: {
         "accordion-down": {
           from: { height: "0" },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
       },
@@ -88,7 +81,7 @@ const config: Config = {
     },
   },
 
-  plugins: [tailwindcssAnimate],
-};
+  plugins: [ tailwindcssAnimate, typography ],
+}
 
-export default config;
+export default config
