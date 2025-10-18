@@ -32,7 +32,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         className={ cn(
-          "bg-background min-h-screen font-sans antialiased",
+          "bg-background h-full w-full font-sans antialiased",
           lexend.variable
         ) }
       >
@@ -48,7 +48,7 @@ export default function RootLayout({
             <CommandMenuProvider>
               <AuthProvider>
                 <NotificationSimulator />
-                <main className="container mx-auto max-w-7xl flex-grow pt-16">
+                <main className="mx-auto h-full w-full flex-grow pt-2">
                   { children }
                 </main>
               </AuthProvider>
