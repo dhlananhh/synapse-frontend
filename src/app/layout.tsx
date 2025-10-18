@@ -9,7 +9,6 @@ import I18nProvider from "@/components/providers/I18nProvider";
 import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import TopProgressBar from "@/components/providers/TopProgressBar";
 import NotificationSimulator from "@/components/providers/NotificationSimulator";
-import { CommandMenuProvider } from "@/context/CommandMenuContext";
 
 const lexend = Lexend({
   subsets: [ "latin" ],
@@ -31,10 +30,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={ cn(
-          "bg-background h-full w-full font-sans antialiased",
-          lexend.variable
-        ) }
+        className={
+          cn(
+            "bg-background h-full w-full font-sans antialiased",
+            lexend.variable
+          )
+        }
       >
         <I18nProvider>
           <ThemeProvider
@@ -45,14 +46,12 @@ export default function RootLayout({
           >
             <TopProgressBar />
 
-            <CommandMenuProvider>
-              <AuthProvider>
-                <NotificationSimulator />
-                <main className="mx-auto h-full w-full flex-grow pt-2">
-                  { children }
-                </main>
-              </AuthProvider>
-            </CommandMenuProvider>
+            <AuthProvider>
+              <NotificationSimulator />
+              <main className="mx-auto h-full w-full flex-grow pt-2">
+                { children }
+              </main>
+            </AuthProvider>
 
             <Toaster
               richColors
