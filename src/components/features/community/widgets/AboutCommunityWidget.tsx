@@ -1,28 +1,28 @@
 'use client'
 
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { useAuth } from '@/context/AuthContext'
 import { useMembership } from '@/context/MembershipContext'
 import { useCommunity, useSetCommunity } from '@/context/CommunityContext'
-import { UpdateCommunityDialog } from '@/components/features/community/manage/dialogs/UpdateCommunityDialog'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { format } from 'date-fns'
 import {
   Cake,
   Users,
-  Settings,
   Globe,
   Lock,
   Info,
-  UserPlus,
-  FileText,
   TriangleAlert,
   ShieldCheck,
   FolderKanban,
+  Crown,
 } from 'lucide-react'
 import type { Community } from '@/types/services/community'
+import { userService } from '@/modules/services/user-service'
+import { SimpleProfile } from '@/types/services/user'
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 
 export default function AboutCommunityWidget() {
   const community = useCommunity()
@@ -30,6 +30,7 @@ export default function AboutCommunityWidget() {
   const { user } = useAuth()
   const membershipContext = useMembership()
   const membership = membershipContext?.membership ?? null
+  const [ownerProfile, setOwnerProfile] = useState<SimpleProfile | null>(null)
 
   // don't render until community is available
   if (!community) return null
@@ -53,6 +54,16 @@ export default function AboutCommunityWidget() {
     return Number.isNaN(d.getTime()) ? null : d
   }, [community?.createdAt])
 
+  useEffect(() => {
+    async function fetchOwnerProfile() {
+      if (community?.ownerId) {
+        const profiles = await userService.getSimpleProfiles([community.ownerId])
+        setOwnerProfile(profiles[0])
+      }
+    }
+    fetchOwnerProfile()
+  }, [community?.ownerId])
+
   return (
     <>
       <Card>
@@ -69,15 +80,38 @@ export default function AboutCommunityWidget() {
         </CardHeader>
 
         <CardContent className='space-y-4'>
-          <p className='text-sm text-muted-foreground'>{community.description}</p>
+          <p className='text-md text-muted-foreground italic'>{community.description}</p>
 
-          <div className='flex flex-col gap-3 text-sm'>
+          <div className='flex flex-col gap-3 text-md'>
+            {/* Owner entry */}
+            {ownerProfile && (
+              <div className='flex items-center gap-2 mt-2'>
+                <Link
+                  href={`/u/${ownerProfile.id}`}
+                  className='flex items-center gap-2 hover:text-primary transition-colors'
+                >
+                  <Avatar className='h-8 w-8'>
+                    {ownerProfile.avatarUrl ? (
+                      <AvatarImage src={ownerProfile.avatarUrl} alt={ownerProfile.username} />
+                    ) : (
+                      <AvatarFallback>
+                        {ownerProfile.username?.[0]?.toUpperCase() ?? '?'}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                  <span className='font-medium'>u/{ownerProfile.username}</span>
+                  {/* <span className='font-semibold text-muted-foreground'>Owner</span> */}
+                  <Crown className='h-5 w-5 inline text-yellow-400' />{' '}
+                </Link>
+              </div>
+            )}
             <div className='flex items-center gap-2'>
               <Cake className='h-5 w-5' />
               <span>
                 Created {createdAtDate ? format(createdAtDate, 'MMM d, yyyy') : 'Unknown'}
               </span>
             </div>
+
             <div className='flex items-center gap-2'>
               {community.isPrivate ? (
                 <span className='inline-flex items-center gap-2 px-2 py-1 rounded bg-indigo-600 text-white text-sm font-semibold'>

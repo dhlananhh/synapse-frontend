@@ -39,7 +39,7 @@ export default function CommunityRulesWidget() {
           </CardTitle>
         </div>
 
-        {isOwner && community && (
+        {/* {isOwner && community && (
           <ManageRulesDialog
             community={community}
             rules={rules}
@@ -50,7 +50,7 @@ export default function CommunityRulesWidget() {
               </Button>
             }
           />
-        )}
+        )} */}
       </CardHeader>
       <CardContent>
         {loading ? (

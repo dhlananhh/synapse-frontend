@@ -45,7 +45,7 @@ export default function CommunityFlairsWidget() {
               </div>
 
               <div className='flex items-center gap-3'>
-                {canEditFlairs && (
+                {/* {canEditFlairs && (
                   <ManageCommunityFlairsDialog
                     community={community as Community}
                     flairs={flairs}
@@ -56,7 +56,7 @@ export default function CommunityFlairsWidget() {
                       </Button>
                     }
                   />
-                )}
+                )} */}
                 <AccordionTrigger className='px-2 py-0 rounded-md text-sm'>
                   {/* Trigger arrow/icon styling depends on your Accordion implementation */}
                 </AccordionTrigger>
