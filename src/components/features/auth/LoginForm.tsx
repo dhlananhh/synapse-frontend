@@ -145,7 +145,7 @@ export default function LoginForm() {
               />
               <Button
                 type="submit"
-                className="w-full"
+                className="w-full transition-transform duration-200 hover:scale-[1.02] active:scale-95"
                 disabled={ isSubmitting }
               >
                 {

@@ -77,7 +77,10 @@ export default function CommunityFlairsWidget() {
 
   return (
     <>
-      <Card>
+      <Card
+        className="animate-fade-in-down"
+        style={ { animationDelay: '300ms' } }
+      >
         <Accordion
           type="single"
           collapsible
@@ -141,7 +144,7 @@ export default function CommunityFlairsWidget() {
                           .map((flair) => (
                             <li
                               key={ flair.id }
-                              className="flex items-center justify-between p-1 rounded-md border hover:bg-muted/50"
+                              className="flex items-center justify-between p-1 rounded-md border hover:bg-muted/50 transition-all duration-200 hover:ml-2"
                             >
                               <Link
                                 href={ `/c/${community.name}?flair=${flair.id}` }

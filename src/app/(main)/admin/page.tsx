@@ -32,6 +32,7 @@ import {
   Loader2
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AnimateOnScroll } from "@/components/shared/AnimateOnScroll";
 // import { adminService } from "@/modules/services/admin-service"; 
 
 
@@ -148,14 +149,18 @@ export default function AdminDashboardPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">
-          Admin Dashboard
-        </h1>
-        <p className="text-muted-foreground">
-          An overview of the Synapse platform"s activity.
-        </p>
-      </div>
+      <AnimateOnScroll
+        delay={ 0.1 }
+      >
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Admin Dashboard
+          </h1>
+          <p className="text-muted-foreground">
+            An overview of the Synapse platform"s activity.
+          </p>
+        </div>
+      </AnimateOnScroll>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {
