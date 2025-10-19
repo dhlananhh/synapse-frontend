@@ -2,12 +2,12 @@ import axios from "axios";
 import { authService } from "@/modules/services/auth-service";
 
 // Base URLs
-const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://192.168.1.5:4000/api/auth'
+const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://localhost:4000/api/auth'
 const USER_SERVICE_URL =
-  process.env.NEXT_PUBLIC_USER_SERVICE_URL || 'http://192.168.1.5:4002/api/users'
-const COMMUNITY_SERVICE_URL = process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL || 'HTTP://NOTHING'
+  process.env.NEXT_PUBLIC_USER_SERVICE_URL || 'http://localhost:4002/api/users'
+const COMMUNITY_SERVICE_URL = process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL || 'http://localhost:4003/api/communities'
 const UPLOAD_SERVICE_URL =
-  process.env.NEXT_PUBLIC_UPLOAD_SERVICE_URL || 'http://192.168.1.5:4003/api/upload'
+  process.env.NEXT_PUBLIC_UPLOAD_SERVICE_URL || 'http://localhost:4003/api/upload'
 const POST_SERVICE_URL =
   process.env.NEXT_PUBLIC_POST_SERVICE_URL || 'http://localhost:4003/api/posts'
 const COMMENT_SERVICE_URL =
