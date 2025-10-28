@@ -1,7 +1,12 @@
 "use client";
 
 
-import * as React from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -26,18 +31,21 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
-import { AdminCommunity, getColumns } from "./columns";
+import {
+  AdminCommunity,
+  getColumns
+} from "@/components/features/admin/communities/columns";
 
 
 export function CommunityDataTable() {
-  const [ data, setData ] = React.useState<AdminCommunity[]>([]);
-  const [ loading, setLoading ] = React.useState(true);
+  const [ data, setData ] = useState<AdminCommunity[]>([]);
+  const [ loading, setLoading ] = useState(true);
 
-  const [ sorting, setSorting ] = React.useState<SortingState>([]);
-  const [ columnFilters, setColumnFilters ] = React.useState<ColumnFiltersState>([]);
-  const [ rowSelection, setRowSelection ] = React.useState({});
+  const [ sorting, setSorting ] = useState<SortingState>([]);
+  const [ columnFilters, setColumnFilters ] = useState<ColumnFiltersState>([]);
+  const [ rowSelection, setRowSelection ] = useState({});
 
-  const fetchData = React.useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const response = await adminService.adminGetAllCommunities();
@@ -49,11 +57,11 @@ export function CommunityDataTable() {
     }
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchData();
   }, [ fetchData ]);
 
-  const columns = React.useMemo(() => getColumns(fetchData), [ fetchData ]);
+  const columns = useMemo(() => getColumns(fetchData), [ fetchData ]);
 
   const table = useReactTable({
     data,

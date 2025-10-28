@@ -1,33 +1,44 @@
 import { communityApiClient, userApiClient } from "@/libs/apiClient";
-import { Community, UpdateCommunityPayload } from "@/types/services/community";
+import { AdminUser } from "@/types/services/admin";
+import { Community } from "@/types/services/community";
 
 
 export const adminService = {
   // =================================
   // ADMIN
   // =================================
+
   adminGetAllUsers: (params: {
     q?: string;
-    cursor?: string | null;
-    limit?: number,
-    sort?: string,
-    order?: "asc" | "desc"
+    cursor?: string;
+    limit?: number;
   }): Promise<{
-    users: any[],
+    users: AdminUser[];
     pagination: {
       hasMore: boolean;
-      nextCursor: string | null
-    }
+      nextCursor: string | null;
+    };
   }> => {
-    return userApiClient.get("/admin/users", { params }).then(res => res.data);
-  },
+    const searchQuery = params.q || "user";
 
+    return userApiClient
+      .get(`/`, {
+        params: {
+          q: searchQuery,
+          cursor: params.cursor,
+          limit: params.limit || 20
+        }
+      })
+      .then((res) => res.data);
+  },
 
   adminUpdateUserStatus: (
     userId: string,
     status: "ACTIVE" | "SUSPENDED"
   ): Promise<any> => {
-    return userApiClient.patch(`/admin/users/${userId}/status`, { status }).then(res => res.data);
+    return userApiClient
+      .patch(`/admin/users/${userId}/status`, { status })
+      .then(res => res.data);
   },
 
 
@@ -40,6 +51,8 @@ export const adminService = {
     communityId: string,
     status: "ACTIVE" | "SUSPENDED"
   ): Promise<Community> => {
-    return communityApiClient.patch(`/communities/${communityId}/status`, { status }).then(res => res.data);
+    return communityApiClient
+      .patch(`/communities/${communityId}/status`, { status })
+      .then(res => res.data);
   }
 }

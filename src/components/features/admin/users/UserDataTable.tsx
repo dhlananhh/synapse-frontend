@@ -1,10 +1,13 @@
 "use client";
 
 
-import * as React from "react";
-import { adminService } from "@/modules/services/admin-service";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState
+} from "react";
 import {
-  ColumnDef,
   ColumnFiltersState,
   SortingState,
   VisibilityState,
@@ -16,6 +19,10 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { toast } from "sonner";
+import { useDebounce } from "@/hooks/useDebounce";
+import { adminService } from "@/modules/services/admin-service";
+import { getColumns } from "@/components/features/admin/users/columns";
+import { AdminUser } from "@/types/services/admin";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -33,22 +40,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Loader2, ChevronDown } from "lucide-react";
-import { AdminUser, getColumns } from "./columns";
 
 
 export function UserDataTable() {
-  const [ data, setData ] = React.useState<AdminUser[]>([]);
-  const [ loading, setLoading ] = React.useState(true);
+  const [ data, setData ] = useState<AdminUser[]>([]);
+  const [ loading, setLoading ] = useState(true);
 
-  const [ sorting, setSorting ] = React.useState<SortingState>([]);
-  const [ columnFilters, setColumnFilters ] = React.useState<ColumnFiltersState>([]);
-  const [ columnVisibility, setColumnVisibility ] = React.useState<VisibilityState>({});
-  const [ rowSelection, setRowSelection ] = React.useState({});
+  const [ sorting, setSorting ] = useState<SortingState>([]);
+  const [ columnFilters, setColumnFilters ] = useState<ColumnFiltersState>([]);
+  const [ columnVisibility, setColumnVisibility ] = useState<VisibilityState>({});
+  const [ rowSelection, setRowSelection ] = useState({});
 
-  const fetchData = React.useCallback(async () => {
+  const [ filterQuery, setFilterQuery ] = useState("");
+  const debouncedFilterQuery = useDebounce(filterQuery, 500);
+
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await adminService.adminGetAllUsers({ limit: 100 });
+      const response = await adminService.adminGetAllUsers({ q: debouncedFilterQuery });
       setData(response.users);
     } catch (error) {
       toast.error("Failed to fetch the list of users.");
@@ -56,14 +65,13 @@ export function UserDataTable() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [ debouncedFilterQuery ]);
 
-
-  React.useEffect(() => {
+  useEffect(() => {
     fetchData();
   }, [ fetchData ]);
 
-  const columns = React.useMemo(() => getColumns(fetchData), [ fetchData ]);
+  const columns = useMemo(() => getColumns(fetchData), [ fetchData ]);
 
   const table = useReactTable({
     data,
@@ -84,24 +92,20 @@ export function UserDataTable() {
     },
   });
 
-
   return (
     <div className="w-full space-y-4">
-      <div className="flex items-center">
+      <div className="flex items-center gap-4">
         <Input
-          placeholder="Filter by email..."
-          value={
-            (table.getColumn("email")?.getFilterValue() as string) ?? ""
-          }
-          onChange={
-            (event) => table.getColumn("email")?.setFilterValue(event.target.value)
-          }
+          placeholder="Filter by email or username..."
+          value={ filterQuery }
+          onChange={ (event) => setFilterQuery(event.target.value) }
           className="max-w-sm"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto">
-              Columns <ChevronDown className="ml-2 h-4 w-4" />
+              Columns
+              <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -109,18 +113,16 @@ export function UserDataTable() {
               table
                 .getAllColumns()
                 .filter((column) => column.getCanHide())
-                .map((column) => {
-                  return (
-                    <DropdownMenuCheckboxItem
-                      key={ column.id }
-                      className="capitalize"
-                      checked={ column.getIsVisible() }
-                      onCheckedChange={ (value) => column.toggleVisibility(!!value) }
-                    >
-                      { column.id }
-                    </DropdownMenuCheckboxItem>
-                  )
-                })
+                .map((column) => (
+                  <DropdownMenuCheckboxItem
+                    key={ column.id }
+                    className="capitalize"
+                    checked={ column.getIsVisible() }
+                    onCheckedChange={ (value) => column.toggleVisibility(!!value) }
+                  >
+                    { column.id }
+                  </DropdownMenuCheckboxItem>
+                ))
             }
           </DropdownMenuContent>
         </DropdownMenu>
@@ -159,8 +161,8 @@ export function UserDataTable() {
                     colSpan={ columns.length }
                     className="h-24 text-center"
                   >
-                    <div className="flex justify-center items-center gap-2">
-                      <Loader2 className="animate-spin h-5 w-5 text-muted-foreground" />
+                    <div className="flex items-center justify-center gap-2 text-muted-foreground">
+                      <Loader2 className="h-5 w-5 animate-spin" />
                       <span>Loading users...</span>
                     </div>
                   </TableCell>
@@ -198,9 +200,9 @@ export function UserDataTable() {
         </Table>
       </div>
 
-      <div className="flex items-center justify-end space-x-2">
+      <div className="flex items-center justify-between">
         <div className="flex-1 text-sm text-muted-foreground">
-          { table.getFilteredSelectedRowModel().rows.length } of{ " " }
+          { table.getFilteredSelectedRowModel().rows.length } of { " " }
           { table.getFilteredRowModel().rows.length } row(s) selected.
         </div>
         <div className="space-x-2">
@@ -223,5 +225,5 @@ export function UserDataTable() {
         </div>
       </div>
     </div>
-  )
+  );
 }

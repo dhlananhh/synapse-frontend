@@ -22,17 +22,7 @@ import {
   UserX,
   CheckCircle2
 } from "lucide-react"
-
-
-export type AdminUser = {
-  id: string;
-  accountId: string;
-  username: string;
-  email: string;
-  role: "USER" | "SYSTEM_ADMIN";
-  status: "ACTIVE" | "PENDING" | "SUSPENDED";
-  createdAt: string;
-}
+import { AdminUser } from "@/types/services/admin";
 
 
 const handleUserAction = async (
