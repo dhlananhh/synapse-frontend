@@ -161,4 +161,32 @@ export const userService = {
       userApiClient
         .get("/me/follow-requests")
         .then((res) => res.data),
+
+
+  // =================================
+  // ADMIN
+  // =================================
+  adminGetAllUsers: (params: {
+    q?: string;
+    cursor?: string | null;
+    limit?: number,
+    sort?: string,
+    order?: 'asc' | 'desc'
+  }): Promise<{
+    users: any[],
+    pagination: {
+      hasMore: boolean;
+      nextCursor: string | null
+    }
+  }> => {
+    return userApiClient.get('/admin/users', { params }).then(res => res.data);
+  },
+
+
+  adminUpdateUserStatus: (
+    userId: string,
+    status: 'ACTIVE' | 'SUSPENDED'
+  ): Promise<any> => {
+    return userApiClient.patch(`/admin/users/${userId}/status`, { status }).then(res => res.data);
+  }
 };
