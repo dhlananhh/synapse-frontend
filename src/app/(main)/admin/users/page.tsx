@@ -9,7 +9,7 @@ export default function ManageUsersPage() {
         delay={ 0.1 }
       >
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">
+          <h1 className="text-3xl font-bold tracking-tight mt-2">
             User Management
           </h1>
           <p className="text-muted-foreground mt-2">

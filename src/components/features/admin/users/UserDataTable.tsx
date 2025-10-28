@@ -2,6 +2,7 @@
 
 
 import * as React from "react";
+import { adminService } from "@/modules/services/admin-service";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -32,7 +33,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Loader2, ChevronDown } from "lucide-react";
-import { userService } from "@/modules/services/user-service";
 import { AdminUser, getColumns } from "./columns";
 
 
@@ -48,7 +48,7 @@ export function UserDataTable() {
   const fetchData = React.useCallback(async () => {
     setLoading(true);
     try {
-      const response = await userService.adminGetAllUsers({ limit: 100 });
+      const response = await adminService.adminGetAllUsers({ limit: 100 });
       setData(response.users);
     } catch (error) {
       toast.error("Failed to fetch the list of users.");

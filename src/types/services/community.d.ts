@@ -30,7 +30,7 @@ export interface Community {
   id: string;
   name: string;
   description: string;
-  status: "PUBLIC" | "RESTRICTED" | "PRIVATE";
+  status: "ACTIVE" | "SUSPENDED" | "DELETED";
   ownerId: string;
   memberCount: number;
   postCount: number;
@@ -105,6 +105,7 @@ export interface UpdateCommunityPayload {
   isNSFW?: boolean;
   isPrivate?: boolean;
   moderationMode?: boolean;
+  
 }
 
 export interface CommunityMember {
