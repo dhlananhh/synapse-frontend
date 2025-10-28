@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimateOnScroll } from "@/components/shared/AnimateOnScroll";
+import Link from "next/link";
 // import { adminService } from "@/modules/services/admin-service"; 
 
 
@@ -165,31 +166,39 @@ export default function AdminDashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {
           statCards.map((card, index) => (
-            <Card
-              key={ index }
+            <Link
+              href={ card.href }
+              key={ card.title }
             >
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium">
-                  { card.title }
-                </CardTitle>
-                <card.icon
-                  className={
-                    `h-4 w-4 text-muted-foreground ${card.color}`
+              <Card
+                key={ index }
+              >
+                <CardHeader className="flex flex-row items-center justify-between pb-2">
+                  <CardTitle className="text-sm font-medium">
+                    { card.title }
+                  </CardTitle>
+                  <card.icon
+                    className={
+                      `h-4 w-4 text-muted-foreground ${card.color}`
+                    }
+                  />
+                </CardHeader>
+                <CardContent>
+                  {
+                    isLoading ? (
+                      <Skeleton className="h-8 w-1/2" />
+                    ) : (
+                      <div className="text-2xl font-bold">
+                        { card.value?.toLocaleString() ?? "N/A" }
+                      </div>
+                    )
                   }
-                />
-              </CardHeader>
-              <CardContent>
-                {
-                  isLoading ? (
-                    <Skeleton className="h-8 w-1/2" />
-                  ) : (
-                    <div className="text-2xl font-bold">
-                      { card.value?.toLocaleString() ?? "N/A" }
-                    </div>
-                  )
-                }
-              </CardContent>
-            </Card>
+                  <p className="text-xs text-muted-foreground">
+                    Click to view details
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           ))
         }
       </div>
