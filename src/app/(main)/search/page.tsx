@@ -1,5 +1,7 @@
 "use client";
 
+
+import React from "react";
 import {
   useSearchParams,
   useRouter,
@@ -14,23 +16,18 @@ import { SearchResultsList } from "@/components/features/search/SearchResultsLis
 import { LoadMoreButton } from "@/components/features/search/LoadMoreButton";
 import { NoMoreResults } from "@/components/features/search/NoMoreResults";
 
+
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const query = searchParams.get("q") || "";
   const type = searchParams.get("type") || "user";
 
-  const [userResults, setUserResults] = useState<
-    SearchUserResult[]
-  >([]);
-  const [communityResults, setCommunityResults] = useState<
-    SearchCommunityResult[]
-  >([]);
-  const [loading, setLoading] = useState(false);
-  const [nextCursor, setNextCursor] = useState<
-    string | null
-  >(null);
-  const [hasMore, setHasMore] = useState<boolean>(false);
+  const [ userResults, setUserResults ] = useState<SearchUserResult[]>([]);
+  const [ communityResults, setCommunityResults ] = useState<SearchCommunityResult[]>([]);
+  const [ loading, setLoading ] = useState(false);
+  const [ nextCursor, setNextCursor ] = useState<string | null>(null);
+  const [ hasMore, setHasMore ] = useState<boolean>(false);
 
   const resourceTypes = [
     { label: "Users", value: "user" },
@@ -72,7 +69,7 @@ export default function SearchPage() {
       setHasMore(false);
       setLoading(false);
     }
-  }, [query, type]);
+  }, [ query, type ]);
 
   const loadMore = () => {
     if (!nextCursor) return;
@@ -81,7 +78,7 @@ export default function SearchPage() {
       userService
         .searchUsers(query, nextCursor, 20)
         .then((res) => {
-          setUserResults((prev) => [...prev, ...res.users]);
+          setUserResults((prev) => [ ...prev, ...res.users ]);
           setNextCursor(res.pagination.nextCursor);
           setHasMore(res.pagination.hasMore);
         })
@@ -108,33 +105,39 @@ export default function SearchPage() {
   return (
     <div className="pt-2">
       <ResourceTypeSelector
-        resourceTypes={resourceTypes}
-        selectedType={type}
-        onTypeChange={handleTypeChange}
+        resourceTypes={ resourceTypes }
+        selectedType={ type }
+        onTypeChange={ handleTypeChange }
       />
       <hr className="border-muted mb-6" />
       <h2 className="text-foreground mb-4 text-lg font-semibold">
-        Search results for{" "}
-        <span className="text-primary">"{query}"</span>
+        Search results for{ " " }
+        <span className="text-primary">"{ query }"</span>
       </h2>
       <SearchResultsList
-        type={type}
-        userResults={userResults}
-        communityResults={communityResults}
+        type={ type }
+        userResults={ userResults }
+        communityResults={ communityResults }
       />
-      {hasMore &&
+      {
+        hasMore &&
         (type === "user" || type === "community") && (
           <LoadMoreButton
-            loading={loading}
-            onClick={loadMore}
+            loading={ loading }
+            onClick={ loadMore }
           />
-        )}
-      {!hasMore &&
+        )
+      }
+      {
+        !hasMore &&
         type === "user" &&
-        userResults.length > 0 && <NoMoreResults />}
-      {!hasMore &&
+        userResults.length > 0 && <NoMoreResults />
+      }
+      {
+        !hasMore &&
         type === "community" &&
-        communityResults.length > 0 && <NoMoreResults />}
+        communityResults.length > 0 && <NoMoreResults />
+      }
     </div>
   );
 }
