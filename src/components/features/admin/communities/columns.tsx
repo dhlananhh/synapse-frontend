@@ -121,8 +121,31 @@ export const getColumns = (onActionComplete: () => void): ColumnDef<AdminCommuni
   },
   {
     accessorKey: "createdAt",
-    header: "Created At",
-    cell: ({ row }) => new Date(row.getValue("createdAt")).toLocaleDateString()
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={ () => column.toggleSorting(column.getIsSorted() === "asc") }
+        >
+          Created At <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      )
+    },
+    cell: ({ row }) => {
+      const dateValue = row.getValue("createdAt") as string;
+      if (!dateValue)
+        return "N/A";
+      const parsableDate = dateValue.replace(" ", "T");
+      const date = new Date(parsableDate);
+      if (isNaN(date.getTime())) {
+        return "Invalid Date";
+      }
+      return (
+        <div>
+          { date.toLocaleDateString() }
+        </div>
+      );
+    }
   },
   {
     id: "actions", cell: ({ row }) => {

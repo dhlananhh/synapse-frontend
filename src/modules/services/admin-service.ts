@@ -31,20 +31,8 @@ export const adminService = {
   },
 
 
-  adminGetAllCommunities: (params: {
-    q?: string;
-    cursor?: string | null;
-    limit?: number,
-    sort?: string,
-    order?: "asc" | "desc"
-  }): Promise<{
-    communities: Community[],
-    pagination: {
-      hasMore: boolean;
-      nextCursor: string | null
-    }
-  }> => {
-    return communityApiClient.get(`/communities`, { params }).then(res => res.data);
+  adminGetAllCommunities: (): Promise<any> => {
+    return communityApiClient.get(`/`).then(res => res.data);
   },
 
 

@@ -40,7 +40,7 @@ export function CommunityDataTable() {
   const fetchData = React.useCallback(async () => {
     setLoading(true);
     try {
-      const response = await adminService.adminGetAllCommunities({ limit: 100 });
+      const response = await adminService.adminGetAllCommunities();
       setData(response.communities);
     } catch (error) {
       toast.error("Failed to fetch community list.");
