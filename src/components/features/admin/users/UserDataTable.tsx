@@ -22,7 +22,6 @@ import { toast } from "sonner";
 import { useDebounce } from "@/hooks/useDebounce";
 import { adminService } from "@/modules/services/admin-service";
 import { getColumns } from "@/components/features/admin/users/columns";
-import { AdminUser } from "@/types/services/admin";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -40,10 +39,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Loader2, ChevronDown } from "lucide-react";
+import { UserProfile } from "@/types/services/user";
 
 
 export function UserDataTable() {
-  const [ data, setData ] = useState<AdminUser[]>([]);
+  const [ data, setData ] = useState<UserProfile[]>([]);
   const [ loading, setLoading ] = useState(true);
 
   const [ sorting, setSorting ] = useState<SortingState>([]);

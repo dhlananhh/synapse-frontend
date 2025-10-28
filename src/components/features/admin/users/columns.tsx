@@ -22,11 +22,11 @@ import {
   UserX,
   CheckCircle2
 } from "lucide-react"
-import { AdminUser } from "@/types/services/admin";
+import { UserProfile } from "@/types/services/user";
 
 
 const handleUserAction = async (
-  user: AdminUser,
+  user: UserProfile,
   action: "suspend" | "activate",
   onActionComplete: () => void
 ) => {
@@ -47,7 +47,7 @@ const handleUserAction = async (
 }
 
 
-export const getColumns = (onActionComplete: () => void): ColumnDef<AdminUser>[] => [
+export const getColumns = (onActionComplete: () => void): ColumnDef<UserProfile>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -75,7 +75,9 @@ export const getColumns = (onActionComplete: () => void): ColumnDef<AdminUser>[]
     accessorKey: "username",
     header: "Username",
     cell: ({ row }) => (
-      <div className="font-medium">{ row.getValue("username") }</div>
+      <div className="font-medium">
+        { row.getValue("username") }
+      </div>
     ),
   },
 
@@ -92,17 +94,32 @@ export const getColumns = (onActionComplete: () => void): ColumnDef<AdminUser>[]
         </Button>
       )
     },
-    cell: ({ row }) => <div className="lowercase">{ row.getValue("email") }</div>,
+    cell: ({ row }) => (
+      <div className="lowercase">
+        { row.getValue("email") }
+      </div>
+    ),
   },
 
   {
     accessorKey: "status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status") as string;
+      const status = row.getValue("status");
+
+      if (typeof status !== "string" || !status) {
+        return (
+          <Badge variant="secondary">
+            Unknown
+          </Badge>
+        );
+      }
+
       let variant: "default" | "secondary" | "destructive" = "secondary";
-      if (status === "ACTIVE") variant = "default";
-      if (status === "SUSPENDED") variant = "destructive";
+      if (status === "ACTIVE")
+        variant = "default";
+      if (status === "SUSPENDED")
+        variant = "destructive";
 
       return (
         <Badge
@@ -128,11 +145,21 @@ export const getColumns = (onActionComplete: () => void): ColumnDef<AdminUser>[]
         </Button>
       )
     },
-    cell: ({ row }) => (
-      <div className="lowercase">
-        { new Date(row.getValue("createdAt")).toLocaleDateString() }
-      </div>
-    )
+    cell: ({ row }) => {
+      const dateValue = row.getValue("createdAt") as string;
+      if (!dateValue)
+        return "N/A";
+      const parsableDate = dateValue.replace(" ", "T");
+      const date = new Date(parsableDate);
+      if (isNaN(date.getTime())) {
+        return "Invalid Date";
+      }
+      return (
+        <div>
+          { date.toLocaleDateString() }
+        </div>
+      );
+    }
   },
 
   {

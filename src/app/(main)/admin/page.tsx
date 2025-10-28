@@ -122,14 +122,14 @@ export default function AdminDashboardPage() {
       icon: Users,
       value: stats?.totalUsers,
       color: "text-blue-500",
-      href: "#",
+      href: "/admin/users",
     },
     {
       title: "Total Communities",
       icon: Library,
       value: stats?.totalCommunities,
       color: "text-green-500",
-      href: "#",
+      href: "/admin/communities",
     },
     {
       title: "Total Posts",

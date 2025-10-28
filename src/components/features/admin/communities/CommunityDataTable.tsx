@@ -31,14 +31,12 @@ import {
   TableHeader,
   TableRow
 } from "@/components/ui/table"
-import {
-  AdminCommunity,
-  getColumns
-} from "@/components/features/admin/communities/columns";
+import { getColumns } from "@/components/features/admin/communities/columns";
+import { Community } from "@/types/services/community";
 
 
 export function CommunityDataTable() {
-  const [ data, setData ] = useState<AdminCommunity[]>([]);
+  const [ data, setData ] = useState<Community[]>([]);
   const [ loading, setLoading ] = useState(true);
 
   const [ sorting, setSorting ] = useState<SortingState>([]);

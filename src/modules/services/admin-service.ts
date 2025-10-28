@@ -1,6 +1,6 @@
 import { communityApiClient, userApiClient } from "@/libs/apiClient";
-import { AdminUser } from "@/types/services/admin";
 import { Community } from "@/types/services/community";
+import { UserProfile } from "@/types/services/user";
 
 
 export const adminService = {
@@ -13,7 +13,7 @@ export const adminService = {
     cursor?: string;
     limit?: number;
   }): Promise<{
-    users: AdminUser[];
+    users: UserProfile[];
     pagination: {
       hasMore: boolean;
       nextCursor: string | null;

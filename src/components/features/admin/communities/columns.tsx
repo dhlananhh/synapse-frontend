@@ -106,7 +106,9 @@ export const getColumns = (onActionComplete: () => void): ColumnDef<AdminCommuni
     )
   },
   {
-    accessorKey: "status", header: "Status", cell: ({ row }) => {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
       const status = row.getValue("status") as string;
       let variant: "default" | "secondary" | "destructive" = status === "ACTIVE" ? "default" : status === "SUSPENDED" ? "destructive" : "secondary";
       return (
