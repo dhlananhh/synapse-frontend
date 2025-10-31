@@ -40,7 +40,7 @@ export const authService = {
   },
 
   refreshToken: (): Promise<LoginResponse> => {
-    return authApiClient.post(`${AUTH_SERVICE_URL}/refresh`).then((res) => res.data)
+    return authApiClient.post(`/refresh`).then((res) => res.data)
   },
 
   changePassword: (payload: ChangePasswordPayload): Promise<GenericMessageResponse> => {

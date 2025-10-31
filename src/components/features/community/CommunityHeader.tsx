@@ -146,7 +146,7 @@ export default function CommunityHeader({
         </div>
       </div>
       {/* Name and badges row below the banner and avatar */}
-      <div className='flex items-center gap-2 px-8 mt-4 ml-28 font-bold text-3xl'>
+      <div className='flex items-center gap-2 px-8 mt-4 ml-28 font-bold text-xl'>
         c/{community.name}
         {community.status === 'PRIVATE' && (
           <span className='inline-flex items-center gap-1 px-2 py-1 rounded bg-indigo-700 text-white text-xs font-bold'>

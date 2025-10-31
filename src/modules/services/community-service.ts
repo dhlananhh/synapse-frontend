@@ -17,7 +17,7 @@ import {
 export const communityService = {
   // Search communities with cursor-based paging
   searchCommunities: (
-    q: string,
+    q?: string,
     cursor?: string,
     limit = 20,
     sort: 'newest' | 'oldest' | 'members' | 'posts' | 'name' = 'newest'
@@ -302,4 +302,17 @@ export const communityService = {
     pagination?: { hasMore: boolean; nextCursor: string | null }
   }> =>
     communityApiClient.get(`/${communityId}/members/banned`, { params }).then((res) => res.data),
+
+  /**
+   * Fetch user's recently visited communities.
+   * GET /recent
+   * @param signal Optional AbortSignal for request cancellation
+   * @returns A list of recently visited communities
+   */
+  fetchRecentCommunities: async (signal?: AbortSignal): Promise<SearchCommunityResult[]> => {
+    const res = await communityApiClient.get<{ communities: SearchCommunityResult[] }>('/recent', {
+      signal,
+    })
+    return res.data.communities
+  },
 }

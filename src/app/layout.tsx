@@ -5,12 +5,14 @@ import '../styles/globals.css'
 import { cn } from '@/libs/utils'
 import { Toaster } from '@/components/ui/sonner'
 import { AuthProvider } from '@/context/AuthContext'
+import { SocketProvider } from '@/context/SocketContext'
 import I18nProvider from '@/components/providers/I18nProvider'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import TopProgressBar from '@/components/providers/TopProgressBar'
-// import ChatWidget from "@/components/features/chat/ChatWidget";
 import NotificationSimulator from '@/components/providers/NotificationSimulator'
 import { CommandMenuProvider } from '@/context/CommandMenuContext'
+import Footer from '@/components/shared/Footer'
+import ChatWrapper from '@/components/features/chat/ChatWrapper'
 
 const lexend = Lexend({
   subsets: ['latin'],
@@ -43,9 +45,13 @@ export default function RootLayout({
 
             <CommandMenuProvider>
               <AuthProvider>
-                <NotificationSimulator />
-                <main className='container mx-auto max-w-7xl pt-16 flex-grow'>{children}</main>
-                {/* <ChatWidget /> */}
+                <SocketProvider>
+                  <NotificationSimulator />
+                  {/* Removed Navbar from RootLayout */}
+                  <main className='flex-grow w-full'>{children}</main> {/* Removed container */}
+                  <Footer />
+                  <ChatWrapper />
+                </SocketProvider>
               </AuthProvider>
             </CommandMenuProvider>
 

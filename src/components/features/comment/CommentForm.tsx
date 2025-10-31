@@ -35,6 +35,7 @@ export default function CommentForm({
   })
 
   const [error, setError] = useState<string | null>(null)
+  const [isExpanded, setIsExpanded] = useState(false)
 
   async function onSubmit(data: CommentFormValues) {
     setError(null)
@@ -45,6 +46,7 @@ export default function CommentForm({
         content: data.content,
       })
       reset()
+      setIsExpanded(false)
       if (onSuccess) onSuccess()
     } catch (err) {
       setError('Failed to submit comment.')
@@ -52,21 +54,47 @@ export default function CommentForm({
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className='mb-6'>
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className={`mb-6 p-4 border border-gray-800 rounded-lg bg-gray-900 shadow-sm ${
+        isExpanded ? 'space-y-2' : ''
+      }`}
+    >
       <Textarea
         {...register('content')}
         placeholder='Write your comment...'
-        rows={3}
-        className='mb-2'
+        rows={1} // Start with one row
+        className='resize-none rounded-md border border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none p-2' // Adjusted padding and rounded corners
         disabled={isSubmitting}
+        onFocus={() => setIsExpanded(true)}
       />
-      {errors.content && (
-        <div className='text-sm text-destructive mb-2'>{errors.content.message}</div>
+      {isExpanded && (
+        <>
+          {errors.content && (
+            <div className='text-sm text-destructive'>{errors.content.message}</div>
+          )}
+          {error && <div className='text-sm text-destructive'>{error}</div>}
+          <div className='flex justify-end gap-2'>
+            <Button
+              type='submit'
+              disabled={isSubmitting}
+              className='bg-gray-700 text-white hover:bg-gray-800 transition-colors'
+            >
+              {isSubmitting ? 'Posting...' : 'Post Comment'}
+            </Button>
+            <Button
+              type='button'
+              variant='outline'
+              onClick={() => {
+                reset()
+                setIsExpanded(false)
+              }}
+            >
+              Cancel
+            </Button>
+          </div>
+        </>
       )}
-      {error && <div className='text-sm text-destructive mb-2'>{error}</div>}
-      <Button type='submit' disabled={isSubmitting}>
-        {isSubmitting ? 'Posting...' : 'Post Comment'}
-      </Button>
     </form>
   )
 }

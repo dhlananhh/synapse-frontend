@@ -17,5 +17,5 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 }
 
 export default function Layout({ children, params }: Props) {
-  return <div className='container mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8'>{children}</div>
+  return <div className='container max-w-4xl px-4 py-16 ml-68'>{children}</div>
 }

@@ -6,7 +6,7 @@ export function UserSearchResultItem({ user }: { user: SearchUserResult }) {
   return (
     <li>
       <Link
-        href={`/profile/${user.id}`}
+        href={`/u/${user.id}`}
         className='flex items-center gap-5 py-6 px-2 min-h-[80px] hover:bg-accent rounded-lg transition'
       >
         {/* Avatar */}

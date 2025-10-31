@@ -32,6 +32,7 @@ import {
 import { useAuth } from '@/context/AuthContext'
 import ActionConfirmDialog from '@/components/shared/ActionConfirmDialog'
 import { toast } from 'sonner'
+import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 
 interface CommentProps {
   comment: CommentNode
@@ -162,13 +163,18 @@ export default function Comment({
   const isRemoved = comment.status === 'REMOVED_AUTHOR' || comment.status === 'REMOVED_MOD'
 
   return (
-    <div className='flex gap-3 py-4 border-b'>
+    <div className='flex gap-3 py-4 mb-2'>
       <div>
-        {profile?.avatarUrl ? (
-          <img src={profile.avatarUrl} alt={profile.username} className='w-8 h-8 rounded-full' />
-        ) : (
-          <div className='w-8 h-8 rounded-full bg-muted' />
-        )}
+        <Avatar className='w-8 h-8 border border-gray-400'>
+          {profile?.avatarUrl ? (
+            <AvatarImage src={profile.avatarUrl} alt={profile.username || comment.authorId} />
+          ) : (
+            <AvatarFallback>
+              {profile?.username?.charAt(0).toUpperCase() ??
+                comment.authorId.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          )}
+        </Avatar>
       </div>
       <div className='flex-1'>
         <div className='flex items-center gap-2 text-sm'>
@@ -211,7 +217,7 @@ export default function Comment({
             </div>
           )}
         </div>
-        <div className='mt-6'>
+        <div className='mt-2'>
           {comment.status === 'PUBLISHED' ? (
             editMode ? (
               <EditCommentForm
@@ -231,7 +237,7 @@ export default function Comment({
           )}
         </div>
         {!isRemoved && (
-          <div className='flex items-center gap-2 mt-2 text-sm text-muted-foreground'>
+          <div className='flex items-center gap-3 my-2 text-sm text-muted-foreground'>
             <button
               className={`rounded-full p-1 hover:bg-muted ${
                 voted === 'UPVOTE' ? 'text-destructive' : ''
@@ -254,7 +260,7 @@ export default function Comment({
               <ArrowDown className='w-4 h-4' />
             </button>
             <button
-              className='ml-2 text-xs underline flex items-center gap-1'
+              className='ml-2 text-xs flex items-center gap-1 hover:bg-gray-600 p-2 rounded-2xl'
               onClick={() => setShowReply((v) => !v)}
               type='button'
             >
@@ -263,7 +269,7 @@ export default function Comment({
             </button>
             {comment.hasReplies && (
               <button
-                className='ml-2 text-xs underline flex items-center gap-1'
+                className='ml-2 text-xs flex items-center gap-1 hover:bg-gray-600 p-2 rounded-2xl'
                 onClick={handleShowReplies}
                 type='button'
               >

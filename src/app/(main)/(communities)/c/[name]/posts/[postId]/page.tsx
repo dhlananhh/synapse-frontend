@@ -73,16 +73,18 @@ export default function PostDetailsPage() {
   const flair = post.flairId ? flairs.find((f) => f.id === post.flairId) : null
 
   return (
-    <div className='max-w-4xl mx-3'>
-      <PostCard post={post} authorProfile={authorProfile} flair={flair} />
-      <div className='mt-4'>
-        <h2 className='text-lg font-semibold mb-4'>Comments</h2>
-        <CommentForm postId={post.id} onSuccess={handleCommentAdded} />
-        {commentsLoading ? (
-          <div>Loading comments...</div>
-        ) : (
-          <CommentList comments={comments} postId={post.id} onCommentAdded={handleCommentAdded} />
-        )}
+    <div className='flex justify-center py-4'>
+      <div className='max-w-3xl'>
+        <PostCard post={post} authorProfile={authorProfile} flair={flair} />
+        <div className='mt-4'>
+          <h2 className='text-lg font-semibold mb-4'>Comments</h2>
+          <CommentForm postId={post.id} onSuccess={handleCommentAdded} />
+          {commentsLoading ? (
+            <div>Loading comments...</div>
+          ) : (
+            <CommentList comments={comments} postId={post.id} onCommentAdded={handleCommentAdded} />
+          )}
+        </div>
       </div>
     </div>
   )

@@ -8,10 +8,14 @@ import { UserProfile, FollowRelationship } from '@/types/services/user'
 import UserProfileSkeleton from '@/components/features/user/UserProfileSkeleton'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/context/AuthContext'
+import { createConversation } from '@/modules/services/message-service'
+import { useChatStore } from '@/store/useChatStore'
+import { useSocket } from '@/context/SocketContext'
 
 export function OtherProfileHeader() {
   const { userId } = useParams()
   const { user: currentUser } = useAuth()
+  const { joinChatRoom } = useSocket()
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [actionLoading, setActionLoading] = useState(false)
@@ -38,6 +42,19 @@ export function OtherProfileHeader() {
 
   const relationship = profile.relationshipStatus
   const isOwnProfile = currentUser?.id === profile.id
+
+  const handleMessage = async () => {
+    try {
+      setActionLoading(true)
+      const conversation = await createConversation('direct', [profile.id]) // Create conversation
+      useChatStore.getState().setActiveConversation(conversation) // Set active conversation in store
+      useChatStore.getState().toggleChat() // Open chat component
+    } catch (error) {
+      console.error('Failed to create conversation:', error)
+    } finally {
+      setActionLoading(false)
+    }
+  }
 
   // Action handlers
   const handleFollow = async () => {
@@ -102,7 +119,7 @@ export function OtherProfileHeader() {
       <div className='mt-4 flex flex-col gap-2 items-end flex-1'>
         {!isOwnProfile && (
           <>
-            {/* 1. Current user is following target */}
+            {/* Follow/Unfollow actions */}
             {relationship?.requesterToTarget?.status === 'ACCEPTED' && (
               <Button
                 variant='default'
@@ -112,8 +129,6 @@ export function OtherProfileHeader() {
                 {actionLoading ? 'Unfollowing...' : 'Unfollow'}
               </Button>
             )}
-
-            {/* 2. Current user has requested to follow target */}
             {relationship?.requesterToTarget?.status === 'PENDING' && (
               <Button
                 variant='default'
@@ -123,8 +138,6 @@ export function OtherProfileHeader() {
                 {actionLoading ? 'Cancelling...' : 'Cancel request'}
               </Button>
             )}
-
-            {/* 3. Target is requesting to follow current user */}
             {relationship?.targetToRequester?.status === 'PENDING' && (
               <div className='flex gap-2'>
                 <Button
@@ -143,20 +156,22 @@ export function OtherProfileHeader() {
                 </Button>
               </div>
             )}
-
             {!relationship?.requesterToTarget &&
               relationship?.targetToRequester?.status === 'ACCEPTED' && (
                 <Button variant='default' disabled={actionLoading} onClick={handleFollow}>
                   {actionLoading ? 'Following...' : 'Follow back'}
                 </Button>
               )}
-
-            {/* 4. Not following, not requested, not being requested */}
             {!relationship?.requesterToTarget && !relationship?.targetToRequester && (
               <Button variant='default' disabled={actionLoading} onClick={handleFollow}>
                 {actionLoading ? 'Following...' : 'Follow'}
               </Button>
             )}
+
+            {/* Message action */}
+            <Button variant='secondary' disabled={actionLoading} onClick={handleMessage}>
+              {actionLoading ? 'Messaging...' : 'Message'}
+            </Button>
           </>
         )}
       </div>

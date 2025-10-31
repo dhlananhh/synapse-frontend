@@ -94,16 +94,21 @@ export default function SearchPage() {
   }
 
   return (
-    <div className='pt-2'>
-      <ResourceTypeSelector
-        resourceTypes={resourceTypes}
-        selectedType={type}
-        onTypeChange={handleTypeChange}
-      />
-      <hr className='border-muted mb-6' />
-      <h2 className='text-lg font-semibold mb-4 text-foreground'>
-        Search results for <span className='text-primary'>"{query}"</span>
-      </h2>
+    <div className='pt-16 pl-16 flex flex-col'>
+      {/* Make the ResourceTypeSelector sticky */}
+      <div className='sticky top-[64px] bg-background z-10 pt-8'>
+        {' '}
+        {/* Adjusted top value */}
+        <ResourceTypeSelector
+          resourceTypes={resourceTypes}
+          selectedType={type}
+          onTypeChange={handleTypeChange}
+        />
+        <h2 className='text-lg font-semibold mb-4 text-foreground'>
+          Search results for <span className='text-primary'>"{query}"</span>
+        </h2>
+        <hr className='border-muted' />
+      </div>
       <SearchResultsList
         type={type}
         userResults={userResults}

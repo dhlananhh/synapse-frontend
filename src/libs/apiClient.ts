@@ -13,6 +13,12 @@ const POST_SERVICE_URL =
 const COMMENT_SERVICE_URL =
   process.env.NEXT_PUBLIC_COMMENT_SERVICE_URL || 'http://localhost:4003/api/comments'
 
+const MESSAGE_SERVICE_URL =
+  process.env.NEXT_PUBLIC_MESSAGE_SERVICE_URL || 'http://localhost:4005/api/conversations'
+
+const FEED_SERVICE_URL =
+  process.env.NEXT_PUBLIC_FEED_SERVICE_URL || 'http://localhost:4004/api/feed'
+
 const createApiClient = (baseURL: string) => {
   const apiClient = axios.create({
     baseURL,
@@ -30,6 +36,8 @@ const communityApiClient = createApiClient(COMMUNITY_SERVICE_URL)
 const uploadApiClient = createApiClient(UPLOAD_SERVICE_URL)
 const postApiClient = createApiClient(POST_SERVICE_URL)
 const commentApiClient = createApiClient(COMMENT_SERVICE_URL)
+const messageApiClient = createApiClient(MESSAGE_SERVICE_URL)
+const feedApiClient = createApiClient(FEED_SERVICE_URL)
 
 // --------------------
 // Interceptors
@@ -62,6 +70,8 @@ setupInterceptors(communityApiClient)
 setupInterceptors(uploadApiClient)
 setupInterceptors(postApiClient)
 setupInterceptors(commentApiClient)
+setupInterceptors(messageApiClient)
+setupInterceptors(feedApiClient)
 
 export {
   authApiClient,
@@ -70,4 +80,6 @@ export {
   uploadApiClient,
   postApiClient,
   commentApiClient,
+  messageApiClient,
+  feedApiClient,
 }

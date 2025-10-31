@@ -1,19 +1,18 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { formatDistanceToNow } from 'date-fns'
 import type { PostDetails } from '@/types/services/post'
 import type { SimpleProfile } from '@/types/services/user'
 import type { CommunityFlair } from '@/types/services/community'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { MessageCircle, Share2, ArrowUp, ArrowDown } from 'lucide-react'
 import { PostBadges } from './PostBadges'
-import TextPost from './TextPost'
-import MediaPost from './MediaPost'
-import LinkPost from './LinkPost'
-import { votePost, unvotePost, PostVoteType } from '@/modules/services/post-service'
+import MediaViewer from '@/components/features/feed/MediaViewer'
+import FeedActions from '@/components/features/feed/FeedActions'
+import LinkViewer from '@/components/features/feed/LinkViewer'
+import { fetchUserVotes } from '@/modules/services/post-service'
+import { useAuth } from '@/context/AuthContext' // Import AuthContext
 
 interface PostCardProps {
   post: PostDetails
@@ -23,40 +22,24 @@ interface PostCardProps {
 
 const PostCard = React.forwardRef<HTMLDivElement, PostCardProps>(
   ({ post, authorProfile, flair }, ref) => {
-    const [voting, setVoting] = React.useState<PostVoteType | null>(null)
-    const [localScore, setLocalScore] = React.useState(post.score)
-    const [voted, setVoted] = React.useState<'UPVOTE' | 'DOWNVOTE' | null>(
-      post.currentUserVote ?? null
-    )
+    const { user, isLoading } = useAuth() // Check if the user is authenticated
+    const [initialVote, setInitialVote] = useState<'UPVOTE' | 'DOWNVOTE' | null>(null)
 
-    const handleVote = async (type: PostVoteType) => {
-      if (voting || voted === type) return
-      setVoting(type)
-      try {
-        const updated = await votePost(post.id, type)
-        setLocalScore(updated.score)
-        setVoted(type)
-      } catch {
-        // Optionally show a toast here
-      } finally {
-        setVoting(null)
-      }
-    }
+    useEffect(() => {
+      if (!user || isLoading) return // Skip fetching votes if the user is not authenticated or loading
 
-    const handleUnvote = async () => {
-      if (voting === null && voted) {
-        setVoting(voted)
+      const fetchVote = async () => {
         try {
-          const updated = await unvotePost(post.id)
-          setLocalScore(updated.score)
-          setVoted(updated.currentUserVote)
-        } catch {
-          // Optionally show a toast here
-        } finally {
-          setVoting(null)
+          const votes = await fetchUserVotes([post.id])
+          const userVote = votes.find((vote) => vote.postId === post.id)?.vote || null
+          setInitialVote(userVote)
+        } catch (error) {
+          console.error('Failed to fetch user vote:', error)
         }
       }
-    }
+
+      fetchVote()
+    }, [post.id, user, isLoading])
 
     return (
       <Card ref={ref} className='w-full rounded-2xl border bg-card'>
@@ -89,7 +72,7 @@ const PostCard = React.forwardRef<HTMLDivElement, PostCardProps>(
             • {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}
             {flair && (
               <span
-                className='ml-2 rounded px-2 py-0.5   text-xs font-medium'
+                className='ml-2 rounded px-2 py-0.5 text-xs font-medium'
                 style={{
                   backgroundColor: flair.color || '#eee',
                   color: '#fff',
@@ -107,57 +90,34 @@ const PostCard = React.forwardRef<HTMLDivElement, PostCardProps>(
           <PostBadges isNSFW={post.isNSFW} isSpoiler={post.isSpoiler} />
         </CardHeader>
 
-        <CardContent className='p-3 sm:p-4 flex-grow mt-0'>
-          {post.type === 'TEXT' && <TextPost post={post} />}
-          {post.type === 'MEDIA' && <MediaPost post={post} />}
-          {post.type === 'LINK' && <LinkPost post={post} />}
+        <CardContent className='p-3 sm:p-4 flex-grow'>
+          {post.type === 'MEDIA' && (
+            <MediaViewer
+              media={post.media.map((media) => ({
+                key: media.key,
+                url: media.url,
+              }))}
+            />
+          )}
+          {post.type === 'LINK' && <LinkViewer links={post.links} />}
+          {post.contentHtml && (
+            <div
+              className='prose prose-invert max-w-none text-md prose-p:my-2 line-clamp-6 mt-6'
+              dangerouslySetInnerHTML={{ __html: post.contentHtml }}
+            />
+          )}
         </CardContent>
 
-        <div className='flex flex-wrap items-center justify-between gap-2 sm:gap-4 text-sm font-medium text-muted-foreground p-2 sm:px-4 border-t'>
-          <div className='flex items-center gap-1'>
-            <Button
-              variant='ghost'
-              size='icon'
-              className={`rounded-full flex items-center justify-center px-2 ${
-                voted === 'UPVOTE' ? 'text-destructive' : ''
-              }`}
-              aria-label='Upvote'
-              type='button'
-              disabled={voting !== null}
-              onClick={() => (voted === 'UPVOTE' ? handleUnvote() : handleVote('UPVOTE'))}
-            >
-              <ArrowUp className='h-5 w-5' />
-            </Button>
-            <span className='mx-1 font-semibold text-foreground'>{localScore}</span>
-            <Button
-              variant='ghost'
-              size='icon'
-              className={`rounded-full flex items-center justify-center px-2 ${
-                voted === 'DOWNVOTE' ? 'text-destructive' : ''
-              }`}
-              aria-label='Downvote'
-              type='button'
-              disabled={voting !== null}
-              onClick={() => (voted === 'DOWNVOTE' ? handleUnvote() : handleVote('DOWNVOTE'))}
-            >
-              <ArrowDown className='h-5 w-5' />
-            </Button>
-          </div>
-          <Button
-            asChild
-            variant='ghost'
-            size='lg'
-            className='rounded-full flex items-center gap-1.5 px-2'
-          >
-            <Link href={`/p/${post.id}`}>
-              <MessageCircle className='h-5 w-5' />
-              <span className='hidden sm:inline'>Comments</span>
-            </Link>
-          </Button>
-          <Button variant='ghost' size='lg' className='rounded-full flex items-center gap-1.5 px-2'>
-            <Share2 className='h-5 w-5' />
-            <span className='hidden sm:inline'>Share</span>
-          </Button>
+        {/* Feed Actions */}
+        <div className='p-2 sm:px-4 border-t'>
+          <FeedActions
+            communityName={post.community.name}
+            postId={post.id} // Pass postId
+            score={post.score}
+            commentCount={post.commentCount}
+            shareCount={0}
+            initialVote={initialVote} // Pass initialVote
+          />
         </div>
       </Card>
     )

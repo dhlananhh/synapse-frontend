@@ -8,16 +8,11 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function HomePage() {
   const { user, isLoading } = useAuth()
-  console.log(`isLoading state retreived from AuthContext ${isLoading}`)
 
   if (isLoading) {
     return (
       <div className='w-full h-screen flex items-center justify-center'>
-        <div className='flex flex-col items-center gap-4'>
-          <Skeleton className='h-16 w-16 rounded-full' />
-          <Skeleton className='h-4 w-[250px]' />
-          <Skeleton className='h-4 w-[200px]' />
-        </div>
+        <Skeleton className='h-32 w-32 rounded-full' />
       </div>
     )
   }

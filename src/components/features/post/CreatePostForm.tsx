@@ -221,10 +221,13 @@ export default function CreatePostForm({
                 <label className='text-sm font-medium' htmlFor='title'>
                   Title
                 </label>
-                <Input
+                <textarea
                   id='title'
                   placeholder={`Enter a descriptive ${postType === 'MEDIA' ? 'caption' : 'title'}`}
                   {...register('title')}
+                  className='w-full rounded-md border border-gray-300 p-2 text-sm resize-none focus:outline-none focus:ring-2 focus:ring-primary'
+                  rows={1} // Start with 1 row
+                  style={{ maxHeight: '6rem', overflowY: 'auto' }} // Limit to 3 rows (approx. 6rem)
                 />
                 {errors.title && (
                   <p className='text-xs text-destructive'>{errors.title.message as string}</p>

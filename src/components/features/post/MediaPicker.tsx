@@ -64,6 +64,9 @@ export function MediaPicker({
   }, [])
 
   useEffect(() => {
+    if (existingMedia.length > 0 && deletedMedia.length > 0) {
+      setDeletedMedia([]) // Reset deletedMedia only if it has items
+    }
     if (existingMedia.length && (!reuseMediaKeys || reuseMediaKeys.length === 0)) {
       setValue(
         reuseName,
@@ -71,8 +74,6 @@ export function MediaPicker({
         { shouldValidate: true }
       )
     }
-    // Reset deletedMedia if existingMedia changes
-    setDeletedMedia([])
     // eslint-disable-next-line
   }, [existingMedia])
 

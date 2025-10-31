@@ -25,6 +25,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const res = await authService.refreshToken() // refresh token via HTTP-only cookie
         setUser(res.user)
       } catch (error: any) {
+        console.log('there something wrong wtf', error)
         if (error.response?.status === 401 || error.response?.status === 400) {
           setUser(null)
         } else {

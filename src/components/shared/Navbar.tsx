@@ -2,10 +2,11 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { PlusCircle } from 'lucide-react'
+import { PlusCircle, MessageCircleMore } from 'lucide-react'
 
 import { useAuth } from '@/context/AuthContext'
 import { userService } from '@/modules/services/user-service'
+import { useChatStore } from '@/store/useChatStore'
 
 import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,6 +20,7 @@ import { UserProfile } from '@/types/services/user'
 export function Navbar() {
   const { user, isLoading } = useAuth()
   const [profile, setProfile] = useState<UserProfile | null>(null)
+  const toggleChat = useChatStore((state) => state.toggleChat)
 
   useEffect(() => {
     if (user?.id) {
@@ -47,6 +49,13 @@ export function Navbar() {
               Create Post
             </Link>
           </Button>
+          <div
+            className='cursor-pointer p-2 rounded hover:bg-muted/50 transition flex items-center gap-2'
+            onClick={toggleChat}
+            title='Toggle Chat'
+          >
+            <MessageCircleMore className='w-8 h-8' />
+          </div>
           <UserNav user={profile} />
         </div>
       )
@@ -66,25 +75,22 @@ export function Navbar() {
 
   return (
     <header className='fixed top-0 inset-x-0 h-16 z-50 border-b bg-background/80 backdrop-blur-lg'>
-      <div className='container h-full max-w-7xl mx-auto flex items-center gap-4'>
+      <div className='container h-full max-w-full mx-auto flex items-center justify-between px-4'>
         {/* Left: Logo & App Name */}
-        <div className='flex items-center gap-2 flex-shrink-0'>
-          <div className='md:hidden'>
-            <MobileNav />
-          </div>
-          <Link href='/' className='hidden md:flex items-center gap-2'>
+        <div className='flex items-center gap-2'>
+          <Link href='/home' className='flex items-center gap-2'>
             <BrainCircuit className='h-8 w-8 text-primary' />
             <p className='hidden lg:block text-xl font-bold text-foreground'>Synapse</p>
           </Link>
         </div>
 
         {/* Center: Search Bar */}
-        <div className='flex-1 flex justify-center px-4'>
+        <div className='flex-1 flex justify-center'>
           <SearchBar />
         </div>
 
         {/* Right: Auth/User Nav */}
-        <div className='flex items-center gap-2 flex-shrink-0'>{renderAuthSection()}</div>
+        <div className='flex items-center gap-2'>{renderAuthSection()}</div>
       </div>
     </header>
   )
