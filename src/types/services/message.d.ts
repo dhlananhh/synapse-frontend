@@ -18,6 +18,7 @@ export interface Conversation {
   avatarUrl: string
   updatedAt: string
   lastMessage?: LastMessage // Optional, as it may not always be present
+  unreadCount: number
 }
 
 export interface Pagination {

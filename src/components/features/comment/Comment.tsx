@@ -33,8 +33,10 @@ import { useAuth } from '@/context/AuthContext'
 import ActionConfirmDialog from '@/components/shared/ActionConfirmDialog'
 import { toast } from 'sonner'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
+import ReportDialog from '@/components/features/report/ReportDialog' // Import ReportDialog
 
 interface CommentProps {
+  communityId: string
   comment: CommentNode
   postId: string
   onCommentAdded?: () => void
@@ -42,12 +44,13 @@ interface CommentProps {
 }
 
 export default function Comment({
+  communityId,
   comment,
   postId,
   onCommentAdded,
   onRepliesChanged,
 }: CommentProps) {
-  const { user: authUser } = useAuth()
+  const { user: authUser } = useAuth() // Get the current user from AuthContext
   const [profile, setProfile] = useState<SimpleProfile | null>(null)
   const [showReply, setShowReply] = useState(false)
   const [showReplies, setShowReplies] = useState(false)
@@ -59,14 +62,17 @@ export default function Comment({
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [voting, setVoting] = useState<VoteType | null>(null)
   const [localScore, setLocalScore] = useState(comment.score)
-  // Initialize voted state from currentUserVote field
   const [voted, setVoted] = useState<'UPVOTE' | 'DOWNVOTE' | null>(comment.currentUserVote ?? null)
+  const [isReportDialogOpen, setReportDialogOpen] = useState(false) // State for the report dialog
 
   useEffect(() => {
     userService.getSimpleProfiles([comment.authorId]).then((profiles) => {
       setProfile(profiles[0])
     })
   }, [comment.authorId])
+
+  const currentUserId = authUser?.id // Get the current user's ID
+  const isAuthor = currentUserId === comment.authorId // Check if the current user is the author
 
   const handleShowReplies = async () => {
     if (!replies) {
@@ -90,10 +96,8 @@ export default function Comment({
         description: 'Your comment has been removed successfully.',
       })
       if (comment.parentCommentId && onRepliesChanged) {
-        // Tell parent to reload its replies
         onRepliesChanged()
       } else if (onCommentAdded) {
-        // Top-level comment
         onCommentAdded()
       }
     } catch {
@@ -147,8 +151,6 @@ export default function Comment({
     }
   }
 
-  const currentUserId = authUser?.id
-
   // Helper to get removed message
   function getRemovedMessage() {
     if (comment.status === 'REMOVED_AUTHOR') {
@@ -192,7 +194,7 @@ export default function Comment({
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align='end'>
-                  {currentUserId === comment.authorId && (
+                  {isAuthor && (
                     <>
                       <DropdownMenuItem onClick={() => setEditMode(true)}>
                         <Pencil className='w-4 h-4 mr-2' />
@@ -208,10 +210,17 @@ export default function Comment({
                       </DropdownMenuItem>
                     </>
                   )}
-                  <DropdownMenuItem>
-                    <Flag className='w-4 h-4 mr-2' />
-                    Report
-                  </DropdownMenuItem>
+                  {!isAuthor && (
+                    <DropdownMenuItem
+                      onClick={(e) => {
+                        e.preventDefault()
+                        setReportDialogOpen(true) // Open the report dialog
+                      }}
+                    >
+                      <Flag className='w-4 h-4 mr-2' />
+                      Report
+                    </DropdownMenuItem>
+                  )}
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
@@ -291,6 +300,7 @@ export default function Comment({
         {showReplies && replies && !isRemoved && (
           <div className='ml-6 border-l pl-4 mt-2'>
             <CommentList
+              communityId={communityId}
               comments={replies}
               postId={postId}
               onCommentAdded={onCommentAdded}
@@ -315,6 +325,14 @@ export default function Comment({
           confirmText='Delete'
           isDestructive
           isConfirming={deleting}
+        />
+        {/* Report Dialog */}
+        <ReportDialog
+          isOpen={isReportDialogOpen}
+          onClose={() => setReportDialogOpen(false)} // Close the dialog
+          communityId={communityId}
+          targetType='COMMENT'
+          targetId={comment.id}
         />
       </div>
     </div>

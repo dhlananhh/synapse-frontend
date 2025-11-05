@@ -13,6 +13,8 @@ import {
 import MediaViewer from './MediaViewer'
 import LinkViewer from './LinkViewer'
 import { useRouter } from 'next/navigation'
+import ReportDialog from '@/components/features/report/ReportDialog'
+import { useAuth } from '@/context/AuthContext' // Import AuthContext
 
 interface FeedItemProps {
   item: FeedItemType
@@ -21,7 +23,9 @@ interface FeedItemProps {
 
 export default function FeedItem({ item, initialVote }: FeedItemProps) {
   const router = useRouter()
+  const { user } = useAuth() // Get the current user from AuthContext
   const [currentVote, setCurrentVote] = useState<'UPVOTE' | 'DOWNVOTE' | null>(initialVote)
+  const [isReportDialogOpen, setReportDialogOpen] = useState(false) // State for the report dialog
 
   // Sync the currentVote state with initialVote whenever it changes
   useEffect(() => {
@@ -31,19 +35,10 @@ export default function FeedItem({ item, initialVote }: FeedItemProps) {
   const goToPost = () => router.push(`/c/${item.community.name}/posts/${item.postId}`)
   const goToCommunity = () => router.push(`/c/${item.community.name}`)
 
+  const isAuthor = user?.id === item.authorId // Check if the current user is the author
+
   return (
-    <div
-      role='link'
-      tabIndex={0}
-      onClick={goToPost}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          goToPost()
-        }
-      }}
-      className='block bg-muted border border-gray-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200 relative'
-    >
+    <div className='block bg-muted border border-gray-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200 relative'>
       {/* Options Menu */}
       <div onClick={(e) => e.stopPropagation()}>
         <DropdownMenu>
@@ -53,10 +48,18 @@ export default function FeedItem({ item, initialVote }: FeedItemProps) {
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent className='bg-gray-700 border-gray-700 shadow-md relative -top-2 right-10'>
-            <DropdownMenuItem onClick={(e) => e.preventDefault()}>
-              <Flag className='w-5 h-5' />
-              Report
-            </DropdownMenuItem>
+            {/* Display the report option only if the current user is not the author */}
+            {!isAuthor && (
+              <DropdownMenuItem
+                onClick={(e) => {
+                  e.preventDefault()
+                  setReportDialogOpen(true) // Open the report dialog
+                }}
+              >
+                <Flag className='w-5 h-5' />
+                Report
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -91,7 +94,15 @@ export default function FeedItem({ item, initialVote }: FeedItemProps) {
       </div>
 
       {/* Post Title */}
-      <h3 className='font-bold text-2xl mb-3'>{item.title}</h3>
+      <h3
+        className='font-bold text-2xl mb-3 cursor-pointer hover:underline'
+        onClick={(e) => {
+          e.stopPropagation()
+          goToPost()
+        }}
+      >
+        {item.title}
+      </h3>
       <p className='text-md text-gray-400 mb-4'>{item.contentPreview}</p>
 
       {/* Media Viewer */}
@@ -117,6 +128,17 @@ export default function FeedItem({ item, initialVote }: FeedItemProps) {
           commentCount={item.metrics.commentCount}
           shareCount={item.metrics.shareCount}
           initialVote={currentVote} // Pass the synced vote state
+        />
+      </div>
+
+      {/* Report Dialog */}
+      <div onClick={(e) => e.stopPropagation()}>
+        <ReportDialog
+          isOpen={isReportDialogOpen}
+          onClose={() => setReportDialogOpen(false)} // Close the dialog
+          communityId={item.community.communityId}
+          targetType='POST'
+          targetId={item.postId}
         />
       </div>
     </div>

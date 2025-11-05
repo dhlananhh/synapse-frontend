@@ -50,4 +50,8 @@ export const messageSocket = {
   leaveChatRoom: (payload: string) => {
     messageSocketClient.emit(SOCKET_EVENTS.ROOM.LEAVE, payload)
   },
+
+  markMessagesAsRead: (conversationId: string, lastReadMessageId: string) => {
+    messageSocketClient.emit(SOCKET_EVENTS.MESSAGE.READ, { conversationId, lastReadMessageId })
+  },
 }

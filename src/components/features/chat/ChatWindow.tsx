@@ -11,6 +11,7 @@ export default function ChatWindow() {
   const { activeConversation } = useChatStore() // Use the active conversation from the store
   const [messages, setMessages] = useState<Message[]>([])
   const [loading, setLoading] = useState(false)
+  const [cursor, setCursor] = useState<string | null>(null) // Track the cursor for paging
   const { onNewMessage, leaveChatRoom, joinChatRoom } = useSocket() // Use the SocketContext to listen for events
   const [previousConversationId, setPreviousConversationId] = useState<string | null>(null)
 
@@ -21,10 +22,14 @@ export default function ChatWindow() {
     const loadMessages = async () => {
       setLoading(true)
       try {
-        const { messages: fetchedMessages } = await fetchMessages(activeConversation.id, {
-          limit: 20,
-        }) // Fetch messages for the conversation
+        const { messages: fetchedMessages, pagination } = await fetchMessages(
+          activeConversation.id,
+          {
+            limit: 20,
+          }
+        ) // Fetch messages for the conversation
         setMessages(fetchedMessages)
+        setCursor(pagination.nextCursor) // Set the cursor for paging
       } catch (error) {
         console.error('Failed to fetch messages:', error)
       } finally {
@@ -34,6 +39,22 @@ export default function ChatWindow() {
 
     loadMessages()
   }, [activeConversation])
+
+  // Fetch older messages when scrolling to the top
+  const fetchOlderMessages = async () => {
+    if (!cursor || !activeConversation) return // No more messages to fetch
+
+    try {
+      const { messages: olderMessages, pagination } = await fetchMessages(activeConversation.id, {
+        limit: 20,
+        cursor,
+      })
+      setMessages((prevMessages) => [...olderMessages, ...prevMessages]) // Prepend older messages
+      setCursor(pagination.nextCursor) // Update the cursor
+    } catch (error) {
+      console.error('Failed to fetch older messages:', error)
+    }
+  }
 
   // Listen for new messages from the server
   useEffect(() => {
@@ -96,7 +117,11 @@ export default function ChatWindow() {
         {loading ? (
           <div className='flex items-center justify-center h-full'>Loading messages...</div>
         ) : (
-          <MessageList messages={messages} />
+          <MessageList
+            conversationId={activeConversation.id}
+            messages={messages}
+            onFetchOlderMessages={fetchOlderMessages}
+          />
         )}
       </div>
 

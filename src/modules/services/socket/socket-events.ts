@@ -4,6 +4,7 @@ export const SOCKET_EVENTS = {
   MESSAGE: {
     SEND: 'message:send',
     RECEIVE: 'message:receive',
+    READ: 'message:read',
     EDIT: 'message:edit',
     DELETE: 'message:delete',
     REACT: 'message:react',

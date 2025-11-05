@@ -44,11 +44,8 @@ export default function ChatComponent() {
       {/* Content */}
       {isOpen && (
         <div className='flex h-full'>
-          <ConversationList
-            activeConversation={activeConversation} // Pass active conversation
-            onSelectConversation={setActiveConversation} // Update active conversation
-          />
-          <ChatWindow conversation={activeConversation} />
+          <ConversationList />
+          <ChatWindow />
         </div>
       )}
     </div>

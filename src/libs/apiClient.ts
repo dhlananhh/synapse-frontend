@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { authService } from '@/modules/services/auth-service'
+import { report } from 'process'
 
 // Base URLs
 const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://192.168.1.5:4000/api/auth'
@@ -18,6 +19,9 @@ const MESSAGE_SERVICE_URL =
 
 const FEED_SERVICE_URL =
   process.env.NEXT_PUBLIC_FEED_SERVICE_URL || 'http://localhost:4004/api/feed'
+
+const REPORT_SERVICE_URL =
+  process.env.NEXT_PUBLIC_REPORT_SERVICE_URL || 'http://localhost:4003/api/reports'
 
 const createApiClient = (baseURL: string) => {
   const apiClient = axios.create({
@@ -38,6 +42,7 @@ const postApiClient = createApiClient(POST_SERVICE_URL)
 const commentApiClient = createApiClient(COMMENT_SERVICE_URL)
 const messageApiClient = createApiClient(MESSAGE_SERVICE_URL)
 const feedApiClient = createApiClient(FEED_SERVICE_URL)
+const reportApiClient = createApiClient(REPORT_SERVICE_URL)
 
 // --------------------
 // Interceptors
@@ -72,6 +77,7 @@ setupInterceptors(postApiClient)
 setupInterceptors(commentApiClient)
 setupInterceptors(messageApiClient)
 setupInterceptors(feedApiClient)
+setupInterceptors(reportApiClient)
 
 export {
   authApiClient,
@@ -82,4 +88,5 @@ export {
   commentApiClient,
   messageApiClient,
   feedApiClient,
+  reportApiClient,
 }

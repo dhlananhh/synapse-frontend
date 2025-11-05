@@ -19,7 +19,7 @@ export default function ConversationList() {
       setLoading(true)
       try {
         const { conversations: fetchedConversations, pagination: fetchedPagination } =
-          await fetchUserConversations({ limit: 10 })
+          await fetchUserConversations({ limit: 20 })
         setConversations(fetchedConversations)
         setPagination(fetchedPagination)
       } catch (error) {
@@ -38,13 +38,20 @@ export default function ConversationList() {
       conversationId: string
       lastMessage: LastMessage
     }) => {
-      console.log('ayooo update bro : ', payload)
+      console.log('Conversation updated:', payload)
       setConversations((prevConversations) => {
-        const updatedConversations = prevConversations.map((conversation) =>
-          conversation.id === payload.conversationId
-            ? { ...conversation, lastMessage: payload.lastMessage }
-            : conversation
-        )
+        const updatedConversations = prevConversations.map((conversation) => {
+          if (conversation.id === payload.conversationId) {
+            // If the conversation is active, do not increment unreadCount
+            const isActive = activeConversation?.id === payload.conversationId
+            return {
+              ...conversation,
+              lastMessage: payload.lastMessage,
+              unreadCount: isActive ? 0 : conversation.unreadCount + 1, // Increment unreadCount if not active
+            }
+          }
+          return conversation
+        })
 
         // Sort conversations by lastMessage.createdAt in descending order
         return updatedConversations.sort((a, b) => {
@@ -60,11 +67,16 @@ export default function ConversationList() {
     return () => {
       onConversationUpdate(() => {}) // Unregister the listener
     }
-  }, [onConversationUpdate])
+  }, [onConversationUpdate, activeConversation])
 
   const handleSelectConversation = (conversation: ConversationType) => {
     setActiveConversation(conversation) // Update active conversation in the store
     joinChatRoom(conversation.id as string) // Emit an event to join the room with the conversation ID
+
+    // Update the unreadCount of the selected conversation to 0
+    setConversations((prevConversations) =>
+      prevConversations.map((c) => (c.id === conversation.id ? { ...c, unreadCount: 0 } : c))
+    )
   }
 
   const loadMoreConversations = async () => {
@@ -84,7 +96,7 @@ export default function ConversationList() {
   }
 
   return (
-    <div className='w-1/3 border-r p-4 overflow-y-auto scrollbar-hide'>
+    <div className='w-2/5 border-r p-4 overflow-y-auto scrollbar-hide'>
       <h2 className='text-lg font-bold mb-4'>Conversations</h2>
       <ul className='space-y-4'>
         {conversations.map((conversation) => (

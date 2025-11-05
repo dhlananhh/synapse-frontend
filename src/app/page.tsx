@@ -17,9 +17,9 @@ export default function HomePage() {
     )
   }
 
-  if (user) {
-    return <FeedPage />
-  }
+  // if (user) {
+  //   return <FeedPage />
+  // }
 
   return <LandingPage />
 }

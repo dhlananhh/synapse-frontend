@@ -31,6 +31,7 @@ export default function PostDetailsPage() {
     async function fetchPostAndProfile() {
       try {
         const data = await getPostById(postId as string)
+        console.log('wtf gang ', data)
         setPost(data)
         // Fetch author simple profile
         const profiles = await userService.getSimpleProfiles([data.authorId])
@@ -82,7 +83,12 @@ export default function PostDetailsPage() {
           {commentsLoading ? (
             <div>Loading comments...</div>
           ) : (
-            <CommentList comments={comments} postId={post.id} onCommentAdded={handleCommentAdded} />
+            <CommentList
+              communityId={post.community.id}
+              comments={comments}
+              postId={post.id}
+              onCommentAdded={handleCommentAdded}
+            />
           )}
         </div>
       </div>

@@ -71,7 +71,7 @@ export default function Sidebar() {
   }, [user, isLoading])
 
   return (
-    <aside className='w-70 bg-muted text-muted-foreground h-screen sticky top-0 flex-shrink-0 pt-8 overflow-y-auto scrollbar-hide px-2'>
+    <aside className='w-70 bg-muted text-muted-foreground h-screen pt-8 overflow-y-auto scrollbar-hide px-2'>
       <div className='p-4 space-y-2'>
         {/* Feed Selection */}
         <div>
@@ -109,7 +109,6 @@ export default function Sidebar() {
             }))}
           />
         )}
-        <hr />
 
         {/* Top Communities */}
         <CommunitySection
@@ -121,7 +120,6 @@ export default function Sidebar() {
             avatarUrl: community.avatarUrl || '/images/default-avatar.png', // Fallback avatar
           }))}
         />
-        <hr />
 
         {/* My Communities */}
         {user && !isLoading && (

@@ -2,6 +2,7 @@ import type { CommentNode } from '@/app/(main)/(communities)/c/[name]/posts/[pos
 import Comment from './Comment'
 
 interface CommentListProps {
+  communityId: string
   comments: CommentNode[]
   postId: string
   onCommentAdded?: () => void
@@ -9,6 +10,7 @@ interface CommentListProps {
 }
 
 export default function CommentList({
+  communityId,
   comments,
   postId,
   onCommentAdded,
@@ -21,6 +23,7 @@ export default function CommentList({
       {comments.map((comment) => (
         <div key={comment.id}>
           <Comment
+            communityId={communityId}
             comment={comment}
             postId={postId}
             onCommentAdded={onCommentAdded}

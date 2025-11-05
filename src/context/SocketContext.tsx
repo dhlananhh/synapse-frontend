@@ -16,6 +16,7 @@ interface SocketContextProps {
   onConversationUpdate: (
     callback: (payload: { conversationId: string; lastMessage: LastMessage }) => void
   ) => void
+  markMessagesAsRead: (conversationId: string, lastReadMessageId: string) => void // Add this method
 }
 
 const SocketContext = createContext<SocketContextProps | null>(null)
@@ -69,6 +70,10 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     messageSocket.onConversationUpdate(callback)
   }
 
+  const markMessagesAsRead = (conversationId: string, lastReadMessageId: string) => {
+    messageSocket.markMessagesAsRead(conversationId, lastReadMessageId)
+  }
+
   return (
     <SocketContext.Provider
       value={{
@@ -78,6 +83,7 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         leaveChatRoom,
         onNewMessage,
         onConversationUpdate,
+        markMessagesAsRead, // Expose the method here
       }}
     >
       {children}
