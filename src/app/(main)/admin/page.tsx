@@ -5,6 +5,7 @@ import React, {
   useEffect,
   useState
 } from "react";
+import { StatsPieChart } from "@/components/features/admin/charts/StatsPieChart"
 import {
   Card,
   CardHeader,
@@ -85,6 +86,19 @@ const mockRecentActivities: RecentActivity[] = [
     link: "/u/user999"
   },
 ];
+
+
+const mockUserDistribution = [
+  { name: 'Active Users', value: 10, color: '#10B981' }, // Màu xanh lá
+  { name: 'Suspended Users', value: 2, color: '#F59E0B' }, // Màu cam
+  { name: 'Pending Users', value: 1, color: '#6B7280' }, // Màu xám
+];
+
+const mockCommunityDistribution = [
+  { name: 'Public Communities', value: 9, color: '#3B82F6' }, // Màu xanh dương
+  { name: 'Private Communities', value: 2, color: '#8B5CF6' }, // Màu tím
+  { name: 'Suspended Communities', value: 1, color: '#EF4444' }, // Màu đỏ
+]
 
 
 export default function AdminDashboardPage() {
@@ -201,6 +215,55 @@ export default function AdminDashboardPage() {
             </Link>
           ))
         }
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              User Status Distribution
+            </CardTitle>
+            <CardDescription>
+              Breakdown of users by their account status.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {
+              isLoading ? (
+                <div className="flex justify-center items-center h-[250px]">
+                  <Skeleton className="h-48 w-48 rounded-full" />
+                </div>
+              ) : (
+                <StatsPieChart
+                  data={ mockUserDistribution }
+                />
+              )
+            }
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              Community Type Distribution
+            </CardTitle>
+            <CardDescription>
+              Breakdown of communities by their privacy and status.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {
+              isLoading ? (
+                <div className="flex justify-center items-center h-[250px]">
+                  <Skeleton className="h-48 w-48 rounded-full" />
+                </div>
+              ) : (
+                <StatsPieChart
+                  data={ mockCommunityDistribution }
+                />
+              )
+            }
+          </CardContent>
+        </Card>
       </div>
 
       <Card>
