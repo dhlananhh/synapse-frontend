@@ -45,6 +45,7 @@ export interface Community {
   userMembership: any;
   createdAt: string;
   updatedAt: string;
+  isOwner?: boolean;
 }
 
 // Define the type for a community membership
@@ -76,6 +77,7 @@ export interface MyCommunity {
   description: string
   status: 'ACTIVE' | 'LEFT'
   avatarUrl: string | null
+  role?: 'OWNER' | 'MODERATOR' | 'MEMBER'
 }
 
 export interface CreateCommunityPayload {
@@ -105,7 +107,7 @@ export interface UpdateCommunityPayload {
   isNSFW?: boolean;
   isPrivate?: boolean;
   moderationMode?: boolean;
-  
+
 }
 
 export interface CommunityMember {

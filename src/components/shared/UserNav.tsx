@@ -26,7 +26,8 @@ import {
   LogOut,
   ShieldCheck,
   UserRound,
-  List as ListIcon
+  List as ListIcon,
+  UsersRound
 } from "lucide-react";
 
 
@@ -92,12 +93,25 @@ export function UserNav({ user }: UserNavProps) {
               </Link>
             </DropdownMenuItem>
 
+            <DropdownMenuSeparator />
+
             <DropdownMenuItem asChild>
               <Link
                 href={ `/u/me/posts` }
               >
                 <ListIcon className="mr-2 h-4 w-4" />
                 <span>My Posts</span>
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <Link
+                href={ `/c/me/` }
+              >
+                <UsersRound className="mr-2 h-4 w-4" />
+                <span>My Communities</span>
               </Link>
             </DropdownMenuItem>
 

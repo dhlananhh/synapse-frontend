@@ -190,7 +190,7 @@ export const communityService = {
    * Accepts: statuses?: ('ACTIVE' | 'LEFT')[]
    * Returns: MyCommunity[]
    */
-  getMyCommunities: (params?: { statuses?: ('ACTIVE' | 'LEFT')[] }): Promise<MyCommunity[]> =>
+  getMyCommunities: (params?: { statuses?: ('ACTIVE' | 'LEFT')[] }): Promise<any[]> =>
     communityApiClient
       .get('/me', {
         params:
