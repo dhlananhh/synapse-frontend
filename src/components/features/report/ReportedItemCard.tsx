@@ -12,6 +12,7 @@ import ReportedItemActions from '@/components/features/report/ReportedItemAction
 interface ReportedItemCardProps {
   item: {
     id: string
+    postId?: string // added: necessary when the reported target is a comment
     title?: string // For posts
     content?: string // For comments
     authorId: string
@@ -60,6 +61,15 @@ export default function ReportedItemCard({ item, type, updateState }: ReportedIt
     fetchAuthorProfile()
   }, [item.authorId])
 
+  // helper to build URL for comment context
+  const buildCommentContextHref = (postId?: string, commentId?: string) => {
+    if (!postId || !commentId) return '#'
+    const base = community?.name
+      ? `/c/${community.name}/posts/${encodeURIComponent(postId)}`
+      : `/posts/${encodeURIComponent(postId)}`
+    return `${base}?contextComment=${encodeURIComponent(commentId)}`
+  }
+
   return (
     <div className='border rounded-lg p-4 shadow-sm bg-muted mb-4 relative'>
       {/* Actions */}
@@ -107,7 +117,14 @@ export default function ReportedItemCard({ item, type, updateState }: ReportedIt
           {item.title}
         </Link>
       ) : (
-        <p className='text-lg font-bold text-primary'>{item.content}</p>
+        // For comments, link to the parent post with contextComment query param so the post page
+        // will load the comment context and highlight the reported comment.
+        <Link
+          href={buildCommentContextHref(item.postId, item.id)}
+          className='text-lg font-bold text-primary hover:underline'
+        >
+          {item.content}
+        </Link>
       )}
 
       {/* Aggregated Report Data */}

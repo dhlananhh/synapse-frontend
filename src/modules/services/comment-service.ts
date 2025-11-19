@@ -64,3 +64,9 @@ export async function unvoteComment(commentId: string): Promise<Comment> {
   const res = await commentApiClient.delete(`/${commentId}/vote`)
   return res.data
 }
+
+// Fetch the context chain for a comment (top-level ancestor -> ... -> target)
+export async function fetchCommentContext(commentId: string): Promise<Comment[]> {
+  const res = await commentApiClient.get(`/${commentId}/context`)
+  return res.data
+}

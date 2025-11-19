@@ -40,7 +40,7 @@ export default function CommunitySection({
                 <>
                   <li>
                     <a
-                      href='/me/communities'
+                      href='/u/me/communities'
                       className='flex items-center gap-4 hover:text-primary'
                     >
                       <Settings className='h-6 w-6' />

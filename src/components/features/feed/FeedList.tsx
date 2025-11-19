@@ -6,19 +6,39 @@ import { fetchUserVotes } from '@/modules/services/post-service'
 import FeedItem from './FeedItem'
 import { FeedItem as FeedItemType, FeedResponse } from '@/types/services/feed'
 import { useAuth } from '@/context/AuthContext'
+import { useCommunity, useCommunityFlairs } from '@/context/CommunityContext'
+import type { CommunityFlair } from '@/types/services/community'
 
 interface FeedListProps {
   type?: 'hot' | 'trending' | 'top' | 'global'
   communityId?: string
   flairId?: string
+  showFlair?: boolean
 }
 
-export default function FeedList({ type = 'global', communityId, flairId }: FeedListProps) {
+export default function FeedList({
+  type = 'global',
+  communityId,
+  flairId,
+  showFlair,
+}: FeedListProps) {
   const { user, isLoading } = useAuth() // Check authentication status
   const [feed, setFeed] = useState<FeedItemType[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [votes, setVotes] = useState<Record<string, 'UPVOTE' | 'DOWNVOTE' | null>>({}) // Store votes by postId
+
+  // determine if we're inside a community context
+  const community = useCommunity()
+  const inCommunity = Boolean(community) || Boolean(communityId)
+  const shouldShowFlair = showFlair ?? inCommunity
+
+  // grab flairs from context (empty array if not in community)
+  const flairs = useCommunityFlairs()
+  const flairMap = (flairs as CommunityFlair[]).reduce((acc, f) => {
+    acc[f.id] = f
+    return acc
+  }, {} as Record<string, CommunityFlair>)
 
   useEffect(() => {
     const loadFeed = async () => {
@@ -64,7 +84,14 @@ export default function FeedList({ type = 'global', communityId, flairId }: Feed
   return (
     <div className='space-y-4 overflow-y-auto'>
       {feed.map((item) => (
-        <FeedItem key={item.postId} item={item} initialVote={votes[item.postId] || null} />
+        <FeedItem
+          key={item.postId}
+          item={item}
+          initialVote={votes[item.postId] || null}
+          flair={
+            shouldShowFlair ? (item.flairId ? flairMap[item.flairId] ?? null : null) : undefined
+          }
+        />
       ))}
     </div>
   )

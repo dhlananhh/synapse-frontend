@@ -129,19 +129,37 @@ export const fetchResolvedItems = async (query: {
   actions?: string // CSV string of actions (e.g., "REMOVED_MOD,LOCKED,NONE")
   targetTypes?: string // CSV string of target types (e.g., "POST,COMMENT,MEMBERSHIP")
 }): Promise<ResolvedItemsResponse> => {
-  const {
-    communityId,
-    cursor = null, // Default cursor to null
-    limit = 20, // Default limit to 20
-    actions = 'REMOVED_MOD,LOCKED,DISMISSED', // Default actions to an empty string
-    targetTypes = 'POST,COMMENT', // Default targetTypes to an empty string
-  } = query
+  const { communityId, cursor = null, limit = 20, actions, targetTypes } = query
 
   try {
-    const response = await reportApiClient.get('/resolved', {
-      params: { communityId, cursor, limit, actions, targetTypes },
-    })
-    return response.data
+    const params: Record<string, any> = { communityId, cursor, limit }
+    if (actions) params.actions = actions
+    if (targetTypes) params.targetTypes = targetTypes
+
+    const response = await reportApiClient.get('/resolved', { params })
+    const data = response.data
+
+    // Normalize backend shapes:
+    // - prefer `items` if present
+    // - fallback to `resolved`
+    // - fallback to top-level array (unlikely) -> wrap
+    const items: any[] = Array.isArray(data?.items)
+      ? data.items
+      : Array.isArray(data?.resolved)
+      ? data.resolved
+      : Array.isArray(data)
+      ? data
+      : []
+
+    const pagination = data?.pagination ?? { // keep shape compatible with ResolvedItemsResponse
+      nextCursor: null,
+      hasMore: false,
+    }
+
+    return {
+      items,
+      pagination,
+    }
   } catch (error) {
     console.error('Error fetching resolved items:', error)
     throw error

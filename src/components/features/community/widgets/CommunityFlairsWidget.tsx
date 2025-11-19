@@ -15,6 +15,7 @@ import { useMembership } from '@/context/MembershipContext'
 import { Button } from '@/components/ui/button'
 import { useCommunity, useCommunityFlairs, useSetCommunityFlairs } from '@/context/CommunityContext'
 import { ManageCommunityFlairsDialog } from '@/components/features/community/manage/dialogs/ManageCommunityFlairsDialog'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 export default function CommunityFlairsWidget() {
   const community = useCommunity()
@@ -32,6 +33,25 @@ export default function CommunityFlairsWidget() {
   // No need to fetch flairs here, context already provides them
   const loading = !community // loading state can be improved if needed
   const error = null
+
+  // Navigation for selecting a flair -> updates ?flair=... which the page reads to filter posts
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const activeFlairId = searchParams?.get('flair') ?? null
+
+  const handleFlairClick = (flairId: string) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? '')
+    // toggle: if clicking currently active flair, remove filter
+    if (params.get('flair') === flairId) {
+      params.delete('flair')
+    } else {
+      params.set('flair', flairId)
+    }
+    const query = params.toString()
+    const dest = query ? `${pathname}?${query}` : pathname
+    router.push(dest)
+  }
 
   return (
     <Card className='p-2'>
@@ -86,7 +106,15 @@ export default function CommunityFlairsWidget() {
               ) : (
                 <ul className='space-y-3'>
                   {flairs.map((flair) => (
-                    <li key={flair.id} className='flex items-start gap-3'>
+                    <li
+                      key={flair.id}
+                      className={`flex items-start gap-3 cursor-pointer rounded-md p-2 hover:bg-muted ${
+                        activeFlairId === flair.id ? 'bg-muted/60 ring-1 ring-primary' : ''
+                      }`}
+                      onClick={() => handleFlairClick(flair.id)}
+                      role='button'
+                      aria-pressed={activeFlairId === flair.id}
+                    >
                       <span
                         aria-hidden
                         style={{ backgroundColor: flair.color ?? '#CBD5E1' }}

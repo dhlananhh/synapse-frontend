@@ -41,6 +41,8 @@ interface CommentProps {
   postId: string
   onCommentAdded?: () => void
   onRepliesChanged?: () => void // NEW
+  highlighted?: boolean // NEW - temporary highlight flag
+  allowNewComments?: boolean
 }
 
 export default function Comment({
@@ -49,6 +51,8 @@ export default function Comment({
   postId,
   onCommentAdded,
   onRepliesChanged,
+  highlighted = false,
+  allowNewComments = true,
 }: CommentProps) {
   const { user: authUser } = useAuth() // Get the current user from AuthContext
   const [profile, setProfile] = useState<SimpleProfile | null>(null)
@@ -65,11 +69,13 @@ export default function Comment({
   const [voted, setVoted] = useState<'UPVOTE' | 'DOWNVOTE' | null>(comment.currentUserVote ?? null)
   const [isReportDialogOpen, setReportDialogOpen] = useState(false) // State for the report dialog
 
+  // local transient highlight state (controls visual effect)
+  const [isLocalHighlight, setIsLocalHighlight] = useState(false)
+
   useEffect(() => {
-    userService.getSimpleProfiles([comment.authorId]).then((profiles) => {
-      setProfile(profiles[0])
-    })
-  }, [comment.authorId])
+    // Make highlight persistent while `highlighted` is true.
+    setIsLocalHighlight(Boolean(highlighted))
+  }, [highlighted])
 
   const currentUserId = authUser?.id // Get the current user's ID
   const isAuthor = currentUserId === comment.authorId // Check if the current user is the author
@@ -165,7 +171,20 @@ export default function Comment({
   const isRemoved = comment.status === 'REMOVED_AUTHOR' || comment.status === 'REMOVED_MOD'
 
   return (
-    <div className='flex gap-3 py-4 mb-2'>
+    <div
+      id={`comment-${comment.id}`}
+      className={`relative flex gap-3 py-4 mb-2 transition-all duration-1500 transform ${
+        isLocalHighlight
+          ? 'rounded-lg ring-2 ring-amber-400/50 bg-gradient-to-r from-amber-600/6 to-transparent border-l-4 border-amber-400 shadow-lg scale-[1.01] animate-pulse'
+          : 'rounded-md hover:shadow-sm'
+      }`}
+    >
+      {/* subtle badge to indicate the highlighted/targeted comment */}
+      {isLocalHighlight && (
+        <span className='absolute -top-2 right-2 inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-400 text-amber-900 shadow-sm'>
+          This one twin !
+        </span>
+      )}
       <div>
         <Avatar className='w-8 h-8 border border-gray-400'>
           {profile?.avatarUrl ? (
@@ -268,14 +287,20 @@ export default function Comment({
             >
               <ArrowDown className='w-4 h-4' />
             </button>
-            <button
-              className='ml-2 text-xs flex items-center gap-1 hover:bg-gray-600 p-2 rounded-2xl'
-              onClick={() => setShowReply((v) => !v)}
-              type='button'
-            >
-              <MessageCircle className='w-4 h-4' />
-              Reply
-            </button>
+            {allowNewComments ? (
+              <button
+                className='ml-2 text-xs flex items-center gap-1 hover:bg-gray-600 p-2 rounded-2xl'
+                onClick={() => setShowReply((v) => !v)}
+                type='button'
+              >
+                <MessageCircle className='w-4 h-4' />
+                Reply
+              </button>
+            ) : (
+              <span className='ml-2 text-xs px-2 py-1 rounded text-muted-foreground bg-muted/20'>
+                Comments locked
+              </span>
+            )}
             {comment.hasReplies && (
               <button
                 className='ml-2 text-xs flex items-center gap-1 hover:bg-gray-600 p-2 rounded-2xl'
@@ -288,7 +313,7 @@ export default function Comment({
             )}
           </div>
         )}
-        {showReply && !isRemoved && (
+        {showReply && !isRemoved && allowNewComments && (
           <div className='mt-2'>
             <CommentForm
               postId={postId}

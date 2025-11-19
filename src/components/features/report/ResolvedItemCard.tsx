@@ -24,6 +24,7 @@ export default function ResolvedItemCard({ item, updateResolvedState }: Resolved
   const community = useCommunity() // Use community context to get communityId
   const [actorProfile, setActorProfile] = useState<SimpleProfile | null>(null)
   const [authorProfile, setAuthorProfile] = useState<SimpleProfile | null>(null)
+  const [targetProfile, setTargetProfile] = useState<SimpleProfile | null>(null) // for MEMBERSHIP
 
   const handleRestore = async () => {
     if (!community?.id) {
@@ -34,8 +35,9 @@ export default function ResolvedItemCard({ item, updateResolvedState }: Resolved
     try {
       await restoreResolvedTarget({
         communityId: community.id, // Use communityId from context
-        targetType: item.target.type as 'POST' | 'COMMENT',
-        targetId: item.target.id,
+        // pass through the target type; backend will validate (MEMBERSHIP may or may not support restore)
+        targetType: item.target.type as any,
+        targetId: item.target.id ?? item.target.userId ?? '',
         reason: null, // Optional reason can be added here
       })
       toast.success('Item restored successfully.')
@@ -49,16 +51,34 @@ export default function ResolvedItemCard({ item, updateResolvedState }: Resolved
   useEffect(() => {
     const fetchProfiles = async () => {
       try {
-        const profiles = await userService.getSimpleProfiles([item.actorId, item.target.authorId])
+        // collect ids to fetch: actor, target.authorId (for comments), target.userId (for membership)
+        const idsToFetch: (string | undefined)[] = [
+          item.actorId,
+          item.target.authorId,
+          item.target.userId,
+        ]
+        const ids = Array.from(new Set(idsToFetch.filter(Boolean) as string[]))
+        if (ids.length === 0) return
+
+        const profiles = await userService.getSimpleProfiles(ids)
         setActorProfile(profiles.find((profile) => profile.id === item.actorId) || null)
         setAuthorProfile(profiles.find((profile) => profile.id === item.target.authorId) || null)
+        setTargetProfile(profiles.find((profile) => profile.id === item.target.userId) || null)
       } catch (error) {
         console.error('Failed to fetch profiles:', error)
       }
     }
 
     fetchProfiles()
-  }, [item.actorId, item.target.authorId])
+  }, [item.actorId, item.target.authorId, item.target.userId])
+
+  // helper for type badge classes
+  const typeBadgeClass = () => {
+    if (item.target.type === 'POST') return 'bg-blue-200 text-blue-800'
+    if (item.target.type === 'COMMENT') return 'bg-green-200 text-green-800'
+    if (item.target.type === 'MEMBERSHIP') return 'bg-yellow-200 text-yellow-800'
+    return 'bg-gray-200 text-gray-800'
+  }
 
   return (
     <div className='border rounded-lg p-4 shadow-sm bg-muted mb-4 relative'>
@@ -80,13 +100,7 @@ export default function ResolvedItemCard({ item, updateResolvedState }: Resolved
 
       {/* Type and Action */}
       <div className='flex items-center gap-2'>
-        <span
-          className={`text-xs font-medium px-2 py-1 rounded ${
-            item.target.type === 'POST'
-              ? 'bg-blue-200 text-blue-800'
-              : 'bg-green-200 text-green-800'
-          }`}
-        >
+        <span className={`text-xs font-medium px-2 py-1 rounded ${typeBadgeClass()}`}>
           {item.target.type}
         </span>
         <span className='text-xs font-medium bg-gray-200 px-2 py-1 rounded'>{item.action}</span>
@@ -115,6 +129,7 @@ export default function ResolvedItemCard({ item, updateResolvedState }: Resolved
         {item.target.type === 'POST' && (
           <p className='text-lg font-bold'>{item.target.title || 'No title available'}</p>
         )}
+
         {item.target.type === 'COMMENT' && (
           <>
             <div className='flex items-center gap-2 mt-2'>
@@ -134,6 +149,37 @@ export default function ResolvedItemCard({ item, updateResolvedState }: Resolved
               </p>
             </div>
             <p className='text-sm text-gray-500'>{item.target.content || 'No content available'}</p>
+          </>
+        )}
+
+        {item.target.type === 'MEMBERSHIP' && (
+          <>
+            <div className='flex items-center gap-2 mt-2'>
+              <Avatar className='w-8 h-8'>
+                <AvatarImage
+                  src={targetProfile?.avatarUrl || ''}
+                  alt={targetProfile?.username || 'Unknown'}
+                />
+                <AvatarFallback>
+                  {targetProfile?.username?.charAt(0).toUpperCase() || '?'}
+                </AvatarFallback>
+              </Avatar>
+              <div>
+                <p className='text-sm'>
+                  <span className='font-medium'>
+                    u/{targetProfile?.username || item.target.userId || 'Unknown'}
+                  </span>
+                </p>
+                <p className='text-xs text-muted-foreground'>
+                  User ID: {item.target.userId ?? '—'}
+                </p>
+              </div>
+            </div>
+
+            {/* show a short summary about the membership action if available */}
+            {item.target.summary && (
+              <p className='text-sm text-gray-500 mt-2'>{item.target.summary}</p>
+            )}
           </>
         )}
       </div>

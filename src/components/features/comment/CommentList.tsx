@@ -7,6 +7,9 @@ interface CommentListProps {
   postId: string
   onCommentAdded?: () => void
   onRepliesChanged?: () => void // NEW
+  contextMode?: boolean // NEW - when true, comments are ancestor -> ... -> target
+  highlightedCommentId?: string | null // NEW
+  allowNewComments?: boolean
 }
 
 export default function CommentList({
@@ -15,8 +18,32 @@ export default function CommentList({
   postId,
   onCommentAdded,
   onRepliesChanged,
+  contextMode = false,
+  highlightedCommentId = null,
+  allowNewComments = true,
 }: CommentListProps) {
   if (!comments.length) return <div className='text-muted-foreground'>No comments yet.</div>
+
+  if (contextMode) {
+    // render ancestor -> ... -> target with increasing indentation
+    return (
+      <div>
+        {comments.map((comment, idx) => (
+          <div key={comment.id} style={{ marginLeft: idx === 0 ? 0 : 20 * idx }}>
+            <Comment
+              communityId={communityId}
+              comment={comment}
+              postId={postId}
+              onCommentAdded={onCommentAdded}
+              onRepliesChanged={onRepliesChanged}
+              highlighted={highlightedCommentId === comment.id}
+              allowNewComments={allowNewComments}
+            />
+          </div>
+        ))}
+      </div>
+    )
+  }
 
   return (
     <div>
@@ -28,6 +55,7 @@ export default function CommentList({
             postId={postId}
             onCommentAdded={onCommentAdded}
             onRepliesChanged={onRepliesChanged}
+            allowNewComments={allowNewComments}
           />
         </div>
       ))}

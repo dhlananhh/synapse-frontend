@@ -2,14 +2,13 @@
 
 import { useSearchParams } from 'next/navigation'
 import CommunityHeader from '@/components/features/community/CommunityHeader'
-import CommunityPostFeed from '@/components/features/community/CommunityPostFeed'
+import FeedList from '@/components/features/feed/FeedList'
 import { useCommunity } from '@/context/CommunityContext'
 import { useMembership } from '@/context/MembershipContext'
-import { format } from 'date-fns'
 
 export default function CommunityPage() {
   const community = useCommunity()
-  const membershipContext = useMembership?.()
+  const membershipContext = useMembership()
   const membership = membershipContext?.membership ?? null
   const setMembership = membershipContext?.setMembership
   const searchParams = useSearchParams()
@@ -23,9 +22,13 @@ export default function CommunityPage() {
         membership={membership}
         onMembershipChange={setMembership}
       />
-      {/* <CreatePostWidget /> */}
       <div className='mt-6'>
-        <CommunityPostFeed />
+        <FeedList
+          showFlair={true}
+          type='hot'
+          communityId={community.id}
+          flairId={activeFlairId ?? undefined}
+        />
       </div>
       <span></span>
     </div>

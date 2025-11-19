@@ -7,6 +7,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import * as commentService from '@/modules/services/comment-service'
+import { toast } from 'sonner'
 
 const commentSchema = z.object({
   content: z.string().min(1, 'Comment cannot be empty').max(1000, 'Comment is too long'),
@@ -48,8 +49,40 @@ export default function CommentForm({
       reset()
       setIsExpanded(false)
       if (onSuccess) onSuccess()
-    } catch (err) {
-      setError('Failed to submit comment.')
+    } catch (err: unknown) {
+      let msg = 'Failed to submit comment.'
+      // If fetch returned a Response (non-2xx) try to read its JSON body.message
+      if (typeof window !== 'undefined' && err instanceof Response) {
+        try {
+          const body = await err
+            .clone()
+            .json()
+            .catch(() => null)
+          if (body && typeof body.message === 'string') {
+            msg = body.message
+          } else {
+            msg = err.statusText || `Request failed with status code ${err.status}`
+          }
+        } catch {
+          msg = `Request failed with status code ${err.status}`
+        }
+      } else if (err instanceof Error) {
+        const anyErr = err as any
+        // axios-like error shape
+        if (anyErr?.response?.data?.message) {
+          msg = String(anyErr.response.data.message)
+        } else if (anyErr?.message) {
+          msg = anyErr.message
+        }
+      } else if (typeof err === 'object' && err !== null) {
+        const anyErr = err as any
+        if (anyErr?.message) msg = String(anyErr.message)
+      } else {
+        msg = String(err)
+      }
+
+      setError(msg)
+      toast.error('Failed to submit comment', { description: msg })
     }
   }
 
@@ -63,8 +96,8 @@ export default function CommentForm({
       <Textarea
         {...register('content')}
         placeholder='Write your comment...'
-        rows={1} // Start with one row
-        className='resize-none rounded-md border border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none p-2' // Adjusted padding and rounded corners
+        rows={1}
+        className='resize-none rounded-md border border-gray-300 focus:ring-2 focus:ring-primary focus:outline-none p-2'
         disabled={isSubmitting}
         onFocus={() => setIsExpanded(true)}
       />

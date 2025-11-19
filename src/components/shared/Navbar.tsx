@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { PlusCircle, MessageCircleMore } from 'lucide-react'
+import { PlusCircle, MessageCircleMore, Bell, BrainCircuit } from 'lucide-react'
 
 import { useAuth } from '@/context/AuthContext'
 import { userService } from '@/modules/services/user-service'
@@ -12,10 +12,11 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { UserNav } from './UserNav'
-import { BrainCircuit } from 'lucide-react'
 import MobileNav from '@/components/shared/MobileNav'
 import SearchBar from '@/components/shared/SearchBar'
 import { UserProfile } from '@/types/services/user'
+
+import NotificationPopover from '@/components/shared/NotificationPopover'
 
 export function Navbar() {
   const { user, isLoading } = useAuth()
@@ -49,6 +50,15 @@ export function Navbar() {
               Create Post
             </Link>
           </Button>
+
+          <NotificationPopover
+            initialNotifications={[]}
+            onOpen={() => {
+              // place to fetch/subscribe to notifications (e.g. call socket or API)
+              console.log('Notifications opened')
+            }}
+          />
+
           <div
             className='cursor-pointer p-2 rounded hover:bg-muted/50 transition flex items-center gap-2'
             onClick={toggleChat}
@@ -56,7 +66,7 @@ export function Navbar() {
           >
             <MessageCircleMore className='w-8 h-8' />
           </div>
-          <UserNav user={profile} />
+          <UserNav user={profile} role={user.role} />
         </div>
       )
     }

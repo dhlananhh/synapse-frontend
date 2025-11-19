@@ -15,13 +15,15 @@ import LinkViewer from './LinkViewer'
 import { useRouter } from 'next/navigation'
 import ReportDialog from '@/components/features/report/ReportDialog'
 import { useAuth } from '@/context/AuthContext' // Import AuthContext
+import type { CommunityFlair } from '@/types/services/community'
 
 interface FeedItemProps {
   item: FeedItemType
   initialVote: 'UPVOTE' | 'DOWNVOTE' | null // User's current vote
+  flair?: CommunityFlair | null // optional flair info when in community context
 }
 
-export default function FeedItem({ item, initialVote }: FeedItemProps) {
+export default function FeedItem({ item, initialVote, flair }: FeedItemProps) {
   const router = useRouter()
   const { user } = useAuth() // Get the current user from AuthContext
   const [currentVote, setCurrentVote] = useState<'UPVOTE' | 'DOWNVOTE' | null>(initialVote)
@@ -95,7 +97,7 @@ export default function FeedItem({ item, initialVote }: FeedItemProps) {
 
       {/* Post Title */}
       <h3
-        className='font-bold text-2xl mb-3 cursor-pointer hover:underline'
+        className='font-bold text-2xl mb-2 cursor-pointer hover:underline'
         onClick={(e) => {
           e.stopPropagation()
           goToPost()
@@ -103,6 +105,22 @@ export default function FeedItem({ item, initialVote }: FeedItemProps) {
       >
         {item.title}
       </h3>
+
+      {/* Flair badge (only shown when flair prop provided) */}
+      {flair && (
+        <div className='mb-3'>
+          <span
+            className='inline-flex items-center text-xs font-medium px-2 py-1 rounded-full'
+            style={{
+              backgroundColor: flair.color ?? '#CBD5E1',
+              color: '#fff',
+            }}
+          >
+            {flair.name}
+          </span>
+        </div>
+      )}
+
       <p className='text-md text-gray-400 mb-4'>{item.contentPreview}</p>
 
       {/* Media Viewer */}

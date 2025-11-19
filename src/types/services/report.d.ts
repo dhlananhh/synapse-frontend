@@ -76,7 +76,8 @@ export interface FetchReportedCommentsResponse {
 export interface ResolvedItemTarget {
   id: string
   type: 'POST' | 'COMMENT' | 'MEMBERSHIP'
-  authorId: string
+  authorId: string | null
+  userId: string | null
   status: string
   createdAt: string
   postId: string | null

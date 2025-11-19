@@ -23,6 +23,9 @@ const FEED_SERVICE_URL =
 const REPORT_SERVICE_URL =
   process.env.NEXT_PUBLIC_REPORT_SERVICE_URL || 'http://localhost:4003/api/reports'
 
+const NOTIFICATION_SERVICE_URL =
+  process.env.NEXT_PUBLIC_NOTIFICATION_SERVER_URL || 'http://localhost:4001'
+
 const createApiClient = (baseURL: string) => {
   const apiClient = axios.create({
     baseURL,
@@ -43,6 +46,7 @@ const commentApiClient = createApiClient(COMMENT_SERVICE_URL)
 const messageApiClient = createApiClient(MESSAGE_SERVICE_URL)
 const feedApiClient = createApiClient(FEED_SERVICE_URL)
 const reportApiClient = createApiClient(REPORT_SERVICE_URL)
+const notificationApiClient = createApiClient(NOTIFICATION_SERVICE_URL)
 
 // --------------------
 // Interceptors
@@ -78,6 +82,7 @@ setupInterceptors(commentApiClient)
 setupInterceptors(messageApiClient)
 setupInterceptors(feedApiClient)
 setupInterceptors(reportApiClient)
+setupInterceptors(notificationApiClient)
 
 export {
   authApiClient,
@@ -89,4 +94,5 @@ export {
   messageApiClient,
   feedApiClient,
   reportApiClient,
+  notificationApiClient,
 }

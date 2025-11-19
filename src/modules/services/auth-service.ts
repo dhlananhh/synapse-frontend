@@ -11,8 +11,13 @@ import {
   VerifyResetCodeResponse,
   SetNewPasswordPayload,
   ChangePasswordPayload,
-  RefreshTokenResponse,
   GenericMessageResponse,
+  FetchAccountsParams,
+  FetchAccountsResponse,
+  FetchAccountLogsParams,
+  FetchAccountLogsResponse,
+  AccountDetails,
+  AccountSummary,
 } from '@/types/services/auth'
 import Cookies from 'js-cookie'
 import { AuthUser } from '@/types/services/auth'
@@ -85,6 +90,43 @@ export const authService = {
       .post(`${AUTH_SERVICE_URL}/set-new-password`, payload, {
         headers: { Authorization: `Bearer ${resetToken}` },
       })
+      .then((res) => res.data)
+  },
+
+  fetchAccounts: (params: FetchAccountsParams = {}): Promise<FetchAccountsResponse> => {
+    return authApiClient
+      .get(`${AUTH_SERVICE_URL}/admin/accounts`, { params })
+      .then((res) => res.data)
+  },
+
+  fetchAccountLogs: (
+    accountId: string,
+    params: FetchAccountLogsParams = {}
+  ): Promise<FetchAccountLogsResponse> => {
+    return authApiClient
+      .get(`${AUTH_SERVICE_URL}/admin/accounts/${accountId}/logs`, { params })
+      .then((res) => res.data)
+  },
+
+  updateAccountStatus: (
+    accountId: string,
+    payload: { status: 'ACTIVE' | 'SUSPENDED' }
+  ): Promise<AccountDetails> => {
+    return authApiClient
+      .patch(`${AUTH_SERVICE_URL}/admin/accounts/${accountId}`, payload)
+      .then((res) => res.data)
+  },
+
+  fetchAccountSummary: (): Promise<AccountSummary> => {
+    return authApiClient.get(`${AUTH_SERVICE_URL}/admin/accounts/summary`).then((res) => res.data)
+  },
+
+  fetchAccountSummariesOverTime: (params: {
+    startDate?: string
+    endDate?: string
+  }): Promise<AccountSummary[]> => {
+    return authApiClient
+      .get(`${AUTH_SERVICE_URL}/admin/accounts/summary-over-time`, { params })
       .then((res) => res.data)
   },
 }

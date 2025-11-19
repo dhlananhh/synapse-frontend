@@ -14,14 +14,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import Link from 'next/link'
-import { LogOut, User as UserIcon, List as ListIcon } from 'lucide-react'
+import { LogOut, User as UserIcon, List as ListIcon, LayoutDashboard } from 'lucide-react' // Import the dashboard icon
 import { UserProfile } from '@/types/services/user'
 
 interface UserNavProps {
   user: UserProfile
+  role: 'USER' | 'SYSTEM_ADMIN'
 }
 
-export function UserNav({ user }: UserNavProps) {
+export function UserNav({ user, role }: UserNavProps) {
   const { logout } = useAuth()
 
   return (
@@ -57,6 +58,15 @@ export function UserNav({ user }: UserNavProps) {
               <span>My Posts</span>
             </Link>
           </DropdownMenuItem>
+          {/* Conditionally render the Admin Dashboard option */}
+          {role === 'SYSTEM_ADMIN' && (
+            <DropdownMenuItem asChild>
+              <Link href={`/admin`}>
+                <LayoutDashboard className='mr-2 h-4 w-4' />
+                <span>Admin Dashboard</span>
+              </Link>
+            </DropdownMenuItem>
+          )}
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={logout}>

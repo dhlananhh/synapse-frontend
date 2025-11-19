@@ -91,3 +91,109 @@ export interface VerifyResetCodeResponse {
 export interface GenericMessageResponse {
   message: string
 }
+
+// =================================
+// Types for Fetching Accounts
+// =================================
+
+export interface AccountPaginationCursor {
+  createdAt: string
+  id: string
+}
+
+export interface AccountPagination {
+  hasMore: boolean
+  nextCursor: AccountPaginationCursor | null
+}
+
+export interface AccountDetails {
+  id: string
+  userId: string
+  username: string
+  email: string
+  isEmailVerified: boolean
+  role: 'USER' | 'SYSTEM_ADMIN'
+  status: 'ACTIVE' | 'PENDING' | 'SUSPENDED' | 'BANNED'
+  verifiedAt: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface FetchAccountsResponse {
+  accounts: AccountDetails[] // List of accounts
+  pagination: {
+    currentPage: number // Current page number
+    totalPages: number // Total number of pages
+    totalRecords: number // Total number of records
+    hasNextPage: boolean // Whether there is a next page
+    hasPreviousPage: boolean // Whether there is a previous page
+  }
+}
+
+export interface FetchAccountsParams {
+  q?: string
+  page?: number // Page number for pagination
+  limit?: number // Number of records per page
+}
+
+// =================================
+// Types for Fetching Account Logs
+// =================================
+
+export type AccountAction =
+  | 'ACCOUNT_CREATED'
+  | 'ACCOUNT_UPDATED'
+  | 'ACCOUNT_BANNED'
+  | 'ACCOUNT_SUSPENDED'
+  | 'ACCOUNT_ACTIVATED'
+  | 'PASSWORD_CHANGED'
+  | 'EMAIL_VERIFIED'
+
+export interface AccountLog {
+  id: string
+  accountId: string
+  action: AccountAction
+  performedBy: string
+  details: string
+  createdAt: string
+}
+
+export interface AccountLogPaginationCursor {
+  id: string
+  createdAt: string
+}
+
+export interface AccountLogPagination {
+  hasMore: boolean
+  nextCursor: AccountLogPaginationCursor | null
+}
+
+export interface FetchAccountLogsResponse {
+  logs: AccountLog[]
+  pagination: AccountLogPagination
+}
+
+export interface FetchAccountLogsParams {
+  cursorId?: string
+  cursorCreatedAt?: string
+  limit?: number
+}
+
+// =================================
+// Type for Account Summary
+// =================================
+
+export interface AccountSummary {
+  id: string
+  summaryDate: string // ISO date string representing the snapshot date
+  totalUsers: number // Accumulated total users up to the snapshot date
+  activeUsers: number // Accumulated active users up to the snapshot date
+  suspendedUsers: number // Accumulated suspended users up to the snapshot date
+  pendingUsers: number // Accumulated pending users up to the snapshot date
+  newUsers: number // New users created on the snapshot date
+  newActiveUsers: number // New active users on the snapshot date
+  newSuspendedUsers: number // New suspended users on the snapshot date
+  newPendingUsers: number // New pending users on the snapshot date
+  newBannedUsers: number // New banned users on the snapshot date
+  createdAt: string // ISO date string representing when this snapshot was created
+}
