@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react'
 
 export default function AuthLayout({
   children,
@@ -6,8 +6,6 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="flex min-h-screen items-center justify-center p-4">
-      { children }
-    </main>
-  );
+    <main className='min-h-screen flex items-center justify-center bg-secondary'>{children}</main>
+  )
 }

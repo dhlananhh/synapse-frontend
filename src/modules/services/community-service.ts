@@ -1,5 +1,5 @@
 import { communityApiClient } from '@/libs/apiClient'
-import type { MyCommunity } from '@/types/services/community'
+import type { MyCommunity, SystemStats } from '@/types/services/community'
 import {
   Community,
   CommunityFlair,
@@ -12,12 +12,13 @@ import {
   CreateCommunityRulePayload,
   UpdateCommunityRulePayload,
   SearchCommunityResult,
+  CommunityStats,
 } from '@/types/services/community'
 
 export const communityService = {
   // Search communities with cursor-based paging
   searchCommunities: (
-    q: string,
+    q?: string,
     cursor?: string,
     limit = 20,
     sort: 'newest' | 'oldest' | 'members' | 'posts' | 'name' = 'newest'
@@ -30,11 +31,34 @@ export const communityService = {
       .then((res) => res.data)
   },
 
-  // Get communities list
-  getCommunities: (): Promise<any> => {
-    return communityApiClient
-      .get(`/`)
-      .then((res) => res.data);
+  // Search communities with cursor-based paging FOR ADMIN
+  searchCommunitiesAdmin: (
+    q?: string,
+    cursor?: string,
+    limit = 20,
+    sort: 'newest' | 'oldest' | 'members' | 'posts' | 'name' = 'newest',
+    statuses?: ('ACTIVE' | 'SUSPENDED' | 'DELETED' | 'ALL')[]
+  ): Promise<{
+    communities: SearchCommunityResult[]
+    pagination: { hasMore: boolean; nextCursor: string | null }
+  }> => {
+    const allowed = new Set(['ACTIVE', 'SUSPENDED', 'DELETED', 'ALL'])
+    let statusesCsv: string | undefined
+
+    if (Array.isArray(statuses) && statuses.length > 0) {
+      const filtered = statuses.filter((s) => allowed.has(s))
+      // if 'ALL' is present, prefer 'ALL' as the single value
+      if (filtered.includes('ALL')) {
+        statusesCsv = 'ALL'
+      } else if (filtered.length > 0) {
+        statusesCsv = filtered.join(',')
+      }
+    }
+
+    const params: Record<string, any> = { q, cursor, limit, sort }
+    if (statusesCsv) params.statuses = statusesCsv
+
+    return communityApiClient.get(`/admin`, { params }).then((res) => res.data)
   },
 
   // Fetch community details by name
@@ -83,9 +107,23 @@ export const communityService = {
       .then((res) => res.data)
   },
 
-  //   // Delete a community
-  //   deleteCommunity: (id: string): Promise<void> =>
-  //     communityApiClient.delete(`/${id}`).then((res) => res.data),
+  /**
+   * Suspend a community (admin)
+   * POST /{communityId}/suspend
+   */
+  suspendCommunity: (communityId: string): Promise<any> =>
+    communityApiClient.post(`/${communityId}/suspend`).then((res) => res.data),
+
+  /**
+   * Reactivate a suspended community (admin)
+   * POST /{communityId}/reactivate
+   */
+  reactivateCommunity: (communityId: string): Promise<any> =>
+    communityApiClient.post(`/${communityId}/reactivate`).then((res) => res.data),
+
+  // Delete a community
+  deleteCommunity: (id: string): Promise<void> =>
+    communityApiClient.delete(`/${id}`).then((res) => res.data),
 
   // Join community
   joinCommunity: (communityId: string): Promise<any> =>
@@ -190,7 +228,7 @@ export const communityService = {
    * Accepts: statuses?: ('ACTIVE' | 'LEFT')[]
    * Returns: MyCommunity[]
    */
-  getMyCommunities: (params?: { statuses?: ('ACTIVE' | 'LEFT')[] }): Promise<any[]> =>
+  getMyCommunities: (params?: { statuses?: ('ACTIVE' | 'LEFT')[] }): Promise<MyCommunity[]> =>
     communityApiClient
       .get('/me', {
         params:
@@ -200,6 +238,23 @@ export const communityService = {
       })
       .then((res) => {
         // The response is expected to be an array of MyCommunity objects
+        return Array.isArray(res.data.items) ? res.data.items : []
+      }),
+
+  // Fetch communities for a specific user (GET /user/:userId)
+  // Accepts optional statuses?: ('PENDING' | 'ACTIVE' | 'BANNED')[]
+  getUserCommunities: (
+    userId: string,
+    params?: { statuses?: ('PENDING' | 'ACTIVE' | 'BANNED')[] }
+  ): Promise<MyCommunity[]> =>
+    communityApiClient
+      .get(`/user/${userId}`, {
+        params:
+          params?.statuses && params.statuses.length > 0
+            ? { statuses: params.statuses.join(',') }
+            : undefined,
+      })
+      .then((res) => {
         return Array.isArray(res.data.items) ? res.data.items : []
       }),
 
@@ -309,4 +364,35 @@ export const communityService = {
     pagination?: { hasMore: boolean; nextCursor: string | null }
   }> =>
     communityApiClient.get(`/${communityId}/members/banned`, { params }).then((res) => res.data),
+
+  /**
+   * Fetch user's recently visited communities.
+   * GET /recent
+   * @param signal Optional AbortSignal for request cancellation
+   * @returns A list of recently visited communities
+   */
+  fetchRecentCommunities: async (signal?: AbortSignal): Promise<SearchCommunityResult[]> => {
+    const res = await communityApiClient.get<{ communities: SearchCommunityResult[] }>('/recent', {
+      signal,
+    })
+    return res.data.communities
+  },
+
+  /**
+   * Fetch system-wide community stats.
+   * GET /stats/system
+   * @returns A Promise resolving to the system-wide stats data.
+   */
+  fetchSystemStats: (): Promise<SystemStats> => {
+    return communityApiClient.get('/stats/system').then((res) => res.data)
+  },
+
+  /**
+   * Fetch stats for a specific community.
+   * GET /stats/{communityId}
+   * @param communityId community identifier
+   * @returns CommunityStats
+   */
+  getCommunityStats: (communityId: string): Promise<CommunityStats> =>
+    communityApiClient.get(`/stats/${communityId}`).then((res) => res.data),
 }

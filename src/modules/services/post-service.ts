@@ -172,6 +172,38 @@ export async function unvotePost(postId: string, signal?: AbortSignal): Promise<
   return res.data
 }
 
+export interface UserVote {
+  postId: string
+  vote: 'UPVOTE' | 'DOWNVOTE' | null
+}
+
+/**
+ * Fetch user's current vote for a post or multiple posts.
+ * GET /api/posts/votes
+ * @param postIds A list of post IDs (array of strings)
+ * @param signal Optional AbortSignal for request cancellation
+ * @returns A list of votes for the specified posts
+ */
+export async function fetchUserVotes(postIds: string[], signal?: AbortSignal): Promise<UserVote[]> {
+  const csvPostIds = postIds.join(',') // Convert the list of post IDs into a CSV string
+  const res = await postApiClient.get<{ votes: UserVote[] }>('/votes', {
+    params: { postIds: csvPostIds },
+    signal,
+  })
+  return res.data.votes
+}
+
+/**
+ * Fetch user's recently viewed posts.
+ * GET /api/posts/recent
+ * @param signal Optional AbortSignal for request cancellation
+ * @returns A list of recently viewed posts
+ */
+export async function fetchRecentPosts(signal?: AbortSignal): Promise<PostDetails[]> {
+  const res = await postApiClient.get<{ posts: PostDetails[] }>('/recent', { signal })
+  return res.data.posts
+}
+
 // Add to your export:
 export const postService = {
   createPost,
@@ -186,4 +218,6 @@ export const postService = {
   deletePost,
   votePost,
   unvotePost,
+  fetchUserVotes,
+  fetchRecentPosts,
 }

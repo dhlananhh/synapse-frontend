@@ -6,10 +6,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export async function generateMetadata(
-  props: Props,
-  parent: ResolvingMetadata
-): Promise<Metadata> {
+export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const params = props.params
   const userId = decodeURIComponent(params.userId)
 
@@ -20,9 +17,5 @@ export async function generateMetadata(
 }
 
 export default function Layout({ children, params }: Props) {
-  return (
-    <div className='container mx-auto max-w-5xl px-4 py-6 sm:px-6 lg:px-8'>
-      { children }
-    </div>
-  )
+  return <div className='container max-w-4xl px-4 py-16 ml-68'>{children}</div>
 }

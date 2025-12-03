@@ -74,10 +74,16 @@ export interface PostDetails {
   isSpoiler: boolean
   title: string
   score: number
+  commentCount: number
   currentUserVote: 'UPVOTE' | 'DOWNVOTE' | null
   contentJson?: any
   contentHtml: string
-  links: string[]
+  links: {
+    url: string
+    title: string
+    description: string
+    thumbnail: string | null
+  }[] // Links with metadata
   currentVersionId: string
   createdAt: string
   numOfVersions: number

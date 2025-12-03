@@ -1,28 +1,20 @@
-"use client";
+'use client'
 
-import React from "react";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
+import React from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { format } from "date-fns";
+import { useForm } from 'react-hook-form'
+import * as z from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { toast } from 'sonner'
+import { format } from 'date-fns'
 
-import { authService } from "@/modules/services/auth-service";
-import {
-  RegisterFormSchema,
-  TRegisterFormSchema,
-} from "@/libs/validators/auth-validator";
+import { authService } from '@/modules/services/auth-service'
+import { RegisterFormSchema, TRegisterFormSchema } from '@/libs/validators/auth-validator'
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Form,
   FormControl,
@@ -30,292 +22,233 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select";
-import { Calendar } from "@/components/ui/calendar";
+} from '@/components/ui/select'
+import { Calendar } from '@/components/ui/calendar'
 
-import {
-  BrainCircuit,
-  CalendarIcon,
-  Loader2,
-} from "lucide-react";
-import { cn } from "@/libs/utils";
+import { BrainCircuit, CalendarIcon, Loader2 } from 'lucide-react'
+import { cn } from '@/libs/utils'
 
 export default function RegisterForm() {
-  const router = useRouter();
+  const router = useRouter()
 
   const form = useForm<TRegisterFormSchema>({
     resolver: zodResolver(RegisterFormSchema),
     defaultValues: {
-      firstName: "",
-      lastName: "",
-      username: "",
-      email: "",
-      password: "",
+      firstName: '',
+      lastName: '',
+      username: '',
+      email: '',
+      password: '',
     },
-  });
+    mode: 'onChange', // Trigger validation on change
+  })
 
-  const { isSubmitting } = form.formState;
+  const { isSubmitting, isValid, errors } = form.formState // Add `errors` to track validation errors
 
   async function onSubmit(values: TRegisterFormSchema) {
     try {
-      toast.info("Creating your account...");
-      await authService.register(values);
+      toast.info('Creating your account...')
+      await authService.register(values)
 
-      toast.success("Account created successfully!", {
-        description:
-          "We've sent a verification code to your email. Please check and verify.",
-      });
+      toast.success('Account created successfully!', {
+        description: "We've sent a verification code to your email. Please check and verify.",
+      })
 
-      router.push(`/verify-email?email=${values.email}`);
+      router.push(`/verify-email?email=${values.email}`)
     } catch (error: any) {
-      console.error("Registration failed:", error);
-      toast.error("Registration failed", {
+      console.error('Registration failed:', error)
+      toast.error('Registration failed', {
         description:
-          error.response?.data?.message ||
-          "An unexpected error occurred. Please try again.",
-      });
+          error.response?.data?.message || 'An unexpected error occurred. Please try again.',
+      })
     }
   }
 
   return (
-    <Card className="mx-auto w-full max-w-lg shadow-xl">
-      <CardHeader className="items-center text-center">
-        <Link
-          href="/"
-          className="mb-2 flex flex-col items-center gap-2"
-        >
-          <BrainCircuit className="text-primary h-10 w-10" />
-          <CardTitle className="text-2xl">
-            Synapse
-          </CardTitle>
+    <Card className='mx-auto max-w-lg w-full'>
+      <CardHeader className='items-center text-center'>
+        <Link href='/' className='flex flex-col items-center gap-2 mb-2'>
+          <BrainCircuit className='h-10 w-10 text-primary' />
+          <CardTitle className='text-2xl'>Synapse</CardTitle>
         </Link>
-        <CardTitle className="mt-5 text-2xl uppercase">
-          Register
-        </CardTitle>
-        <CardDescription>
-          Create your account to start connecting
-        </CardDescription>
+        <CardTitle className='mt-5 text-2xl uppercase'>Register</CardTitle>
+        <CardDescription>Create your account to start connecting</CardDescription>
       </CardHeader>
 
       <CardContent>
-        <Form { ...form }>
-          <form
-            onSubmit={ form.handleSubmit(onSubmit) }
-            className="space-y-6"
-          >
-            <div className="grid grid-cols-2 gap-4">
-              {/* First Name */ }
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+            {/* First Name */}
+            <div className='grid grid-cols-2 gap-4'>
               <FormField
-                control={ form.control }
-                name="firstName"
-                render={ ({ field }) => (
+                control={form.control}
+                name='firstName'
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>First Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Enter your first name"
-                        { ...field }
-                      />
+                      <Input placeholder='Enter your first name' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                ) }
+                )}
               />
 
-              {/* Last Name */ }
+              {/* Last Name */}
               <FormField
-                control={ form.control }
-                name="lastName"
-                render={ ({ field }) => (
+                control={form.control}
+                name='lastName'
+                render={({ field }) => (
                   <FormItem>
                     <FormLabel>Last Name</FormLabel>
                     <FormControl>
-                      <Input
-                        placeholder="Enter your last name"
-                        { ...field }
-                      />
+                      <Input placeholder='Enter your last name' {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                ) }
+                )}
               />
             </div>
 
-            {/* Username */ }
+            {/* Username */}
             <FormField
-              control={ form.control }
-              name="username"
-              render={ ({ field }) => (
+              control={form.control}
+              name='username'
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Username</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter your username"
-                      { ...field }
-                    />
+                    <Input placeholder='Enter your username' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              ) }
+              )}
             />
 
-            {/* Email */ }
+            {/* Email */}
             <FormField
-              control={ form.control }
-              name="email"
-              render={ ({ field }) => (
+              control={form.control}
+              name='email'
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input
-                      placeholder="Enter your email"
-                      { ...field }
-                    />
+                    <Input placeholder='Enter your email' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              ) }
+              )}
             />
 
-            {/* Password */ }
+            {/* Password */}
             <FormField
-              control={ form.control }
-              name="password"
-              render={ ({ field }) => (
+              control={form.control}
+              name='password'
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input
-                      type="password"
-                      placeholder="Enter your password"
-                      { ...field }
-                    />
+                    <Input type='password' placeholder='Enter your password' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              ) }
+              )}
             />
 
-            {/* Date of Birth */ }
+            {/* Date of Birth */}
             <FormField
-              control={ form.control }
-              name="birthday"
-              render={ ({ field }) => (
-                <FormItem className="flex flex-col">
+              control={form.control}
+              name='birthday'
+              render={({ field }) => (
+                <FormItem className='flex flex-col'>
                   <FormLabel>Date of Birth</FormLabel>
-
                   <Popover>
                     <PopoverTrigger asChild>
                       <FormControl>
                         <Button
-                          variant={ "outline" }
-                          className={ cn(
-                            "w-full pl-3 text-left font-normal",
-                            !field.value &&
-                            "text-muted-foreground"
-                          ) }
+                          variant='outline'
+                          className={cn(
+                            'w-full pl-3 text-left font-normal',
+                            !field.value && 'text-muted-foreground'
+                          )}
                         >
-                          { field.value ? (
-                            format(field.value, "PPP")
+                          {field.value ? (
+                            format(field.value, 'PPP')
                           ) : (
-                            <span>
-                              Select your date of birth
-                            </span>
-                          ) }
-                          <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            <span>Select your date of birth</span>
+                          )}
+                          <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
-
                     <PopoverContent
-                      className="max-h-full min-h-full max-w-full min-w-full p-0"
-                      align="start"
+                      className='max-w-full max-h-full min-w-full min-h-full p-0'
+                      align='start'
                     >
                       <Calendar
-                        mode="single"
-                        captionLayout="dropdown"
-                        selected={ field.value }
-                        onSelect={ field.onChange }
-                        disabled={ (date) =>
-                          date > new Date()
-                        }
+                        mode='single'
+                        captionLayout='dropdown'
+                        selected={field.value}
+                        onSelect={field.onChange}
+                        disabled={(date) => date > new Date()}
                         autoFocus
-                        className="max-h-full min-h-full max-w-full min-w-full"
+                        className='max-w-full max-h-full min-w-full min-h-full'
                       />
                     </PopoverContent>
                   </Popover>
                   <FormMessage />
                 </FormItem>
-              ) }
+              )}
             />
 
-            {/* Gender */ }
+            {/* Gender */}
             <FormField
-              control={ form.control }
-              name="gender"
-              render={ ({ field }) => (
+              control={form.control}
+              name='gender'
+              render={({ field }) => (
                 <FormItem>
                   <FormLabel>Gender</FormLabel>
-                  <Select
-                    onValueChange={ field.onChange }
-                    defaultValue={ field.value }
-                  >
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select your gender" />
+                        <SelectValue placeholder='Select your gender' />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="MALE">
-                        Male
-                      </SelectItem>
-                      <SelectItem value="FEMALE">
-                        Female
-                      </SelectItem>
+                      <SelectItem value='MALE'>Male</SelectItem>
+                      <SelectItem value='FEMALE'>Female</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
-              ) }
+              )}
             />
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={ isSubmitting }
-            >
-              { isSubmitting ? (
-                <Loader2 className="animate-spin" />
-              ) : (
-                "Sign Up"
-              ) }
+            <Button type='submit' className='w-full' disabled={!isValid || isSubmitting}>
+              {isSubmitting ? <Loader2 className='animate-spin' /> : 'Sign Up'}
             </Button>
           </form>
         </Form>
 
-        <div className="mt-4 text-center text-sm">
-          Already have an account?{ " " }
+        <div className='mt-4 text-center text-sm'>
+          Already have an account?{' '}
           <Link
-            href="/login"
-            className="text-muted-foreground hover:text-primary ml-auto inline-block text-sm hover:underline"
+            href='/login'
+            className='ml-auto inline-block text-sm text-muted-foreground hover:text-primary hover:underline'
           >
             Log in
           </Link>
         </div>
       </CardContent>
     </Card>
-  );
+  )
 }

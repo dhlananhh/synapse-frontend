@@ -1,196 +1,141 @@
-"use client";
+'use client'
 
-
-import React, {
-  useEffect,
-  useState
-} from "react";
-import Link from "next/link";
-import { toast } from "sonner";
-import { useCommunity } from "@/context/CommunityContext";
-import { useMembership } from "@/context/MembershipContext";
-import { CommunityFlair } from "@/types/services/community";
-import { communityService } from "@/modules/services/community-service";
-import { ManageFlairsDialog } from "@/components/features/community/manage/flairs/ManageFlairsDialog";
-import CommunityFlairsWidgetSkeleton from "@/components/features/community/widgets/CommunityFlairsWidgetSkeleton";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent
-} from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Button } from "@/components/ui/button";
+import React from 'react'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
+import type { Community } from '@/types/services/community'
 import {
   Accordion,
-  AccordionContent,
   AccordionItem,
-  AccordionTrigger
-} from "@/components/ui/accordion";
-import {
-  Tag,
-  Settings
-} from "lucide-react";
-
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion'
+import { Tag, Settings } from 'lucide-react'
+import { useMembership } from '@/context/MembershipContext'
+import { Button } from '@/components/ui/button'
+import { useCommunity, useCommunityFlairs, useSetCommunityFlairs } from '@/context/CommunityContext'
+import { ManageCommunityFlairsDialog } from '@/components/features/community/manage/dialogs/ManageCommunityFlairsDialog'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 
 export default function CommunityFlairsWidget() {
-  const community = useCommunity();
-  const membershipContext = useMembership();
+  const community = useCommunity()
+  const communityName = community?.name ?? ''
+  const membershipContext = useMembership()
+  const membership = membershipContext?.membership ?? null
+  const isOwner = membership?.role === 'OWNER'
+  const isModerator = membership?.role === 'MODERATOR'
+  const canEditFlairs = isOwner || isModerator
 
-  const [ flairs, setFlairs ] = useState<CommunityFlair[]>([]);
-  const [ isLoading, setIsLoading ] = useState(true);
-  const [ error, setError ] = useState<string | null>(null);
-  const [ isManageOpen, setIsManageOpen ] = useState(false);
+  // Use flairs from context
+  const flairs = useCommunityFlairs()
+  const setFlairs = useSetCommunityFlairs()
 
-  useEffect(() => {
-    if (!community?.id) {
-      setIsLoading(false);
-      return;
-    };
+  // No need to fetch flairs here, context already provides them
+  const loading = !community // loading state can be improved if needed
+  const error = null
 
-    setIsLoading(true);
-    setError(null);
+  // Navigation for selecting a flair -> updates ?flair=... which the page reads to filter posts
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  const activeFlairId = searchParams?.get('flair') ?? null
 
-    communityService.getFlairs(community.id)
-      .then(response => {
-        setFlairs(response);
-      })
-      .catch(() => {
-        setError("Failed to load flairs.");
-        toast.error("An error occurred while fetching flairs.");
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-
-  }, [ community?.id ]);
-
-
-  if (!community) {
-    return <CommunityFlairsWidgetSkeleton />;
+  const handleFlairClick = (flairId: string) => {
+    const params = new URLSearchParams(searchParams?.toString() ?? '')
+    // toggle: if clicking currently active flair, remove filter
+    if (params.get('flair') === flairId) {
+      params.delete('flair')
+    } else {
+      params.set('flair', flairId)
+    }
+    const query = params.toString()
+    const dest = query ? `${pathname}?${query}` : pathname
+    router.push(dest)
   }
 
-  const membership = membershipContext?.membership ?? null;
-  const canManageFlairs =
-    membership?.role === "OWNER"
-    || membership?.role === "MODERATOR";
-
   return (
-    <>
-      <Card
-        className="animate-fade-in-down"
-        style={ { animationDelay: '300ms' } }
-      >
-        <Accordion
-          type="single"
-          collapsible
-          defaultValue="item-1"
-        >
-          <AccordionItem
-            value="item-1"
-            className="border-b-0"
-          >
-            <CardHeader className="p-3">
-              <div className="flex items-center justify-between w-full">
-                <div className="flex items-center gap-2">
-                  <Tag className="w-5 h-5 text-muted-foreground" />
-                  <CardTitle className="text-base font-bold">
-                    Flairs ({ isLoading ? "..." : flairs.length })
-                  </CardTitle>
-                </div>
-
-                <div className="flex items-center">
-                  {
-                    canManageFlairs && (
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        aria-label="Manage Flairs"
-                        onClick={ () => setIsManageOpen(true) }
-                      >
-                        <Settings className="w-4 h-4" />
-                      </Button>
-                    )
-                  }
-                  <AccordionTrigger
-                    className="p-1 text-muted-foreground hover:text-foreground [&[data-state=open]>svg]:rotate-180"
-                  />
-                </div>
+    <Card className='p-2'>
+      <Accordion type='single' collapsible>
+        <AccordionItem value='flairs'>
+          <CardHeader className='p-2'>
+            <div className='flex items-center justify-between w-full gap-2'>
+              <div className='flex items-center gap-2'>
+                <Tag className='w-5 h-5' />-{' '}
+                <CardTitle className='m-0 p-0'>{`Flairs (${flairs.length})`}</CardTitle>
               </div>
-            </CardHeader>
 
-            <AccordionContent>
-              <CardContent className="p-3 pt-0">
-                {
-                  isLoading ? (
-                    <div className="space-y-2">
-                      <Skeleton className="h-5 w-1/2" />
-                      <Skeleton className="h-5 w-1/3" />
-                    </div>
-                  ) : error ? (
-                    <p className="text-sm text-destructive">
-                      { error }
-                    </p>
-                  ) : flairs.length === 0 ? (
-                    <p className="text-sm text-muted-foreground text-center py-2">
-                      This community has no flairs.
-                    </p>
-                  ) : (
-                    <ul className="space-y-2">
-                      {
-                        flairs
-                          .slice(0, 7)
-                          .map((flair) => (
-                            <li
-                              key={ flair.id }
-                              className="flex items-center justify-between p-1 rounded-md border hover:bg-muted/50 transition-all duration-200 hover:ml-2"
-                            >
-                              <Link
-                                href={ `/c/${community.name}?flair=${flair.id}` }
-                                className="flex items-center gap-2 p-1.5 rounded-md transition-colors hover:bg-accent"
-                              >
-                                <span
-                                  aria-hidden
-                                  className="block h-3 w-3 rounded-full flex-shrink-0"
-                                  style={ { backgroundColor: flair.color ?? "#94A3B8" } }
-                                />
-                                <span className="text-sm font-medium">
-                                  { flair.name }
-                                </span>
-                              </Link>
-                            </li>
-                          ))
-                      }
+              <div className='flex items-center gap-3'>
+                {/* {canEditFlairs && (
+                  <ManageCommunityFlairsDialog
+                    community={community as Community}
+                    flairs={flairs}
+                    setFlairs={setFlairs}
+                    trigger={
+                      <Button variant='ghost' size='icon' aria-label='Manage flairs'>
+                        <Settings className='w-5 h-5' />
+                      </Button>
+                    }
+                  />
+                )} */}
+                <AccordionTrigger className='px-2 py-0 rounded-md text-sm'>
+                  {/* Trigger arrow/icon styling depends on your Accordion implementation */}
+                </AccordionTrigger>
+              </div>
+            </div>
+          </CardHeader>
 
-                      {
-                        flairs.length > 7 && (
-                          <p className="text-xs text-muted-foreground mt-2 pl-1.5">
-                            + { flairs.length - 7 } more
-                          </p>
-                        )
-                      }
-                    </ul>
-                  )
-                }
-              </CardContent>
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </Card>
-
-
-      {
-        canManageFlairs && (
-          <ManageFlairsDialog
-            community={ community }
-            flairs={ flairs }
-            setFlairs={ setFlairs }
-            isOpen={ isManageOpen }
-            onOpenChange={ setIsManageOpen }
-          />
-        )
-      }
-    </>
-  );
+          <AccordionContent>
+            <CardContent>
+              {loading ? (
+                <div className='space-y-3'>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-6 w-6 rounded-full' />
+                    <Skeleton className='h-4 w-1/2' />
+                  </div>
+                  <div className='flex items-center gap-3'>
+                    <Skeleton className='h-6 w-6 rounded-full' />
+                    <Skeleton className='h-4 w-1/3' />
+                  </div>
+                </div>
+              ) : error ? (
+                <p className='text-sm text-destructive'>{error}</p>
+              ) : flairs.length === 0 ? (
+                <p className='text-sm text-muted-foreground'>
+                  This community currently has no flairs.
+                </p>
+              ) : (
+                <ul className='space-y-3'>
+                  {flairs.map((flair) => (
+                    <li
+                      key={flair.id}
+                      className={`flex items-start gap-3 cursor-pointer rounded-md p-2 hover:bg-muted ${
+                        activeFlairId === flair.id ? 'bg-muted/60 ring-1 ring-primary' : ''
+                      }`}
+                      onClick={() => handleFlairClick(flair.id)}
+                      role='button'
+                      aria-pressed={activeFlairId === flair.id}
+                    >
+                      <span
+                        aria-hidden
+                        style={{ backgroundColor: flair.color ?? '#CBD5E1' }}
+                        className='inline-block h-6 w-6 rounded-full ring-1 ring-border'
+                      />
+                      <div className='flex-1'>
+                        <div className='flex items-center justify-between gap-2'>
+                          <span className='font-medium'>{flair.name}</span>
+                        </div>
+                        {flair.description && (
+                          <p className='text-sm text-muted-foreground mt-1'>{flair.description}</p>
+                        )}
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </CardContent>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </Card>
+  )
 }
