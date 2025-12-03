@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { AuthUser, LoginPayload, RegisterPayload } from '@/types/services/auth'
 import { authService } from '@/modules/services/auth-service'
+import { useRouter } from 'next/navigation'
 
 interface AuthContextType {
   user: AuthUser | null
@@ -15,8 +16,9 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isLoading, setIsLoading] = useState(true)
-  const [user, setUser] = useState<AuthUser | null>(null)
+  const [ isLoading, setIsLoading ] = useState(true)
+  const [ user, setUser ] = useState<AuthUser | null>(null)
+  const router = useRouter()
 
   // On mount -> check session
   useEffect(() => {
@@ -25,9 +27,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         const res = await authService.refreshToken() // refresh token via HTTP-only cookie
         setUser(res.user)
       } catch (error: any) {
-        console.log('there something wrong wtf', error)
         if (error.response?.status === 401 || error.response?.status === 400) {
-          setUser(null)
+          // Use functional update to prevent race condition.
+          // This ensures that if a login happens while this check is running,
+          // we don't accidentally nullify the user state.
+          setUser((currentUser) => (currentUser ? currentUser : null))
         } else {
           console.error('Session check failed:', error)
         }
@@ -44,9 +48,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const logout = async () => {
-    await authService.logout() // Backend clears refresh cookie
-    setUser(null)
-    window.location.href = '/login' // Redirect to login page
+    try {
+      await authService.logout() // Backend clears refresh cookie
+    } catch (error) {
+      console.error('Logout request failed:', error)
+    } finally {
+      setUser(null)
+      router.push('/login') // Use soft navigation instead of hard refresh
+    }
   }
 
   const register = async (payload: RegisterPayload) => {
@@ -61,7 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     register,
   }
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
+  return <AuthContext.Provider value={ value }>{ children }</AuthContext.Provider>
 }
 
 export const useAuth = () => {
