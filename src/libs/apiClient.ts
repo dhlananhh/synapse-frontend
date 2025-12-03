@@ -3,28 +3,16 @@ import { authService } from '@/modules/services/auth-service'
 import { report } from 'process'
 
 // Base URLs
-const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://192.168.1.5:4000/api/auth'
-const USER_SERVICE_URL =
-  process.env.NEXT_PUBLIC_USER_SERVICE_URL || 'http://192.168.1.5:4002/api/users'
-const COMMUNITY_SERVICE_URL = process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL || 'HTTP://NOTHING'
-const UPLOAD_SERVICE_URL =
-  process.env.NEXT_PUBLIC_UPLOAD_SERVICE_URL || 'http://192.168.1.5:4003/api/upload'
-const POST_SERVICE_URL =
-  process.env.NEXT_PUBLIC_POST_SERVICE_URL || 'http://localhost:4003/api/posts'
-const COMMENT_SERVICE_URL =
-  process.env.NEXT_PUBLIC_COMMENT_SERVICE_URL || 'http://localhost:4003/api/comments'
-
-const MESSAGE_SERVICE_URL =
-  process.env.NEXT_PUBLIC_MESSAGE_SERVICE_URL || 'http://localhost:4005/api/conversations'
-
-const FEED_SERVICE_URL =
-  process.env.NEXT_PUBLIC_FEED_SERVICE_URL || 'http://localhost:4004/api/feed'
-
-const REPORT_SERVICE_URL =
-  process.env.NEXT_PUBLIC_REPORT_SERVICE_URL || 'http://localhost:4003/api/reports'
-
-const NOTIFICATION_SERVICE_URL =
-  process.env.NEXT_PUBLIC_NOTIFICATION_SERVER_URL || 'http://localhost:4001'
+const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || "http://localhost:4000/api/auth"
+const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || "http://localhost:4002/api/users"
+const COMMUNITY_SERVICE_URL = process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL || "http://localhost:4003/api/communities"
+const UPLOAD_SERVICE_URL = process.env.NEXT_PUBLIC_UPLOAD_SERVICE_URL || "http://localhost:4003/api/uploads"
+const POST_SERVICE_URL = process.env.NEXT_PUBLIC_POST_SERVICE_URL || "http://localhost:4003/api/posts"
+const COMMENT_SERVICE_URL = process.env.NEXT_PUBLIC_COMMENT_SERVICE_URL || "http://localhost:4003/api/comments"
+const MESSAGE_SERVICE_URL = process.env.NEXT_PUBLIC_MESSAGE_SERVICE_URL || "http://localhost:4005/api/"
+const FEED_SERVICE_URL = process.env.NEXT_PUBLIC_FEED_SERVICE_URL || "http://localhost:4004/api/feed"
+const REPORT_SERVICE_URL = process.env.NEXT_PUBLIC_REPORT_SERVICE_URL || "http://localhost:4003/api/reports"
+const NOTIFICATION_SERVICE_URL = process.env.NEXT_PUBLIC_NOTIFICATION_SERVER_URL || "http://localhost:4001"
 
 const createApiClient = (baseURL: string) => {
   const apiClient = axios.create({
