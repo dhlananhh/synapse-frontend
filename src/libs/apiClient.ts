@@ -1,5 +1,6 @@
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { authService } from '@/modules/services/auth-service'
+import sessionStorageManager from '@/libs/sessionStorageManager'
 
 // Base URLs
 const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://localhost:4000/api/auth'
@@ -21,6 +22,21 @@ const createApiClient = (baseURL: string) => {
     },
     withCredentials: true, // ensures cookies are sent with requests
   })
+
+  // Request interceptor to add the auth token
+  apiClient.interceptors.request.use(
+    (config: InternalAxiosRequestConfig) => {
+      const token = sessionStorageManager.get('accessToken')
+      if (token) {
+        config.headers[ 'Authorization' ] = `Bearer ${token}`
+      }
+      return config
+    },
+    (error) => {
+      return Promise.reject(error)
+    }
+  )
+
   return apiClient
 }
 
