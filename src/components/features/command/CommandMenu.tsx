@@ -3,7 +3,6 @@
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useCommandMenu } from "@/context/CommandMenuContext";
-import { mockCommunities } from "@/libs/mock-data";
 
 import {
   CommandDialog,
@@ -12,9 +11,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandSeparator,
 } from "@/components/ui/command";
-import { Home, MessageSquarePlus, Moon, Settings, Sun, Users } from "lucide-react";
+import { Home, MessageSquarePlus, Moon, Settings, Sun } from "lucide-react";
 
 export default function CommandMenu() {
   const router = useRouter();
@@ -56,20 +54,6 @@ export default function CommandMenu() {
             <Moon className="mr-2 h-4 w-4" />
             <span>Dark Mode</span>
           </CommandItem>
-        </CommandGroup>
-
-        <CommandSeparator />
-
-        <CommandGroup heading="Communities">
-          { mockCommunities.map(community => (
-            <CommandItem
-              key={ community.id }
-              onSelect={ () => runCommand(() => router.push(`/c/${community.slug}`)) }
-            >
-              <Users className="mr-2 h-4 w-4" />
-              <span>c/{ community.slug }</span>
-            </CommandItem>
-          )) }
         </CommandGroup>
       </CommandList>
     </CommandDialog>
