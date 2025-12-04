@@ -22,8 +22,7 @@ import {
 import Cookies from 'js-cookie'
 import { AuthUser } from '@/types/services/auth'
 
-const AUTH_SERVICE_URL =
-  process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || 'http://localhost:4000/api/auth'
+const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || 'http://localhost:4000/api/auth'
 const RESET_TOKEN_KEY = 'reset_token'
 
 export const authService = {

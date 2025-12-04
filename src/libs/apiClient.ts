@@ -3,7 +3,7 @@ import { authService } from '@/modules/services/auth-service'
 import sessionStorageManager from '@/libs/sessionStorageManager'
 
 // Base URLs
-const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_API_URL || 'http://localhost:4000/api/auth'
+const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || 'http://localhost:4000/api/auth'
 const USER_SERVICE_URL = process.env.NEXT_PUBLIC_USER_SERVICE_URL || 'http://localhost:4002/api/users'
 const COMMUNITY_SERVICE_URL = process.env.NEXT_PUBLIC_COMMUNITY_SERVICE_URL || 'http://localhost:4003/api/communities'
 const UPLOAD_SERVICE_URL = process.env.NEXT_PUBLIC_UPLOAD_SERVICE_URL || 'http://localhost:4003/api/uploads'
