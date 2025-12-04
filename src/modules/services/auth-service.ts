@@ -21,6 +21,7 @@ import {
 } from '@/types/services/auth'
 import Cookies from 'js-cookie'
 import { AuthUser } from '@/types/services/auth'
+import sessionStorageManager from '@/libs/sessionStorageManager'
 
 const AUTH_SERVICE_URL = process.env.NEXT_PUBLIC_AUTH_SERVICE_URL || 'http://localhost:4000/api/auth'
 const RESET_TOKEN_KEY = 'reset_token'
@@ -32,7 +33,14 @@ export const authService = {
   },
 
   login: (payload: LoginPayload): Promise<LoginResponse> => {
-    return authApiClient.post(`${AUTH_SERVICE_URL}/login`, payload).then((res) => res.data)
+    return authApiClient.post(`${AUTH_SERVICE_URL}/login`, payload).then((res) => {
+      const { accessToken, refreshToken } = res.data
+      if (accessToken && refreshToken) {
+        sessionStorageManager.set('accessToken', accessToken)
+        sessionStorageManager.set('refreshToken', refreshToken)
+      }
+      return res.data
+    })
   },
 
   getMe: (): Promise<AuthUser> => {
@@ -40,11 +48,22 @@ export const authService = {
   },
 
   logout: (): Promise<GenericMessageResponse> => {
-    return authApiClient.post(`${AUTH_SERVICE_URL}/logout`).then((res) => res.data)
+    return authApiClient.post(`${AUTH_SERVICE_URL}/logout`).then((res) => {
+      sessionStorageManager.remove('accessToken')
+      sessionStorageManager.remove('refreshToken')
+      return res.data
+    })
   },
 
   refreshToken: (): Promise<LoginResponse> => {
-    return authApiClient.post(`/refresh`).then((res) => res.data)
+    return authApiClient.post(`/refresh`).then((res) => {
+      const { accessToken, refreshToken } = res.data
+      if (accessToken && refreshToken) {
+        sessionStorageManager.set('accessToken', accessToken)
+        sessionStorageManager.set('refreshToken', refreshToken)
+      }
+      return res.data
+    })
   },
 
   changePassword: (payload: ChangePasswordPayload): Promise<GenericMessageResponse> => {
