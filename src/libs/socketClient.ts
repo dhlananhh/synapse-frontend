@@ -1,9 +1,9 @@
 import { io, Socket } from 'socket.io-client'
 
 // Base URLs for the Socket.IO servers
-const MESSAGE_SERVER_URL = process.env.NEXT_PUBLIC_MESSAGE_SERVER_URL || 'http://localhost:4000'
+const MESSAGE_SERVER_URL = process.env.NEXT_PUBLIC_MESSAGE_SERVER_URL || 'http://localhost:4005'
 const NOTIFICATION_SERVER_URL =
-  process.env.NEXT_PUBLIC_NOTIFICATION_SERVER_URL || 'http://localhost:5000'
+  process.env.NEXT_PUBLIC_NOTIFICATION_SERVER_URL || 'http://localhost:4001'
 
 // Create a Socket.IO client instance for the messaging server
 export const messageSocketClient: Socket = io(MESSAGE_SERVER_URL, {
