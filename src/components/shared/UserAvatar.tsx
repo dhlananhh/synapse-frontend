@@ -9,8 +9,7 @@ type UserAvatarProps =
   | { user: User; name?: never; imageUrl?: never }
   | { user?: never; name: string; imageUrl?: string };
 
-type CombinedProps = UserAvatarProps &
-  React.HTMLAttributes<HTMLSpanElement>;
+type CombinedProps = UserAvatarProps & React.HTMLAttributes<HTMLSpanElement>;
 
 export function UserAvatar({
   user,
@@ -18,16 +17,21 @@ export function UserAvatar({
   imageUrl,
   ...props
 }: CombinedProps) {
-  const src = user?.avatarUrl || imageUrl;
+  const src = user?.avatarUrl || imageUrl || '/images/default-avatar.png';
   const displayName =
     user?.firstName + " " + user?.lastName ||
     user?.username;
 
   return (
-    <Avatar {...props}>
-      <AvatarImage src={src} alt={displayName} />
+    <Avatar
+      { ...props }
+    >
+      <AvatarImage
+        src={ src }
+        alt={ displayName }
+      />
       <AvatarFallback>
-        {displayName?.slice(0, 2).toUpperCase() || "??"}
+        { displayName?.slice(0, 2).toUpperCase() || "??" }
       </AvatarFallback>
     </Avatar>
   );
