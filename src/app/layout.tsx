@@ -53,8 +53,10 @@ export default function RootLayout({
             <CommandMenuProvider>
               <AuthProvider>
                 <NotificationSimulator />
-                <main className='container mx-auto max-w-7xl pt-16 flex-grow'>{children}</main>
-                {/* <ChatWidget /> */}
+                <main className='mx-auto h-full w-full flex-grow'>
+                  { children }
+                </main>
+                {/* <ChatWidget /> */ }
               </AuthProvider>
             </CommandMenuProvider>
 

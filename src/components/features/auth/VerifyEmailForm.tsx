@@ -30,9 +30,9 @@ export default function VerifyEmailForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const [isClient, setIsClient] = useState(false)
-  const [isResending, setIsResending] = useState(false)
-  const [cooldown, setCooldown] = useState(0) // Cooldown timer state
+  const [ isClient, setIsClient ] = useState(false)
+  const [ isResending, setIsResending ] = useState(false)
+  const [ cooldown, setCooldown ] = useState(0) // Cooldown timer state
   const email = searchParams.get('email')
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export default function VerifyEmailForm() {
       }, 1000)
       return () => clearInterval(timer)
     }
-  }, [cooldown])
+  }, [ cooldown ])
 
   const form = useForm<TVerifyEmailSchema>({
     resolver: zodResolver(VerifyEmailSchema),
@@ -129,53 +129,53 @@ export default function VerifyEmailForm() {
 
         <CardTitle className='text-2xl mt-5 uppercase'>Verify Your Email</CardTitle>
         <CardDescription>
-          We&apos;ve sent a 6-digit verification code to <strong>{email}</strong>. <br />
+          We&apos;ve sent a 6-digit verification code to <strong>{ email }</strong>. <br />
           Please enter it below to activate your account.
         </CardDescription>
       </CardHeader>
 
       <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-6'>
+        <Form { ...form }>
+          <form onSubmit={ form.handleSubmit(onSubmit) } className='space-y-6'>
             <FormField
-              control={form.control}
+              control={ form.control }
               name='code'
-              render={({ field }) => (
+              render={ ({ field }) => (
                 <FormItem className='flex flex-col items-center'>
                   <FormLabel>Verification Code</FormLabel>
                   <FormControl>
-                    <InputOTP maxLength={6} {...field}>
+                    <InputOTP maxLength={ 6 } { ...field }>
                       <InputOTPGroup>
-                        <InputOTPSlot index={0} />
-                        <InputOTPSlot index={1} />
-                        <InputOTPSlot index={2} />
-                        <InputOTPSlot index={3} />
-                        <InputOTPSlot index={4} />
-                        <InputOTPSlot index={5} />
+                        <InputOTPSlot index={ 0 } />
+                        <InputOTPSlot index={ 1 } />
+                        <InputOTPSlot index={ 2 } />
+                        <InputOTPSlot index={ 3 } />
+                        <InputOTPSlot index={ 4 } />
+                        <InputOTPSlot index={ 5 } />
                       </InputOTPGroup>
                     </InputOTP>
                   </FormControl>
                 </FormItem>
-              )}
+              ) }
             />
-            <Button type='submit' className='w-full' disabled={isSubmitting}>
-              {isSubmitting ? <Loader2 className='animate-spin' /> : 'Verify Account'}
+            <Button type='submit' className='w-full' disabled={ isSubmitting }>
+              { isSubmitting ? <Loader2 className='animate-spin' /> : 'Verify Account' }
             </Button>
           </form>
         </Form>
         <div className='mt-4 text-center text-sm text-muted-foreground'>
-          Didn&apos;t receive a code?{' '}
+          Didn&apos;t receive a code?{ ' ' }
           <Button
             variant='link'
             className='p-0 h-auto'
-            onClick={handleResendCode}
-            disabled={isResending || cooldown > 0}
+            onClick={ handleResendCode }
+            disabled={ isResending || cooldown > 0 }
           >
-            {isResending
+            { isResending
               ? 'Sending...'
               : cooldown > 0
-              ? `Resend Code (${formatCooldown(cooldown)})`
-              : 'Resend Code'}
+                ? `Resend Code (${formatCooldown(cooldown)})`
+                : 'Resend Code' }
           </Button>
         </div>
       </CardContent>

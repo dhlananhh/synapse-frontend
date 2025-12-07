@@ -8,9 +8,9 @@ import PostPreview from './PostPreview'
 
 export default function RecentPosts() {
   const { user, isLoading } = useAuth() // Check authentication status
-  const [recentPosts, setRecentPosts] = useState<PostDetails[]>([])
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [ recentPosts, setRecentPosts ] = useState<PostDetails[]>([])
+  const [ loading, setLoading ] = useState(false)
+  const [ error, setError ] = useState<string | null>(null)
 
   useEffect(() => {
     if (!user || isLoading) return // Skip fetching if user is not authenticated or loading
@@ -30,7 +30,7 @@ export default function RecentPosts() {
     }
 
     loadRecentPosts()
-  }, [user, isLoading])
+  }, [ user, isLoading ])
 
   if (!user || isLoading) return null // Do not render if user is not authenticated or loading
 
@@ -39,7 +39,7 @@ export default function RecentPosts() {
   }
 
   if (error) {
-    return <p className='text-red-500'>{error}</p>
+    return <p className='text-red-500'>{ error }</p>
   }
 
   if (recentPosts.length === 0) {
@@ -49,9 +49,9 @@ export default function RecentPosts() {
   return (
     <div className='space-y-4 h-full overflow-y-auto'>
       <h3 className='text-lg font-bold mb-4'>Recently Viewed Posts</h3>
-      {recentPosts.map((post) => (
-        <PostPreview key={post.id} post={post} />
-      ))}
+      { recentPosts.map((post) => (
+        <PostPreview key={ post.id } post={ post } />
+      )) }
     </div>
   )
 }

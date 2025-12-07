@@ -14,10 +14,19 @@ import { LoginPayload } from '@/types/services/auth'
 import { LoginSchema, TLoginSchema } from '@/libs/validators/auth-validator'
 
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { BrainCircuit, Loader2 } from 'lucide-react'
+import {
+  BrainCircuit,
+  Loader2
+} from 'lucide-react'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -56,7 +65,7 @@ export default function LoginForm() {
   }
 
   return (
-    <Card className='mx-auto max-w-lg w-full'>
+    <Card className='mx-auto max-w-lg w-full h-full shadow-xl'>
       <CardHeader className='items-center text-center'>
         <Link href='/' className='flex flex-col items-center gap-2 mb-2'>
           <BrainCircuit className='h-10 w-10 text-primary' />
@@ -69,19 +78,22 @@ export default function LoginForm() {
       </CardHeader>
 
       <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className='grid gap-4'>
-          {/* Email */}
+        <form
+          onSubmit={ handleSubmit(onSubmit) }
+          className='grid gap-4'
+        >
+          {/* Email */ }
           <div className='grid gap-2'>
             <Label htmlFor='email'>Email</Label>
             <Input
-              {...register('email')}
+              { ...register('email') }
               id='email'
               type='email'
               placeholder='Enter your email address'
             />
           </div>
 
-          {/* Password */}
+          {/* Password */ }
           <div className='grid gap-2'>
             <div className='flex items-center justify-between'>
               <Label htmlFor='password'>Password</Label>
@@ -89,27 +101,27 @@ export default function LoginForm() {
               <Link
                 href='/reset-password'
                 className='ml-auto inline-block text-sm text-muted-foreground hover:text-primary hover:underline'
-                tabIndex={-1}
+                tabIndex={ -1 }
               >
                 Forgot your password? Reset now!
               </Link>
             </div>
 
             <Input
-              {...register('password')}
+              { ...register('password') }
               id='password'
               type='password'
               placeholder='Enter your password'
             />
           </div>
 
-          <Button type='submit' className='w-full' disabled={isSubmitting}>
-            {isSubmitting ? <Loader2 className='animate-spin' /> : 'Log In'}
+          <Button type='submit' className='w-full' disabled={ isSubmitting }>
+            { isSubmitting ? <Loader2 className='animate-spin' /> : 'Log In' }
           </Button>
         </form>
 
         <div className='mt-4 text-center text-sm'>
-          Don&apos;t have an account?{' '}
+          Don&apos;t have an account?{ ' ' }
           <Link
             href='/register'
             className='ml-auto inline-block text-sm text-muted-foreground hover:text-primary hover:underline'
