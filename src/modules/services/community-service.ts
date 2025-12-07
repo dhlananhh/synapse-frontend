@@ -16,6 +16,20 @@ import {
 } from '@/types/services/community'
 
 export const communityService = {
+  // Get all communities
+  getAllCommunities: (
+    cursor?: string,
+    limit = 20,
+    sort: 'newest' | 'oldest' | 'members' | 'posts' | 'name' = 'newest'
+  ): Promise<{
+    communities: SearchCommunityResult[]
+    pagination: { hasMore: boolean; nextCursor: string | null }
+  }> => {
+    return communityApiClient
+      .get(`/`, { params: { cursor, limit, sort } })
+      .then((res) => res.data)
+  },
+
   // Search communities with cursor-based paging
   searchCommunities: (
     q?: string,
@@ -42,7 +56,7 @@ export const communityService = {
     communities: SearchCommunityResult[]
     pagination: { hasMore: boolean; nextCursor: string | null }
   }> => {
-    const allowed = new Set(['ACTIVE', 'SUSPENDED', 'DELETED', 'ALL'])
+    const allowed = new Set([ 'ACTIVE', 'SUSPENDED', 'DELETED', 'ALL' ])
     let statusesCsv: string | undefined
 
     if (Array.isArray(statuses) && statuses.length > 0) {
