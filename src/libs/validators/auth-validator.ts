@@ -41,7 +41,7 @@ export const RegisterFormSchema = z.object({
       required_error: 'Your date of birth is required.',
     })
     .max(eighteenYearsAgo, { message: 'You must be at least 18 years old to use Synapse.' }),
-  gender: z.enum(['MALE', 'FEMALE'], {
+  gender: z.enum([ 'MALE', 'FEMALE' ], {
     required_error: 'Please select a gender.',
   }),
 })
@@ -52,3 +52,15 @@ export const VerifyEmailSchema = z.object({
   code: z.string().min(6, { message: 'Your code must be 6 digits.' }),
 })
 export type TVerifyEmailSchema = z.infer<typeof VerifyEmailSchema>
+
+// Change password schema
+export const ChangePasswordSchema = z.object({
+  current_password: z.string().min(1, "Current password is required."),
+  new_password: z.string().min(8, "New password must be at least 8 characters."),
+  confirm_password: z.string()
+}).refine(data => data.new_password === data.confirm_password, {
+  message: "New passwords don't match",
+  path: [ "confirmPassword" ],
+});
+
+export type TChangePasswordSchema = z.infer<typeof ChangePasswordSchema>;

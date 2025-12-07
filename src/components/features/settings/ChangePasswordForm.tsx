@@ -36,9 +36,9 @@ export function ChangePasswordForm() {
   const form = useForm<TChangePasswordSchema>({
     resolver: zodResolver(ChangePasswordSchema),
     defaultValues: {
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: ""
+      current_password: "",
+      new_password: "",
+      confirm_password: ""
     },
   });
 
@@ -46,8 +46,8 @@ export function ChangePasswordForm() {
     setIsSubmitting(true);
     try {
       await authService.changePassword({
-        currentPassword: data.currentPassword,
-        newPassword: data.newPassword,
+        current_password: data.current_password,
+        new_password: data.new_password,
       });
 
       toast.success("Password changed successfully!", {
@@ -87,7 +87,7 @@ export function ChangePasswordForm() {
           >
             <FormField
               control={ form.control }
-              name="currentPassword"
+              name="current_password"
               render={
                 ({ field }) => (
                   <FormItem>
@@ -107,7 +107,7 @@ export function ChangePasswordForm() {
             />
             <FormField
               control={ form.control }
-              name="newPassword"
+              name="new_password"
               render={
                 ({ field }) => (
                   <FormItem>
@@ -127,7 +127,7 @@ export function ChangePasswordForm() {
             />
             <FormField
               control={ form.control }
-              name="confirmPassword"
+              name="confirm_password"
               render={
                 ({ field }) => (
                   <FormItem>
