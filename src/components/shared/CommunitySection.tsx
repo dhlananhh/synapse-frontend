@@ -116,15 +116,15 @@ export default function CommunitySection({
               {
                 showMoreOption && (
                   <li>
-                    <a
-                      href='/communities/show-more' // Replace with the actual route later
+                    <Link
+                      href='/c' // Replace with the actual route later
                       className='flex items-center gap-4 hover:text-primary'
                     >
                       <MoreHorizontal className='h-6 w-6' />
                       <span className='text-sm font-medium italic'>
                         Show More
                       </span>
-                    </a>
+                    </Link>
                   </li>
                 )
               }
