@@ -28,6 +28,8 @@ import {
   UserRound,
   List as ListIcon
 } from "lucide-react";
+import { GrGroup, GrUserSettings } from "react-icons/gr";
+import { BsPostcardHeart } from "react-icons/bs";
 
 
 interface UserNavProps {
@@ -92,12 +94,25 @@ export function UserNav({ user }: UserNavProps) {
               </Link>
             </DropdownMenuItem>
 
+            <DropdownMenuSeparator />
+
             <DropdownMenuItem asChild>
               <Link
                 href={ `/u/me/posts` }
               >
-                <ListIcon className="mr-2 h-4 w-4" />
+                <BsPostcardHeart className="mr-2 h-4 w-4" />
                 <span>My Posts</span>
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <Link
+                href={ `/u/me/communities` }
+              >
+                <GrGroup className="mr-2 h-4 w-4" />
+                <span>My Communities</span>
               </Link>
             </DropdownMenuItem>
 
@@ -107,7 +122,7 @@ export function UserNav({ user }: UserNavProps) {
               <Link
                 href={ `/preferences/me` }
               >
-                <Cog className="mr-2 h-4 w-4" />
+                <GrUserSettings className="mr-2 h-4 w-4" />
                 <span>Preferences</span>
               </Link>
             </DropdownMenuItem>
