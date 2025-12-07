@@ -30,7 +30,7 @@ export default function AboutCommunityWidget() {
   const { user } = useAuth()
   const membershipContext = useMembership()
   const membership = membershipContext?.membership ?? null
-  const [ownerProfile, setOwnerProfile] = useState<SimpleProfile | null>(null)
+  const [ ownerProfile, setOwnerProfile ] = useState<SimpleProfile | null>(null)
 
   // don't render until community is available
   if (!community) return null
@@ -52,68 +52,68 @@ export default function AboutCommunityWidget() {
     if (!community?.createdAt) return null
     const d = new Date(community.createdAt)
     return Number.isNaN(d.getTime()) ? null : d
-  }, [community?.createdAt])
+  }, [ community?.createdAt ])
 
   useEffect(() => {
     async function fetchOwnerProfile() {
       if (community?.ownerId) {
-        const profiles = await userService.getSimpleProfiles([community.ownerId])
-        setOwnerProfile(profiles[0])
+        const profiles = await userService.getSimpleProfiles([ community.ownerId ])
+        setOwnerProfile(profiles[ 0 ])
       }
     }
     fetchOwnerProfile()
-  }, [community?.ownerId])
+  }, [ community?.ownerId ])
 
   return (
     <>
       <Card>
         <CardHeader>
-          <Link href={`/c/${community.name}`}>
+          <Link href={ `/c/${community.name}` }>
             <CardTitle
               className='cursor-pointer hover:text-primary transition-colors hover:scale-[1.03] hover:bg-muted/40 px-2 py-1 rounded'
-              style={{ display: 'inline-flex', alignItems: 'center' }}
+              style={ { display: 'inline-flex', alignItems: 'center' } }
             >
               <Info className='h-5 w-5 inline mr-2 transition-transform group-hover:scale-110' />
-              <span>About c/{community.name}</span>
+              <span>About c/{ community.name }</span>
             </CardTitle>
           </Link>
         </CardHeader>
 
         <CardContent className='space-y-4'>
-          <p className='text-md text-muted-foreground italic'>{community.description}</p>
+          <p className='text-md text-muted-foreground italic'>{ community.description }</p>
 
           <div className='flex flex-col gap-3 text-md'>
-            {/* Owner entry */}
-            {ownerProfile && (
+            {/* Owner entry */ }
+            { ownerProfile && (
               <div className='flex items-center gap-2 mt-2'>
                 <Link
-                  href={`/u/${ownerProfile.id}`}
+                  href={ `/u/${ownerProfile.id}` }
                   className='flex items-center gap-2 hover:text-primary transition-colors'
                 >
                   <Avatar className='h-8 w-8'>
-                    {ownerProfile.avatarUrl ? (
-                      <AvatarImage src={ownerProfile.avatarUrl} alt={ownerProfile.username} />
+                    { ownerProfile.avatarUrl ? (
+                      <AvatarImage src={ ownerProfile.avatarUrl } alt={ ownerProfile.username } />
                     ) : (
                       <AvatarFallback>
-                        {ownerProfile.username?.[0]?.toUpperCase() ?? '?'}
+                        { ownerProfile.username?.[ 0 ]?.toUpperCase() ?? '?' }
                       </AvatarFallback>
-                    )}
+                    ) }
                   </Avatar>
-                  <span className='font-medium'>u/{ownerProfile.username}</span>
-                  {/* <span className='font-semibold text-muted-foreground'>Owner</span> */}
-                  <Crown className='h-5 w-5 inline text-yellow-400' />{' '}
+                  <span className='font-medium'>u/{ ownerProfile.username }</span>
+                  {/* <span className='font-semibold text-muted-foreground'>Owner</span> */ }
+                  <Crown className='h-5 w-5 inline text-yellow-400' />{ ' ' }
                 </Link>
               </div>
-            )}
+            ) }
             <div className='flex items-center gap-2'>
               <Cake className='h-5 w-5' />
               <span>
-                Created {createdAtDate ? format(createdAtDate, 'MMM d, yyyy') : 'Unknown'}
+                Created { createdAtDate ? format(createdAtDate, 'MMM d, yyyy') : 'Unknown' }
               </span>
             </div>
 
             <div className='flex items-center gap-2'>
-              {community.isPrivate ? (
+              { community.isPrivate ? (
                 <span className='inline-flex items-center gap-2 px-2 py-1 rounded bg-indigo-600 text-white text-sm font-semibold'>
                   <Lock className='w-4 h-4 text-white' />
                   Private
@@ -123,40 +123,40 @@ export default function AboutCommunityWidget() {
                   <Globe className='w-4 h-4 text-white' />
                   Public
                 </span>
-              )}
+              ) }
 
-              {community.isNSFW && (
+              { community.isNSFW && (
                 <span className='inline-flex items-center gap-1 px-2 py-1 rounded bg-purple-600 text-white text-xs font-bold'>
                   <TriangleAlert className='w-4 h-4 text-white' />
                   NSFW
                 </span>
-              )}
+              ) }
 
-              {community.moderationMode && (
+              { community.moderationMode && (
                 <span className='inline-flex items-center gap-2 px-2 py-1 rounded bg-amber-600 text-white text-sm font-semibold'>
                   <ShieldCheck className='w-4 h-4 text-white' />
                   Moderated
                 </span>
-              )}
+              ) }
             </div>
             <hr />
 
             <Link
-              href={`/c/${community.name}/members`}
+              href={ `/c/${community.name}/members` }
               className='flex items-center gap-2 hover:text-primary font-medium cursor-pointer'
             >
               <Users className='h-5 w-5' />
-              <span>{community.memberCount.toLocaleString()} members</span>
+              <span>{ community.memberCount.toLocaleString() } members</span>
             </Link>
           </div>
 
-          {/* Moderator / Owner actions (use membership role & status) */}
-          {(canManage || isOwner) && (
+          {/* Moderator / Owner actions (use membership role & status) */ }
+          { (canManage || isOwner) && (
             <>
               <hr />
               <div className='space-y-2'>
                 <h4 className='font-semibold text-sm'>
-                  {/* {isOwner ? 'Owner Actions' : 'Moderator Actions'} */}
+                  {/* {isOwner ? 'Owner Actions' : 'Moderator Actions'} */ }
                 </h4>
 
                 {/* Manage Members - available to moderators & owners (if active)
@@ -172,7 +172,7 @@ export default function AboutCommunityWidget() {
                   </Button>
                 )} */}
 
-                {/* Manage Contents - available to moderators & owners (if active) */}
+                {/* Manage Contents - available to moderators & owners (if active) */ }
                 {/* {canManage && (
                   <Button asChild className='w-full' variant='outline'>
                     <Link
@@ -185,24 +185,24 @@ export default function AboutCommunityWidget() {
                   </Button>
                 )} */}
 
-                {/* Community Management - available to moderators & owners (if active) */}
-                {canManage && (
+                {/* Community Management - available to moderators & owners (if active) */ }
+                { canManage && (
                   <Button asChild className='w-full' variant='outline'>
                     <Link
-                      href={`/c/${community.name}/manage`}
+                      href={ `/c/${community.name}/manage` }
                       className='flex w-full items-center justify-center gap-2'
                     >
                       <FolderKanban className='h-4 w-4' />
                       Manage this community
                     </Link>
                   </Button>
-                )}
+                ) }
 
                 {/* Edit Community - available only to owner
                 {isOwner && <UpdateCommunityDialog community={community} onUpdate={handleUpdate} />} */}
               </div>
             </>
-          )}
+          ) }
         </CardContent>
       </Card>
     </>
