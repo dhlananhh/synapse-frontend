@@ -1,9 +1,17 @@
-'use client'
+"use client";
 
-import React from 'react'
-import { useAuth } from '@/context/AuthContext'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { UserProfile } from "@/types/services/user";
+import { LogoutConfirmDialog } from "@/components/shared/LogoutConfirmDialog";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,68 +20,129 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import Link from 'next/link'
-import { LogOut, User as UserIcon, List as ListIcon, LayoutDashboard } from 'lucide-react' // Import the dashboard icon
-import { UserProfile } from '@/types/services/user'
+} from "@/components/ui/dropdown-menu";
+import {
+  Cog,
+  LogOut,
+  ShieldCheck,
+  UserRound,
+  List as ListIcon
+} from "lucide-react";
+
 
 interface UserNavProps {
-  user: UserProfile
-  role: 'USER' | 'SYSTEM_ADMIN'
+  user: UserProfile;
 }
 
-export function UserNav({ user, role }: UserNavProps) {
-  const { logout } = useAuth()
+
+export function UserNav({ user }: UserNavProps) {
+  const { logout } = useAuth();
+  const [ isLogoutConfirmOpen, setIsLogoutConfirmOpen ] =
+    useState(false);
+
+  const handleLogoutClick = (event: React.MouseEvent) => {
+    event.preventDefault();
+    setIsLogoutConfirmOpen(true);
+  };
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className='relative h-10 w-10 rounded-full'>
-          <Avatar className='h-10 w-10'>
-            <AvatarImage src={user.avatarUrl || ''} alt={`@${user.username}`} />
-            <AvatarFallback>{user.username.charAt(0).toUpperCase()}</AvatarFallback>
-          </Avatar>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className='w-56' align='end' forceMount>
-        <DropdownMenuLabel className='font-normal'>
-          <div className='flex flex-col space-y-1'>
-            <p className='text-sm font-medium leading-none'>
-              {`${user.firstName} ${user.lastName}`}
-            </p>
-            <p className='text-xs leading-none text-muted-foreground'>@{user.username}</p>
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem asChild>
-            <Link href={`/u/me`}>
-              <UserIcon className='mr-2 h-4 w-4' />
-              <span>Profile</span>
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <Link href={`/u/me/posts`}>
-              <ListIcon className='mr-2 h-4 w-4' />
-              <span>My Posts</span>
-            </Link>
-          </DropdownMenuItem>
-          {/* Conditionally render the Admin Dashboard option */}
-          {role === 'SYSTEM_ADMIN' && (
+    <>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            className="relative h-10 w-10 rounded-full"
+          >
+            <Avatar className="h-10 w-10">
+              <AvatarImage
+                src={ user.avatarUrl || "" }
+                alt={ `@${user.username}` }
+              />
+              <AvatarFallback>
+                { user.username.charAt(0).toUpperCase() }
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="w-56"
+          align="end"
+          forceMount
+        >
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col space-y-1">
+              <p className="text-sm leading-none font-medium">
+                { `${user.firstName} ${user.lastName}` }
+              </p>
+              <p className="text-muted-foreground text-xs leading-none">
+                @{ user.username }
+              </p>
+            </div>
+          </DropdownMenuLabel>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link href={`/admin`}>
-                <LayoutDashboard className='mr-2 h-4 w-4' />
-                <span>Admin Dashboard</span>
+              <Link
+                href={ `/u/me` }
+              >
+                <UserRound className="mr-2 h-4 w-4" />
+                <span>Profile</span>
               </Link>
             </DropdownMenuItem>
-          )}
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logout}>
-          <LogOut className='mr-2 h-4 w-4' />
-          <span>Log out</span>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
+
+            <DropdownMenuItem asChild>
+              <Link
+                href={ `/u/me/posts` }
+              >
+                <ListIcon className="mr-2 h-4 w-4" />
+                <span>My Posts</span>
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <Link
+                href={ `/preferences/me` }
+              >
+                <Cog className="mr-2 h-4 w-4" />
+                <span>Preferences</span>
+              </Link>
+            </DropdownMenuItem>
+
+            {
+              user.role === "SYSTEM_ADMIN" && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">
+                    <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
+                    <span>Admin Dashboard</span>
+                  </Link>
+                </DropdownMenuItem>
+              )
+            }
+
+          </DropdownMenuGroup>
+
+          <DropdownMenuSeparator />
+
+          <DropdownMenuItem
+            onClick={ handleLogoutClick }
+            className="text-destructive focus:text-destructive pt-1"
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            <span>Log out</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+
+
+      <LogoutConfirmDialog
+        isOpen={ isLogoutConfirmOpen }
+        onOpenChange={ setIsLogoutConfirmOpen }
+        onConfirmLogout={ logout }
+      />
+    </>
+  );
 }
