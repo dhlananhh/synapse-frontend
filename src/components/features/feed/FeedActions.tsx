@@ -1,17 +1,27 @@
-import React, { useState, useEffect } from 'react'
-import { CornerLeftUp, CornerRightDown, MessageSquare, Share2 } from 'lucide-react'
+import React, {
+  useState,
+  useEffect
+} from 'react'
+import {
+  CornerLeftUp,
+  CornerRightDown,
+  MessageSquare,
+  Share2
+} from 'lucide-react'
 import { votePost, unvotePost } from '@/modules/services/post-service'
-import { toast } from 'sonner' // Import toast for notifications
-import { useRouter } from 'next/navigation' // Import useRouter for navigation
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
+
 
 interface FeedActionsProps {
   communityName: string
-  postId: string // Post ID for API requests
-  score: number // Current score of the post
-  commentCount: number // Number of comments
-  shareCount: number // Number of shares
-  initialVote: 'UPVOTE' | 'DOWNVOTE' | null // User's current vote
+  postId: string
+  score: number
+  commentCount: number
+  shareCount: number
+  initialVote: 'UPVOTE' | 'DOWNVOTE' | null
 }
+
 
 export default function FeedActions({
   postId,
@@ -21,15 +31,15 @@ export default function FeedActions({
   initialVote,
   communityName,
 }: FeedActionsProps) {
-  const router = useRouter() // Initialize router for navigation
-  const [localScore, setLocalScore] = useState(score)
-  const [voted, setVoted] = useState<'UPVOTE' | 'DOWNVOTE' | null>(initialVote) // Initialize with initialVote
-  const [loading, setLoading] = useState(false)
+  const router = useRouter()
+  const [ localScore, setLocalScore ] = useState(score)
+  const [ voted, setVoted ] = useState<'UPVOTE' | 'DOWNVOTE' | null>(initialVote)
+  const [ loading, setLoading ] = useState(false)
 
   // Sync the voted state with initialVote whenever it changes
   useEffect(() => {
     setVoted(initialVote)
-  }, [initialVote])
+  }, [ initialVote ])
 
   const handleVote = async (type: 'UPVOTE' | 'DOWNVOTE') => {
     if (loading || voted === type) return
@@ -60,13 +70,13 @@ export default function FeedActions({
   }
 
   const handleShare = async () => {
-    const postUrl = `${window.location.origin}/c/${communityName}/posts/${postId}` // Construct the post URL
+    const postUrl = `${window.location.origin}/c/${communityName}/posts/${postId}`
     try {
-      await navigator.clipboard.writeText(postUrl) // Copy URL to clipboard
-      toast.success('Post URL copied to clipboard!') // Notify the user using toast
+      await navigator.clipboard.writeText(postUrl)
+      toast.success('Post URL copied to clipboard!')
     } catch (error) {
       console.error('Failed to copy URL:', error)
-      toast.error('Failed to copy URL to clipboard.') // Notify the user of failure
+      toast.error('Failed to copy URL to clipboard.')
     }
   }
 
@@ -75,51 +85,77 @@ export default function FeedActions({
   }
 
   return (
-    <div className='flex items-center gap-6 mt-8'>
-      {/* Voting */}
-      <div className='flex items-center gap-2 px-3 py-2 border rounded-3xl bg-gray-700'>
+    <div className='flex items-center gap-3 mt-3'>
+      {/* Voting Group */ }
+      <div className='flex items-center gap-1 px-3 py-1.5 rounded-full border border-border bg-secondary/30 hover:border-primary/30 transition-colors'>
         <button
-          className={`flex items-center gap-1 text-white ${
-            voted === 'UPVOTE' ? 'text-green-500' : 'hover:text-green-500'
-          } transition-colors`}
-          onClick={() => (voted === 'UPVOTE' ? handleUnvote() : handleVote('UPVOTE'))}
-          disabled={loading}
+          className={ `p-1 rounded-sm transition-colors 
+            ${voted === 'UPVOTE'
+              ? 'text-green-600 dark:text-green-500' // Active color
+              : 'text-muted-foreground hover:text-green-600 dark:hover:text-green-500 hover:bg-black/5 dark:hover:bg-white/10' // Inactive hover
+            }` }
+          onClick={
+            () => (
+              voted === 'UPVOTE'
+                ? handleUnvote()
+                : handleVote('UPVOTE')
+            )
+          }
+          disabled={ loading }
+          aria-label="Upvote"
         >
-          <CornerLeftUp className={`h-5 w-5 ${voted === 'UPVOTE' ? 'text-green-500' : ''}`} />
+          <CornerLeftUp className={ `h-5 w-5 ${voted === 'UPVOTE' ? 'fill-current' : ''}` } />
         </button>
-        <span className='text-sm font-medium'>{localScore}</span>
-        <button
-          className={`flex items-center gap-1 text-white ${
-            voted === 'DOWNVOTE' ? 'text-purple-500' : 'hover:text-purple-500'
-          } transition-colors`}
-          onClick={() => (voted === 'DOWNVOTE' ? handleUnvote() : handleVote('DOWNVOTE'))}
-          disabled={loading}
+
+        <span
+          className={
+            `text-sm font-bold min-w-[2ch] text-center 
+            ${voted === 'UPVOTE'
+              ? 'text-green-600 dark:text-green-500'
+              :
+              voted === 'DOWNVOTE'
+                ? 'text-purple-600 dark:text-purple-500'
+                :
+                'text-foreground'
+            }`
+          }
         >
-          <CornerRightDown className={`h-5 w-5 ${voted === 'DOWNVOTE' ? 'text-purple-500' : ''}`} />
+          { localScore }
+        </span>
+
+        <button
+          className={ `p-1 rounded-sm transition-colors ${voted === 'DOWNVOTE'
+            ? 'text-purple-600 dark:text-purple-500' // Active color
+            : 'text-muted-foreground hover:text-purple-600 dark:hover:text-purple-500 hover:bg-black/5 dark:hover:bg-white/10' // Inactive hover
+            }` }
+          onClick={ () => (voted === 'DOWNVOTE' ? handleUnvote() : handleVote('DOWNVOTE')) }
+          disabled={ loading }
+          aria-label="Downvote"
+        >
+          <CornerRightDown className={ `h-5 w-5 ${voted === 'DOWNVOTE' ? 'fill-current' : ''}` } />
         </button>
       </div>
 
-      {/* Comments */}
-      <div className='flex items-center gap-2 px-3 py-2 border rounded-3xl bg-gray-700'>
-        <button
-          className='flex items-center gap-2 text-white hover:text-primary'
-          onClick={handleCommentClick} // Navigate to the post's URL
-        >
-          <MessageSquare className='h-5 w-5' />
-          <span className='text-sm font-medium'>{commentCount}</span>
-        </button>
-      </div>
+      {/* Comments Button */ }
+      <button
+        className='flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/30 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all'
+        onClick={ handleCommentClick }
+      >
+        <MessageSquare className='h-4 w-4' />
+        <span className='text-xs font-semibold'>
+          { commentCount }
+          <span className="hidden sm:inline"></span>
+        </span>
+      </button>
 
-      {/* Share */}
-      <div className='flex items-center gap-2 px-3 py-2 border rounded-3xl bg-gray-700'>
-        <button
-          className='flex items-center gap-2 text-white hover:text-primary'
-          onClick={handleShare}
-        >
-          <Share2 className='h-5 w-5' />
-          <span className='text-sm font-medium'>{shareCount}</span>
-        </button>
-      </div>
+      {/* Share Button */ }
+      <button
+        className='flex items-center gap-2 px-3 py-1.5 rounded-full border border-border bg-secondary/30 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all'
+        onClick={ handleShare }
+      >
+        <Share2 className='h-4 w-4' />
+        <span className='text-xs font-semibold'></span>
+      </button>
     </div>
   )
 }

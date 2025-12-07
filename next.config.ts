@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "images.ctfassets.net",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
         hostname:
           "synapse-user-avatars.s3.ap-southeast-1.amazonaws.com",
         port: "",

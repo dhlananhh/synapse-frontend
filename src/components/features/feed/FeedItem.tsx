@@ -40,16 +40,16 @@ export default function FeedItem({ item, initialVote, flair }: FeedItemProps) {
   const isAuthor = user?.id === item.authorId // Check if the current user is the author
 
   return (
-    <div className='block bg-muted border border-gray-700 rounded-lg p-6 shadow-sm hover:shadow-md transition-shadow duration-200 relative'>
+    <div className="group block bg-card text-card-foreground border border-border rounded-lg p-6 shadow-sm transition-all duration-200 hover:border-primary/50 relative">
       {/* Options Menu */ }
       <div onClick={ (e) => e.stopPropagation() }>
         <DropdownMenu>
           <DropdownMenuTrigger className='absolute top-2 right-4'>
-            <div className='text-gray-500 hover:text-primary rounded-full p-2 hover:bg-gray-600 transition-colors cursor-pointer'>
+            <div className='text-muted-foreground hover:text-primary rounded-full p-2 hover:bg-gray-600 transition-colors cursor-pointer'>
               <MoreHorizontal className='h-6 w-6' />
             </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className='bg-gray-700 border-gray-700 shadow-md relative -top-2 right-10'>
+          <DropdownMenuContent className='bg-gray-700 border-border shadow-md relative -top-2 right-10'>
             {/* Display the report option only if the current user is not the author */ }
             { !isAuthor && (
               <DropdownMenuItem
@@ -89,7 +89,7 @@ export default function FeedItem({ item, initialVote, flair }: FeedItemProps) {
           >
             c/{ item.community.name }
           </button>
-          <p className='text-xs text-gray-500'>
+          <p className='text-xs text-muted-foreground'>
             { formatDistanceToNow(new Date(item.createdAt), { addSuffix: true }) }
           </p>
         </div>
