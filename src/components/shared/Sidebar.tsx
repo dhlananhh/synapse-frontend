@@ -84,13 +84,18 @@ export default function Sidebar() {
                     onClick={ () =>
                       handleFeedSelection(option.value as 'hot' | 'trending' | 'top' | 'global')
                     }
-                    className={ `flex items-center gap-2 w-full px-3 py-2 rounded-md transition-all duration-200 ${selectedFeed === option.value
-                      ? 'bg-gray-500 text-white'
-                      : 'hover:bg-gray-700 hover:text-primary'
-                      }` }
+                    className={
+                      `flex items-center gap-2 w-full px-3 py-2 rounded-md transition-all duration-200 
+                      ${selectedFeed === option.value
+                        ? 'bg-gray-500 text-white'
+                        : 'hover:bg-gray-700 hover:text-primary'
+                      }`
+                    }
                   >
                     { option.icon }
-                    <span className='text-sm font-medium'>{ option.label }</span>
+                    <span className='text-sm font-medium'>
+                      { option.label }
+                    </span>
                   </button>
                 </li>
               ))
@@ -104,11 +109,13 @@ export default function Sidebar() {
           user && !isLoading && (
             <CommunitySection
               title='Recent Communities'
-              communities={ recentCommunities.map((community) => ({
-                id: community.id,
-                name: community.name,
-                avatarUrl: community.avatarUrl || '/images/default-avatar.png', // Fallback avatar
-              })) }
+              communities={
+                recentCommunities.map((community) => ({
+                  id: community.id,
+                  name: community.name,
+                  avatarUrl: community.avatarUrl || '/images/default-community-avatar.png', // Fallback avatar
+                }))
+              }
             />
           )
         }
@@ -121,23 +128,27 @@ export default function Sidebar() {
             topCommunities.map((community) => ({
               id: community.id,
               name: community.name,
-              avatarUrl: community.avatarUrl || '/images/default-avatar.png', // Fallback avatar
+              avatarUrl: community.avatarUrl || '/images/default-community-avatar.png', // Fallback avatar
             }))
           }
         />
 
         {/* My Communities */ }
-        { user && !isLoading && (
-          <CommunitySection
-            title='My Communities'
-            showManageOptions={ true }
-            communities={ myCommunities.map((community) => ({
-              id: community.communityId,
-              name: community.name,
-              avatarUrl: community.avatarUrl || '/images/default-avatar.png', // Fallback avatar
-            })) }
-          />
-        ) }
+        {
+          user && !isLoading && (
+            <CommunitySection
+              title='My Communities'
+              showManageOptions={ true }
+              communities={
+                myCommunities.map((community) => ({
+                  id: community.communityId,
+                  name: community.name,
+                  avatarUrl: community.avatarUrl || '/images/default-avatar.png', // Fallback avatar
+                }))
+              }
+            />
+          )
+        }
       </div>
     </aside>
   )
