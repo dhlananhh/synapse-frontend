@@ -1,16 +1,34 @@
-export const PATHS = {
-  home: "/",
-  feed: "/feed",
+export const paths = {
+  home: "/home",
   login: "/login",
   register: "/register",
+  resetPassword: "/reset-password",
+  verifyEmail: "/verify-email",
+  search: "/search",
   submit: "/submit",
-  settings: "/settings",
-  search: (query: string) =>
-    `/search?q=${encodeURIComponent(query)}`,
-  community: (slug: string) => `/c/${slug}`,
-  post: (postId: string) => `/p/${postId}`,
-  postEdit: (postId: string) => `/p/${postId}/edit`,
-  userProfile: (username: string) => `/u/${username}`,
-  communityMembers: (slug: string) => `/c/${slug}/members`,
-  createCommunity: "/communities/create",
+  forbidden: "/forbidden",
+  notFound: "/not-found",
+  community: {
+    create: "/c/create",
+    detail: (name: string) => `/c/${name}`,
+    edit: (name: string) => `/c/${name}/edit`,
+    manage: (name: string) => `/c/${name}/manage`,
+    members: (name: string) => `/c/${name}/members`,
+  },
+  post: {
+    detail: (communityName: string, postId: string) => `/c/${communityName}/posts/${postId}`,
+    edit: (postId: string) => `/u/me/posts/${postId}/edit`,
+  },
+  user: {
+    detail: (userId: string) => `/u/${userId}`,
+    me: "/u/me",
+    myPosts: "/u/me/posts",
+    myCommunities: "/u/me/communities",
+    preferences: "/preferences/me",
+  },
+  admin: {
+    dashboard: "/admin",
+    users: "/admin/users",
+    communities: "/admin/communities",
+  },
 };

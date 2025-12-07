@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter, useSearchParams } from 'next/navigation'
 import PostCard from '@/components/features/post/PostCard'
 import { getPostById } from '@/modules/services/post-service'
@@ -23,14 +23,14 @@ export default function PostDetailsPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
 
-  const [post, setPost] = useState<PostDetails | null>(null)
-  const [authorProfile, setAuthorProfile] = useState<SimpleProfile | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  const [comments, setComments] = useState<CommentNode[]>([])
-  const [commentsLoading, setCommentsLoading] = useState(true)
-  const [contextMode, setContextMode] = useState(false)
-  const [highlightedCommentId, setHighlightedCommentId] = useState<string | null>(null)
+  const [ post, setPost ] = useState<PostDetails | null>(null)
+  const [ authorProfile, setAuthorProfile ] = useState<SimpleProfile | null>(null)
+  const [ loading, setLoading ] = useState(true)
+  const [ error, setError ] = useState<string | null>(null)
+  const [ comments, setComments ] = useState<CommentNode[]>([])
+  const [ commentsLoading, setCommentsLoading ] = useState(true)
+  const [ contextMode, setContextMode ] = useState(false)
+  const [ highlightedCommentId, setHighlightedCommentId ] = useState<string | null>(null)
   const flairs = useCommunityFlairs()
 
   useEffect(() => {
@@ -59,8 +59,8 @@ export default function PostDetailsPage() {
         const data = await getPostById(postId as string)
         setPost(data)
         // Fetch author simple profile
-        const profiles = await userService.getSimpleProfiles([data.authorId])
-        setAuthorProfile(profiles[0])
+        const profiles = await userService.getSimpleProfiles([ data.authorId ])
+        setAuthorProfile(profiles[ 0 ])
       } catch (err) {
         const info = extractErrorInfo(err)
         // prefer server message when available
@@ -77,10 +77,10 @@ export default function PostDetailsPage() {
     }
 
     if (postId) fetchPostAndProfile()
-  }, [postId])
+  }, [ postId ])
 
   // load full comments
-  async function loadComments() {
+  const loadComments = useCallback(async () => {
     setCommentsLoading(true)
     try {
       const res = await fetchPostComments(postId as string)
@@ -103,7 +103,7 @@ export default function PostDetailsPage() {
     } finally {
       setCommentsLoading(false)
     }
-  }
+  }, [ postId, searchParams, router ])
 
   // initial comments load
   useEffect(() => {
@@ -113,7 +113,7 @@ export default function PostDetailsPage() {
     if (!contextCommentId) {
       void loadComments()
     }
-  }, [postId])
+  }, [ postId, loadComments, searchParams ])
 
   // load context chain if contextComment param present
   useEffect(() => {
@@ -122,61 +122,61 @@ export default function PostDetailsPage() {
 
     let mounted = true
     setCommentsLoading(true)
-    ;(async () => {
-      try {
-        const chainResp = await fetchCommentContext(contextCommentId)
+      ; (async () => {
+        try {
+          const chainResp = await fetchCommentContext(contextCommentId)
 
-        if (!mounted) return
+          if (!mounted) return
 
-        const chain: CommentNode[] = Array.isArray(chainResp)
-          ? (chainResp as CommentNode[])
-          : (chainResp as any)?.comments ?? []
+          const chain: CommentNode[] = Array.isArray(chainResp)
+            ? (chainResp as CommentNode[])
+            : (chainResp as any)?.comments ?? []
 
-        if (!chain.length) {
-          // fallback to full comments if no chain returned
-          await loadComments()
-          return
-        }
-
-        // set context comments + highlight
-        setComments(chain)
-        setContextMode(true)
-        setHighlightedCommentId(contextCommentId)
-
-        // wait a tick for DOM to render then scroll into view
-        requestAnimationFrame(() => {
-          const el = document.getElementById(`comment-${contextCommentId}`)
-          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        })
-
-        // Delay clearing the query param so other effects don't immediately re-run and overwrite state.
-        // You can shorten/lengthen the timeout or remove this logic and clear only on user action.
-        setTimeout(() => {
-          try {
-            const params = new URLSearchParams(window.location.search)
-            params.delete('contextComment')
-            const dest = params.toString()
-              ? `${window.location.pathname}?${params.toString()}`
-              : window.location.pathname
-            // replace without scrolling and without causing immediate reload effects
-            router.replace(dest, { scroll: false })
-          } catch {
-            /* ignore */
+          if (!chain.length) {
+            // fallback to full comments if no chain returned
+            await loadComments()
+            return
           }
-        }, 1000)
-      } catch (err) {
-        // fallback to full comments on error
-        await loadComments()
-      } finally {
-        if (mounted) setCommentsLoading(false)
-      }
-    })()
+
+          // set context comments + highlight
+          setComments(chain)
+          setContextMode(true)
+          setHighlightedCommentId(contextCommentId)
+
+          // wait a tick for DOM to render then scroll into view
+          requestAnimationFrame(() => {
+            const el = document.getElementById(`comment-${contextCommentId}`)
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          })
+
+          // Delay clearing the query param so other effects don't immediately re-run and overwrite state.
+          // You can shorten/lengthen the timeout or remove this logic and clear only on user action.
+          setTimeout(() => {
+            try {
+              const params = new URLSearchParams(window.location.search)
+              params.delete('contextComment')
+              const dest = params.toString()
+                ? `${window.location.pathname}?${params.toString()}`
+                : window.location.pathname
+              // replace without scrolling and without causing immediate reload effects
+              router.replace(dest, { scroll: false })
+            } catch {
+              /* ignore */
+            }
+          }, 1000)
+        } catch (err) {
+          // fallback to full comments on error
+          await loadComments()
+        } finally {
+          if (mounted) setCommentsLoading(false)
+        }
+      })()
 
     return () => {
       mounted = false
     }
     // note: intentionally depend only on postId (and not on searchParams) so clearing the query doesn't re-run this effect
-  }, [postId])
+  }, [ postId, loadComments, router, searchParams ])
 
   function handleCommentAdded() {
     if (postId) {
@@ -185,7 +185,7 @@ export default function PostDetailsPage() {
   }
 
   if (loading) return <div>Loading post...</div>
-  if (error) return <div>{error}</div>
+  if (error) return <div>{ error }</div>
   if (!post) return <div>Post not found.</div>
 
   // Find the correct flair by id
@@ -196,25 +196,25 @@ export default function PostDetailsPage() {
   return (
     <div className='flex justify-center py-4'>
       <div className='max-w-3xl'>
-        <PostCard post={post} authorProfile={authorProfile} flair={flair} />
+        <PostCard post={ post } authorProfile={ authorProfile } flair={ flair } />
         <div className='mt-4'>
           <h2 className='text-lg font-semibold mb-4'>Comments</h2>
 
-          {contextMode && (
+          { contextMode && (
             <div className='mb-3'>
               <button
                 className='px-3 py-1 rounded-md bg-gray-800 text-sm'
-                onClick={() => {
+                onClick={ () => {
                   void loadComments()
-                }}
+                } }
               >
                 View full thread
               </button>
             </div>
-          )}
+          ) }
 
-          {allowNewComments ? (
-            <CommentForm postId={post.id} onSuccess={handleCommentAdded} />
+          { allowNewComments ? (
+            <CommentForm postId={ post.id } onSuccess={ handleCommentAdded } />
           ) : (
             <div
               role='status'
@@ -235,20 +235,20 @@ export default function PostDetailsPage() {
                 </div>
               </div>
             </div>
-          )}
-          {commentsLoading ? (
+          ) }
+          { commentsLoading ? (
             <div>Loading comments...</div>
           ) : (
             <CommentList
-              communityId={post.community.id}
-              comments={comments}
-              postId={post.id}
-              onCommentAdded={handleCommentAdded}
-              contextMode={contextMode}
-              highlightedCommentId={highlightedCommentId}
-              allowNewComments={allowNewComments}
+              communityId={ post.community.id }
+              comments={ comments }
+              postId={ post.id }
+              onCommentAdded={ handleCommentAdded }
+              contextMode={ contextMode }
+              highlightedCommentId={ highlightedCommentId }
+              allowNewComments={ allowNewComments }
             />
-          )}
+          ) }
         </div>
       </div>
     </div>

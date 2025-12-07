@@ -41,7 +41,10 @@ export function MyCommunityRow({ community, onLeave }: MyCommunityRowProps) {
     <div className="border-b last:border-b-0 hover:bg-muted/50 transition-colors">
       <div className="flex items-center justify-between p-4">
 
-        <Link href={ `/c/${community.name}` } className="flex items-center gap-4 flex-1 overflow-hidden group">
+        <Link
+          href={ `/c/${community.name}` }
+          className="flex items-center gap-4 flex-1 overflow-hidden group"
+        >
           <Avatar className="h-10 w-10">
             <AvatarImage src={ community.avatarUrl ?? '' } />
             <AvatarFallback>{ community.name.charAt(0).toUpperCase() }</AvatarFallback>

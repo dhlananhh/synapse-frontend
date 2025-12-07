@@ -5,7 +5,7 @@ import React, { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { communityService } from "@/modules/services/community-service";
 import { MyCommunity } from "@/types/services/community";
-import { MyCommunityRow } from "@/components/features/community/me/CommunityRow";
+import { MyCommunityRow } from "@/components/features/community/me/MyCommunityRow";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { List } from "lucide-react";
