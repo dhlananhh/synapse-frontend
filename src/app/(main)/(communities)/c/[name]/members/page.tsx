@@ -209,7 +209,7 @@ export default function CommunityMembersPage({ params }: PageProps) {
             Members
           </h1>
           <p className="text-muted-foreground mt-1">
-            Showing all { community.memberCount.toLocaleString() } members of c/{ community.name }
+            A list of all members currently in c/{ community.name }
           </p>
         </div>
 
