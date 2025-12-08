@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   ArrowUp,
   ArrowDown,
@@ -33,17 +33,19 @@ import { useAuth } from '@/context/AuthContext'
 import ActionConfirmDialog from '@/components/shared/ActionConfirmDialog'
 import { toast } from 'sonner'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import ReportDialog from '@/components/features/report/ReportDialog' // Import ReportDialog
+import ReportDialog from '@/components/features/report/ReportDialog'
+
 
 interface CommentProps {
   communityId: string
   comment: CommentNode
   postId: string
   onCommentAdded?: () => void
-  onRepliesChanged?: () => void // NEW
-  highlighted?: boolean // NEW - temporary highlight flag
+  onRepliesChanged?: () => void
+  highlighted?: boolean
   allowNewComments?: boolean
 }
+
 
 export default function Comment({
   communityId,
@@ -54,28 +56,28 @@ export default function Comment({
   highlighted = false,
   allowNewComments = true,
 }: CommentProps) {
-  const { user: authUser } = useAuth() // Get the current user from AuthContext
-  const [profile, setProfile] = useState<SimpleProfile | null>(null)
-  const [showReply, setShowReply] = useState(false)
-  const [showReplies, setShowReplies] = useState(false)
-  const [replies, setReplies] = useState<CommentNode[] | null>(null)
-  const [loadingReplies, setLoadingReplies] = useState(false)
-  const [editMode, setEditMode] = useState(false)
-  const [content, setContent] = useState(comment.content)
-  const [deleting, setDeleting] = useState(false)
-  const [confirmOpen, setConfirmOpen] = useState(false)
-  const [voting, setVoting] = useState<VoteType | null>(null)
-  const [localScore, setLocalScore] = useState(comment.score)
-  const [voted, setVoted] = useState<'UPVOTE' | 'DOWNVOTE' | null>(comment.currentUserVote ?? null)
-  const [isReportDialogOpen, setReportDialogOpen] = useState(false) // State for the report dialog
+  const { user: authUser } = useAuth()
+  const [ profile, setProfile ] = useState<SimpleProfile | null>(null)
+  const [ showReply, setShowReply ] = useState(false)
+  const [ showReplies, setShowReplies ] = useState(false)
+  const [ replies, setReplies ] = useState<CommentNode[] | null>(null)
+  const [ loadingReplies, setLoadingReplies ] = useState(false)
+  const [ editMode, setEditMode ] = useState(false)
+  const [ content, setContent ] = useState(comment.content)
+  const [ deleting, setDeleting ] = useState(false)
+  const [ confirmOpen, setConfirmOpen ] = useState(false)
+  const [ voting, setVoting ] = useState<VoteType | null>(null)
+  const [ localScore, setLocalScore ] = useState(comment.score)
+  const [ voted, setVoted ] = useState<'UPVOTE' | 'DOWNVOTE' | null>(comment.currentUserVote ?? null)
+  const [ isReportDialogOpen, setReportDialogOpen ] = useState(false)
 
   // local transient highlight state (controls visual effect)
-  const [isLocalHighlight, setIsLocalHighlight] = useState(false)
+  const [ isLocalHighlight, setIsLocalHighlight ] = useState(false)
 
   useEffect(() => {
     // Make highlight persistent while `highlighted` is true.
     setIsLocalHighlight(Boolean(highlighted))
-  }, [highlighted])
+  }, [ highlighted ])
 
   const currentUserId = authUser?.id // Get the current user's ID
   const isAuthor = currentUserId === comment.authorId // Check if the current user is the author
@@ -172,192 +174,289 @@ export default function Comment({
 
   return (
     <div
-      id={`comment-${comment.id}`}
-      className={`relative flex gap-3 py-4 mb-2 transition-all duration-1500 transform ${
-        isLocalHighlight
-          ? 'rounded-lg ring-2 ring-amber-400/50 bg-gradient-to-r from-amber-600/6 to-transparent border-l-4 border-amber-400 shadow-lg scale-[1.01] animate-pulse'
-          : 'rounded-md hover:shadow-sm'
-      }`}
+      id={ `comment-${comment.id}` }
+      className={
+        `relative flex gap-3 py-4 transition-all duration-500 rounded-md
+        ${isLocalHighlight
+          ? 'bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800'
+          : 'hover:bg-muted/30'
+        }`
+      }
     >
-      {/* subtle badge to indicate the highlighted/targeted comment */}
-      {isLocalHighlight && (
-        <span className='absolute -top-2 right-2 inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-400 text-amber-900 shadow-sm'>
-          This one twin !
-        </span>
-      )}
-      <div>
-        <Avatar className='w-8 h-8 border border-gray-400'>
-          {profile?.avatarUrl ? (
-            <AvatarImage src={profile.avatarUrl} alt={profile.username || comment.authorId} />
-          ) : (
-            <AvatarFallback>
-              {profile?.username?.charAt(0).toUpperCase() ??
-                comment.authorId.charAt(0).toUpperCase()}
-            </AvatarFallback>
-          )}
-        </Avatar>
-      </div>
-      <div className='flex-1'>
-        <div className='flex items-center gap-2 text-sm'>
-          <span className='font-semibold'>u/{profile?.username ?? comment.authorId}</span>
-          <span className='text-muted-foreground'>
-            • {formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true })}
+      {/* Badge Highlight */ }
+      {
+        isLocalHighlight && (
+          <span className='absolute -top-2 right-2 inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-100 shadow-sm border border-amber-200'>
+            New Highlight
           </span>
-          {comment.isEdited && <span className='ml-2 text-xs text-muted-foreground'>(edited)</span>}
-          {!isRemoved && (
-            <div className='ml-auto'>
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className='p-1 rounded-full hover:bg-muted' aria-label='Comment options'>
-                    <MoreHorizontal className='w-5 h-5' />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align='end'>
-                  {isAuthor && (
-                    <>
-                      <DropdownMenuItem onClick={() => setEditMode(true)}>
-                        <Pencil className='w-4 h-4 mr-2' />
-                        Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem
-                        className='text-destructive'
-                        onClick={() => setConfirmOpen(true)}
-                        disabled={deleting}
-                      >
-                        <Trash2 className='w-4 h-4 mr-2' />
-                        {deleting ? 'Deleting...' : 'Delete'}
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  {!isAuthor && (
-                    <DropdownMenuItem
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setReportDialogOpen(true) // Open the report dialog
-                      }}
+        )
+      }
+
+      {/* Avatar Column */ }
+      <div className="flex-shrink-0">
+        <Avatar className='w-8 h-8 border border-border shadow-sm'>
+          {
+            profile?.avatarUrl ? (
+              <AvatarImage src={ profile.avatarUrl } alt={ profile.username || comment.authorId } />
+            ) : (
+              <AvatarFallback className="bg-muted text-muted-foreground text-xs font-medium">
+                { (profile?.username ?? comment.authorId).slice(0, 2).toUpperCase() }
+              </AvatarFallback>
+            )
+          }
+        </Avatar>
+
+        {/* Thread line visual cue (optional) */ }
+        {
+          showReplies && (
+            <div className="w-[1px] bg-border mx-auto h-[calc(100%-2rem)] mt-2 group-hover:bg-primary/20" />
+          )
+        }
+      </div>
+
+      {/* Content Column */ }
+      <div className='flex-1 min-w-0'>
+        <div className='flex items-center gap-2 text-sm text-muted-foreground mb-1'>
+          <span className='font-semibold text-foreground hover:underline cursor-pointer'>
+            u/{ profile?.username ?? comment.authorId }
+          </span>
+          <span className='text-muted-foreground'>
+            • { formatDistanceToNow(new Date(comment.createdAt), { addSuffix: true }) }
+          </span>
+          {
+            comment.isEdited && (
+              <span className='ml-2 text-xs text-muted-foreground italic'>
+                (edited)
+              </span>
+            )
+          }
+
+          {/* Action Menu (More options) */ }
+          {
+            !isRemoved && (
+              <div className='ml-auto'>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      className='p-1 rounded-full hover:bg-muted'
+                      aria-label='Comment options'
                     >
-                      <Flag className='w-4 h-4 mr-2' />
-                      Report
-                    </DropdownMenuItem>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
+                      <MoreHorizontal className='w-5 h-5' />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align='end'>
+                    {
+                      isAuthor && (
+                        <>
+                          <DropdownMenuItem
+                            onClick={ () => setEditMode(true) }
+                          >
+                            <Pencil className='w-4 h-4 mr-2' />
+                            Edit
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className='text-destructive'
+                            onClick={ () => setConfirmOpen(true) }
+                            disabled={ deleting }
+                          >
+                            <Trash2 className='w-4 h-4 mr-2' />
+                            { deleting ? 'Deleting...' : 'Delete' }
+                          </DropdownMenuItem>
+                        </>
+                      )
+                    }
+                    {
+                      !isAuthor && (
+                        <DropdownMenuItem
+                          onClick={
+                            (e) => {
+                              e.preventDefault()
+                              setReportDialogOpen(true) // Open the report dialog
+                            }
+                          }
+                        >
+                          <Flag className='w-4 h-4 mr-2' />
+                          Report
+                        </DropdownMenuItem>
+                      )
+                    }
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            )
+          }
         </div>
         <div className='mt-2'>
-          {comment.status === 'PUBLISHED' ? (
-            editMode ? (
-              <EditCommentForm
-                commentId={comment.id}
-                initialContent={content}
-                onSuccess={(newContent) => {
-                  setContent(newContent)
-                  setEditMode(false)
-                }}
-                onCancel={() => setEditMode(false)}
-              />
+          {
+            comment.status === 'PUBLISHED' ? (
+              editMode ? (
+                <EditCommentForm
+                  commentId={ comment.id }
+                  initialContent={ content }
+                  onSuccess={
+                    (newContent) => {
+                      setContent(newContent)
+                      setEditMode(false)
+                    }
+                  }
+                  onCancel={ () => setEditMode(false) }
+                />
+              ) : (
+                // Hiển thị nội dung comment
+                <div className="whitespace-pre-wrap break-words">
+                  { content }
+                </div>
+              )
             ) : (
-              content
+              // <span className='italic text-muted-foreground'>{ getRemovedMessage() }</span>
+              <div className="py-2 px-3 bg-muted/50 rounded text-xs italic text-muted-foreground border border-border">
+                { getRemovedMessage() }
+              </div>
             )
-          ) : (
-            <span className='italic text-muted-foreground'>{getRemovedMessage()}</span>
-          )}
+          }
         </div>
-        {!isRemoved && (
-          <div className='flex items-center gap-3 my-2 text-sm text-muted-foreground'>
-            <button
-              className={`rounded-full p-1 hover:bg-muted ${
-                voted === 'UPVOTE' ? 'text-destructive' : ''
-              }`}
-              aria-label='Upvote'
-              disabled={voting !== null}
-              onClick={() => (voted === 'UPVOTE' ? handleUnvote() : handleVote('UPVOTE'))}
-            >
-              <ArrowUp className='w-4 h-4' />
-            </button>
-            <span className='font-semibold text-foreground'>{localScore}</span>
-            <button
-              className={`rounded-full p-1 hover:bg-muted ${
-                voted === 'DOWNVOTE' ? 'text-destructive' : ''
-              }`}
-              aria-label='Downvote'
-              disabled={voting !== null}
-              onClick={() => (voted === 'DOWNVOTE' ? handleUnvote() : handleVote('DOWNVOTE'))}
-            >
-              <ArrowDown className='w-4 h-4' />
-            </button>
-            {allowNewComments ? (
+
+        {/* Footer Actions (Vote, Reply) */ }
+        {
+          !isRemoved && (
+            <div className='flex items-center gap-3 my-2 text-sm text-muted-foreground'>
               <button
-                className='ml-2 text-xs flex items-center gap-1 hover:bg-gray-600 p-2 rounded-2xl'
-                onClick={() => setShowReply((v) => !v)}
-                type='button'
-              >
-                <MessageCircle className='w-4 h-4' />
-                Reply
-              </button>
-            ) : (
-              <span className='ml-2 text-xs px-2 py-1 rounded text-muted-foreground bg-muted/20'>
-                Comments locked
-              </span>
-            )}
-            {comment.hasReplies && (
-              <button
-                className='ml-2 text-xs flex items-center gap-1 hover:bg-gray-600 p-2 rounded-2xl'
-                onClick={handleShowReplies}
-                type='button'
-              >
-                <CornerDownRight className='w-4 h-4' />
-                {showReplies ? 'Hide replies' : loadingReplies ? 'Loading...' : 'Show replies'}
-              </button>
-            )}
-          </div>
-        )}
-        {showReply && !isRemoved && allowNewComments && (
-          <div className='mt-2'>
-            <CommentForm
-              postId={postId}
-              parentCommentId={comment.id}
-              onSuccess={handleReplyAdded}
-            />
-          </div>
-        )}
-        {showReplies && replies && !isRemoved && (
-          <div className='ml-6 border-l pl-4 mt-2'>
-            <CommentList
-              communityId={communityId}
-              comments={replies}
-              postId={postId}
-              onCommentAdded={onCommentAdded}
-              onRepliesChanged={async () => {
-                setLoadingReplies(true)
-                try {
-                  const res = await fetchCommentReplies(comment.id)
-                  setReplies(res.comments)
-                } finally {
-                  setLoadingReplies(false)
+                className={
+                  `rounded-full p-1 hover:bg-muted 
+                  ${voted === 'UPVOTE' ? 'text-destructive' : ''}`
                 }
-              }}
-            />
-          </div>
-        )}
+                aria-label='Upvote'
+                disabled={ voting !== null }
+                onClick={ () => (voted === 'UPVOTE' ? handleUnvote() : handleVote('UPVOTE')) }
+              >
+                <ArrowUp className='w-4 h-4' />
+              </button>
+
+              <span className={
+                `text-xs font-bold px-1 min-w-[1.5rem] text-center 
+                ${voted === 'UPVOTE' ? 'text-orange-500' :
+                  voted === 'DOWNVOTE' ? 'text-purple-500' : 'text-foreground'
+                }`
+              }
+              >
+                { localScore }
+              </span>
+
+              <button
+                className={
+                  `p-1 rounded hover:bg-black/5 dark:hover:bg-white/10 transition-colors 
+                  ${voted === 'DOWNVOTE'
+                    ? 'text-purple-500'
+                    : 'text-muted-foreground hover:text-purple-500'
+                  }`
+                }
+                onClick={
+                  () => (voted === 'DOWNVOTE'
+                    ? handleUnvote()
+                    : handleVote('DOWNVOTE'))
+                }
+              >
+                <ArrowDown className='w-4 h-4' />
+              </button>
+
+              {/* Separator */ }
+              <div className="h-3 w-[1px] bg-border mx-1"></div>
+
+              {/* Reply Button */ }
+              {
+                allowNewComments ? (
+                  <button
+                    className='flex items-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-semibold text-muted-foreground hover:bg-secondary hover:text-foreground transition-all'
+                    onClick={ () => setShowReply((v) => !v) }
+                    type='button'
+                  >
+                    <MessageCircle className='w-4 h-4' />
+                    Reply
+                  </button>
+                ) : (
+                  <span className='ml-2 text-[10px] uppercase font-bold text-muted-foreground tracking-wide flex items-center gap-1 opacity-70'>
+                    Comments locked
+                  </span>
+                )
+              }
+
+              {/* Show Replies Button */ }
+              {
+                comment.hasReplies && (
+                  <button
+                    className='flex items-center gap-1.5 px-2 py-1.5 rounded-md text-xs font-semibold text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all'
+                    onClick={ handleShowReplies }
+                    type='button'
+                  >
+                    <CornerDownRight className={ `w-4 h-4 transition-transform 
+                      ${showReplies ? 'rotate-90' : ''}` }
+                    />
+                    { showReplies ? 'Hide replies' : loadingReplies ? 'Loading...' : 'Show replies' }
+                  </button>
+                )
+              }
+            </div>
+          )
+        }
+
+        {/* Reply Input Form */ }
+        {
+          showReply && !isRemoved && allowNewComments && (
+            <div className='mt-3 pl-2 border-l-2 border-border animate-in fade-in slide-in-from-top-1'>
+              <CommentForm
+                postId={ postId }
+                parentCommentId={ comment.id }
+                onSuccess={ handleReplyAdded }
+              />
+            </div>
+          )
+        }
+
+        {/* Nested Replies */ }
+        {
+          showReplies && replies && !isRemoved && (
+            <div className='ml-6 border-l pl-4 mt-2'>
+              <CommentList
+                communityId={ communityId }
+                comments={ replies }
+                postId={ postId }
+                onCommentAdded={ onCommentAdded }
+                onRepliesChanged={
+                  async () => {
+                    setLoadingReplies(true)
+                    try {
+                      const res = await fetchCommentReplies(comment.id)
+                      setReplies(res.comments)
+                    } finally {
+                      setLoadingReplies(false)
+                    }
+                  }
+                }
+              />
+            </div>
+          )
+        }
+
+
+        {/* Action Confirm Dialog */ }
         <ActionConfirmDialog
-          open={confirmOpen}
-          onOpenChange={setConfirmOpen}
-          onConfirm={handleDelete}
+          open={ confirmOpen }
+          onOpenChange={ setConfirmOpen }
+          onConfirm={ handleDelete }
           title='Delete Comment'
           description='Are you sure you want to delete this comment? This action cannot be undone.'
           confirmText='Delete'
           isDestructive
-          isConfirming={deleting}
+          isConfirming={ deleting }
         />
-        {/* Report Dialog */}
+
+        {/* Report Dialog */ }
         <ReportDialog
-          isOpen={isReportDialogOpen}
-          onClose={() => setReportDialogOpen(false)} // Close the dialog
-          communityId={communityId}
+          isOpen={ isReportDialogOpen }
+          onClose={ () => setReportDialogOpen(false) } // Close the dialog
+          communityId={ communityId }
           targetType='COMMENT'
-          targetId={comment.id}
+          targetId={ comment.id }
         />
       </div>
     </div>
