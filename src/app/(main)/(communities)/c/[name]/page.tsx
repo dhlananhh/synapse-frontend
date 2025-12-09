@@ -16,7 +16,7 @@ export default function CommunityPage() {
 
 
   if (!community)
-    return <div>Loadddding...</div>
+    return <div>Loading...</div>
 
   return (
     <div>
