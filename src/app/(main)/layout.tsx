@@ -1,21 +1,25 @@
-import { Navbar } from '@/components/shared/Navbar'
-import Sidebar from '@/components/shared/Sidebar'
+import { Navbar } from "@/components/shared/Navbar"
+import Sidebar from "@/components/shared/Sidebar"
+
 
 export default function MainLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className='relative flex min-h-screen'>
-      {/* Sidebar */ }
-      <aside className='w-70 bg-muted text-muted-foreground flex-shrink-0'>
-        <div className='sticky top-[32px] max-h-[calc(100vh-64px)] overflow-y-auto scrollbar-hide'>
-          {/* Sidebar content is scrollable */ }
+    <div className="flex min-h-screen bg-background">
+
+      <div className="flex-shrink-0 z-30 hidden md:block">
+        <div className="sticky top-0 h-screen w-[270px] border-r bg-background">
           <Sidebar />
         </div>
-      </aside>
+      </div>
 
-      {/* Main Content */ }
-      <div className='flex flex-col flex-grow'>
+      <div className="flex-1 flex flex-col min-w-0">
+
         <Navbar />
-        <main className='flex-grow w-full pt-8 mb-14 px-4 sm:px-6 lg:px-8'>{ children }</main>
+
+        <main className="flex-1 pt-16 px-0 md:px-6 w-full max-w-full">
+          { children }
+        </main>
+
       </div>
     </div>
   )
