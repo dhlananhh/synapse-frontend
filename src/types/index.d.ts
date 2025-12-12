@@ -139,6 +139,7 @@ export type Conversation = {
 
 // ChatState interface
 export interface ChatState {
+  conversation: Conversation | null
   conversations: Conversation[]
   activeConversationId: string | null
   isWidgetOpen: boolean
@@ -155,6 +156,12 @@ export interface NotificationState {
   addNotification: (notification: Notification) => void
   markAsRead: (notificationId: string) => void
   markAllAsRead: () => void
+}
+
+export interface Participant {
+  avatarUrl: string;
+  username: string;
+  isOnline: boolean;
 }
 
 // Language type
