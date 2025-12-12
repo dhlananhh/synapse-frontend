@@ -3,9 +3,8 @@ import React from "react";
 
 
 export async function generateMetadata(
-  props: {
-    params: Promise<{ userId: string }>
-  }, parent?: ResolvingMetadata
+  props: { params: Promise<{ userId: string }> },
+  parent: ResolvingMetadata
 ): Promise<Metadata> {
   const params = await props.params;
   const userId = decodeURIComponent(String(params.userId));
