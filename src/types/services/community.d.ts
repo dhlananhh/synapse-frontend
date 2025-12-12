@@ -176,6 +176,8 @@ export interface SystemStats {
     moderationActions: number
     bansIssued: number
     unbansIssued: number
+    commentsRemoved: number
+    postsRemoved: number
   }
   timestamps: {
     createdAt: string

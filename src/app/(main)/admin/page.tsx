@@ -39,15 +39,15 @@ import { Doughnut, Bar } from 'react-chartjs-2'
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement)
 
 export default function AdminDashboardPage() {
-  const [summary, setSummary] = useState<AccountSummary | null>(null)
-  const [systemStats, setSystemStats] = useState<SystemStats | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
+  const [ summary, setSummary ] = useState<AccountSummary | null>(null)
+  const [ systemStats, setSystemStats ] = useState<SystemStats | null>(null)
+  const [ isLoading, setIsLoading ] = useState(true)
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true)
       try {
-        const [summaryResp, systemResp] = await Promise.all([
+        const [ summaryResp, systemResp ] = await Promise.all([
           authService.fetchAccountSummary(),
           communityService.fetchSystemStats(),
         ])
@@ -90,15 +90,15 @@ export default function AdminDashboardPage() {
     // if there's no data at all, return null so we don't paint a fake slice
     if (total === 0) return null
 
-    const values = [active, suspended, pending]
+    const values = [ active, suspended, pending ]
 
-    const labels = ['Active', 'Suspended', 'Pending']
+    const labels = [ 'Active', 'Suspended', 'Pending' ]
     const data = {
       labels,
       datasets: [
         {
           data: values,
-          backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+          backgroundColor: [ '#10b981', '#ef4444', '#f59e0b' ],
           hoverOffset: 6,
         },
       ],
@@ -108,7 +108,7 @@ export default function AdminDashboardPage() {
       maintainAspectRatio: false,
     }
     return { data, options }
-  }, [summary])
+  }, [ summary ])
 
   const dailyChart = useMemo(() => {
     // visualize proportions of daily/new user categories (exclude the total newUsers slice)
@@ -122,15 +122,15 @@ export default function AdminDashboardPage() {
     // if there's no daily data, don't render a fake slice
     if (total === 0) return null
 
-    const values = [newActive, newSuspended, newPending, newBanned]
+    const values = [ newActive, newSuspended, newPending, newBanned ]
 
-    const labels = ['New Active', 'New Suspended', 'New Pending', 'New Banned']
+    const labels = [ 'New Active', 'New Suspended', 'New Pending', 'New Banned' ]
     const data = {
       labels,
       datasets: [
         {
           data: values,
-          backgroundColor: ['#06b6d4', '#fb923c', '#fbbf24', '#ef4444'],
+          backgroundColor: [ '#06b6d4', '#fb923c', '#fbbf24', '#ef4444' ],
           hoverOffset: 6,
         },
       ],
@@ -140,7 +140,7 @@ export default function AdminDashboardPage() {
       maintainAspectRatio: false,
     }
     return { data, options }
-  }, [summary])
+  }, [ summary ])
 
   // --- new charts for system stats ---
   // Communities: status breakdown (ACTIVE / SUSPENDED / DELETED)
@@ -153,17 +153,17 @@ export default function AdminDashboardPage() {
     if (total === 0) return null
     return {
       data: {
-        labels: ['Active', 'Suspended', 'Deleted'],
+        labels: [ 'Active', 'Suspended', 'Deleted' ],
         datasets: [
           {
-            data: [active, suspended, deleted],
-            backgroundColor: ['#10b981', '#ef4444', '#6b7280'],
+            data: [ active, suspended, deleted ],
+            backgroundColor: [ '#10b981', '#ef4444', '#6b7280' ],
           },
         ],
       },
       options: { plugins: { legend: { position: 'bottom' as const } }, maintainAspectRatio: false },
     }
-  }, [systemStats])
+  }, [ systemStats ])
 
   // Communities: mode/privacy breakdown (NSFW / Private / Public inferred)
   const communitiesModeChart = useMemo(() => {
@@ -177,17 +177,17 @@ export default function AdminDashboardPage() {
     if (total === 0) return null
     return {
       data: {
-        labels: ['NSFW', 'Private', 'Public (inferred)'],
+        labels: [ 'NSFW', 'Private', 'Public (inferred)' ],
         datasets: [
           {
-            data: [nsfw, priv, inferredPublic],
-            backgroundColor: ['#fb7185', '#7c3aed', '#3b82f6'],
+            data: [ nsfw, priv, inferredPublic ],
+            backgroundColor: [ '#fb7185', '#7c3aed', '#3b82f6' ],
           },
         ],
       },
       options: { plugins: { legend: { position: 'bottom' as const } }, maintainAspectRatio: false },
     }
-  }, [systemStats])
+  }, [ systemStats ])
 
   const membershipsChart = useMemo(() => {
     if (!systemStats) return null
@@ -198,14 +198,14 @@ export default function AdminDashboardPage() {
     if (total === 0) return null
     return {
       data: {
-        labels: ['Active', 'Pending', 'Banned'],
+        labels: [ 'Active', 'Pending', 'Banned' ],
         datasets: [
-          { data: [active, pending, banned], backgroundColor: ['#10b981', '#f59e0b', '#ef4444'] },
+          { data: [ active, pending, banned ], backgroundColor: [ '#10b981', '#f59e0b', '#ef4444' ] },
         ],
       },
       options: { plugins: { legend: { position: 'bottom' as const } }, maintainAspectRatio: false },
     }
-  }, [systemStats])
+  }, [ systemStats ])
 
   const contentChart = useMemo(() => {
     if (!systemStats) return null
@@ -219,12 +219,12 @@ export default function AdminDashboardPage() {
     if (postsTotal === 0 && comments === 0 && votes === 0) return null
     return {
       data: {
-        labels: ['Published', 'Drafts', 'NSFW', 'Comments', 'Votes'],
+        labels: [ 'Published', 'Drafts', 'NSFW', 'Comments', 'Votes' ],
         datasets: [
           {
             label: 'Counts',
-            data: [published, drafts, nsfw, comments, votes],
-            backgroundColor: ['#3b82f6', '#94a3b8', '#fb7185', '#06b6d4', '#7c3aed'],
+            data: [ published, drafts, nsfw, comments, votes ],
+            backgroundColor: [ '#3b82f6', '#94a3b8', '#fb7185', '#06b6d4', '#7c3aed' ],
           },
         ],
       },
@@ -234,7 +234,7 @@ export default function AdminDashboardPage() {
         maintainAspectRatio: false,
       },
     }
-  }, [systemStats])
+  }, [ systemStats ])
 
   const reportsChart = useMemo(() => {
     if (!systemStats) return null
@@ -245,17 +245,17 @@ export default function AdminDashboardPage() {
     if (total === 0) return null
     return {
       data: {
-        labels: ['Pending', 'Resolved', 'Dismissed'],
+        labels: [ 'Pending', 'Resolved', 'Dismissed' ],
         datasets: [
           {
-            data: [pending, resolved, dismissed],
-            backgroundColor: ['#f59e0b', '#10b981', '#94a3b8'],
+            data: [ pending, resolved, dismissed ],
+            backgroundColor: [ '#f59e0b', '#10b981', '#94a3b8' ],
           },
         ],
       },
       options: { plugins: { legend: { position: 'bottom' as const } }, maintainAspectRatio: false },
     }
-  }, [systemStats])
+  }, [ systemStats ])
 
   const moderationChart = useMemo(() => {
     if (!systemStats) return null
@@ -266,12 +266,12 @@ export default function AdminDashboardPage() {
     if (total === 0) return null
     return {
       data: {
-        labels: ['Actions', 'Bans', 'Unbans'],
+        labels: [ 'Actions', 'Bans', 'Unbans' ],
         datasets: [
           {
             label: 'Count',
-            data: [actions, bans, unbans],
-            backgroundColor: ['#7c3aed', '#ef4444', '#06b6d4'],
+            data: [ actions, bans, unbans ],
+            backgroundColor: [ '#7c3aed', '#ef4444', '#06b6d4' ],
           },
         ],
       },
@@ -281,11 +281,11 @@ export default function AdminDashboardPage() {
         maintainAspectRatio: false,
       },
     }
-  }, [systemStats])
+  }, [ systemStats ])
 
   return (
     <div className='space-y-8'>
-      <AnimateOnScroll delay={0.1}>
+      <AnimateOnScroll delay={ 0.1 }>
         <div>
           <h1 className='text-3xl font-bold tracking-tight'>Admin Dashboard</h1>
           <p className='text-muted-foreground'>An overview of the Synapse platform's activity.</p>
@@ -293,158 +293,158 @@ export default function AdminDashboardPage() {
       </AnimateOnScroll>
 
       <div className='grid gap-4 md:grid-cols-2 lg:grid-cols-4'>
-        {statCards.map((card) => (
-          <Link href={card.href} key={card.title}>
+        { statCards.map((card) => (
+          <Link href={ card.href } key={ card.title }>
             <Card>
               <CardHeader className='flex flex-row items-center justify-between pb-2'>
-                <CardTitle className='text-sm font-medium'>{card.title}</CardTitle>
-                <card.icon className={`h-4 w-4 text-muted-foreground ${card.color}`} />
+                <CardTitle className='text-sm font-medium'>{ card.title }</CardTitle>
+                <card.icon className={ `h-4 w-4 text-muted-foreground ${card.color}` } />
               </CardHeader>
               <CardContent>
-                {isLoading ? (
+                { isLoading ? (
                   <Skeleton className='h-8 w-1/2' />
                 ) : (
-                  <div className='text-2xl font-bold'>{(card.value ?? 0).toLocaleString()}</div>
-                )}
+                  <div className='text-2xl font-bold'>{ (card.value ?? 0).toLocaleString() }</div>
+                ) }
                 <p className='text-xs text-muted-foreground'>Click to view details</p>
               </CardContent>
             </Card>
           </Link>
-        ))}
+        )) }
       </div>
 
-      {/* Expanded snapshot details */}
+      {/* Expanded snapshot details */ }
       <Card>
         <CardHeader>
           <CardTitle className='text-sm flex items-center justify-between'>
-            Platform snapshot - {new Date(summary.summaryDate).toLocaleDateString()}
+            Platform snapshot - { summary ? new Date(summary.summaryDate).toLocaleDateString() : 'Loading...' }
             <span className='text-xs text-muted-foreground'>
-              {summary
+              { summary
                 ? `${new Date(summary.summaryDate).toLocaleDateString()} • ${formatDistanceToNow(
-                    new Date(summary.summaryDate),
-                    { addSuffix: true }
-                  )}`
-                : ''}
+                  new Date(summary.summaryDate),
+                  { addSuffix: true }
+                )}`
+                : '' }
             </span>
           </CardTitle>
           <CardDescription>Detailed counts for the selected snapshot</CardDescription>
         </CardHeader>
 
         <CardContent>
-          {isLoading || !summary ? (
+          { isLoading || !summary ? (
             <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
-              {[...Array(8)].map((_, i) => (
-                <Skeleton key={i} className='h-8 w-full' />
-              ))}
+              { [ ...Array(8) ].map((_, i) => (
+                <Skeleton key={ i } className='h-8 w-full' />
+              )) }
             </div>
           ) : (
             <>
               <div className='grid grid-cols-1 md:grid-cols-2 gap-4 mb-4'>
-                {/* Accumulated totals (snapshot) */}
+                {/* Accumulated totals (snapshot) */ }
                 <div className='border rounded-md p-3 bg-card'>
                   <div className='flex items-center justify-between mb-2'>
                     <div className='text-sm font-medium'>Accumulated totals</div>
                     <div className='text-xs text-muted-foreground'>snapshot</div>
                   </div>
                   <div className='text-xs text-muted-foreground mb-2'>
-                    Total users: {summary.totalUsers}
+                    Total users: { summary.totalUsers }
                   </div>
                   <div className='h-44'>
-                    {accumulatedChart ? (
-                      <Doughnut data={accumulatedChart.data} options={accumulatedChart.options} />
+                    { accumulatedChart ? (
+                      <Doughnut data={ accumulatedChart.data } options={ accumulatedChart.options } />
                     ) : (
                       <div className='h-44 flex items-center justify-center text-sm text-muted-foreground'>
                         No breakdown data for this snapshot
                       </div>
-                    )}
+                    ) }
                   </div>
 
                   <div className='mt-3 flex flex-wrap gap-2'>
                     <Badge className='inline-flex items-center gap-2 px-2 py-1'>
                       <Users className='w-4 h-4' /> <span className='text-xs'>Total</span>
-                      <span className='ml-2 font-semibold'>{summary.totalUsers}</span>
+                      <span className='ml-2 font-semibold'>{ summary.totalUsers }</span>
                     </Badge>
                     <Badge className='inline-flex items-center gap-2 px-2 py-1'>
-                      <UserCheck className='w-4 h-4 text-green-600' />{' '}
+                      <UserCheck className='w-4 h-4 text-green-600' />{ ' ' }
                       <span className='text-xs'>Active</span>
-                      <span className='ml-2 font-semibold'>{summary.activeUsers}</span>
+                      <span className='ml-2 font-semibold'>{ summary.activeUsers }</span>
                     </Badge>
                     <Badge className='inline-flex items-center gap-2 px-2 py-1'>
-                      <ShieldAlert className='w-4 h-4 text-red-600' />{' '}
+                      <ShieldAlert className='w-4 h-4 text-red-600' />{ ' ' }
                       <span className='text-xs'>Suspended</span>
-                      <span className='ml-2 font-semibold'>{summary.suspendedUsers}</span>
+                      <span className='ml-2 font-semibold'>{ summary.suspendedUsers }</span>
                     </Badge>
                     <Badge className='inline-flex items-center gap-2 px-2 py-1'>
-                      <UserMinus className='w-4 h-4 text-yellow-600' />{' '}
+                      <UserMinus className='w-4 h-4 text-yellow-600' />{ ' ' }
                       <span className='text-xs'>Pending</span>
-                      <span className='ml-2 font-semibold'>{summary.pendingUsers}</span>
+                      <span className='ml-2 font-semibold'>{ summary.pendingUsers }</span>
                     </Badge>
                   </div>
                 </div>
 
-                {/* Daily / snapshot deltas */}
+                {/* Daily / snapshot deltas */ }
                 <div className='border rounded-md p-3 bg-card'>
                   <div className='flex items-center justify-between mb-2'>
                     <div className='text-sm font-medium'>Daily / Snapshot deltas</div>
                     <div className='text-xs text-muted-foreground'>daily</div>
                   </div>
                   <div className='h-44'>
-                    {dailyChart ? (
-                      <Doughnut data={dailyChart.data} options={dailyChart.options} />
+                    { dailyChart ? (
+                      <Doughnut data={ dailyChart.data } options={ dailyChart.options } />
                     ) : (
                       <div className='h-44 flex items-center justify-center text-sm text-muted-foreground'>
                         No daily changes to display
                       </div>
-                    )}
+                    ) }
                   </div>
 
                   <div className='mt-3 flex flex-wrap gap-2'>
                     <Badge className='inline-flex items-center gap-2 px-2 py-1'>
-                      <UserPlus className='w-4 h-4 text-indigo-600' />{' '}
+                      <UserPlus className='w-4 h-4 text-indigo-600' />{ ' ' }
                       <span className='text-xs'>New (snapshot)</span>
-                      <span className='ml-2 font-semibold'>{summary.newUsers}</span>
+                      <span className='ml-2 font-semibold'>{ summary.newUsers }</span>
                     </Badge>
                     <Badge className='inline-flex items-center gap-2 px-2 py-1'>
-                      <UserCheck className='w-4 h-4 text-green-600' />{' '}
+                      <UserCheck className='w-4 h-4 text-green-600' />{ ' ' }
                       <span className='text-xs'>New Active</span>
-                      <span className='ml-2 font-semibold'>{summary.newActiveUsers}</span>
+                      <span className='ml-2 font-semibold'>{ summary.newActiveUsers }</span>
                     </Badge>
                     <Badge className='inline-flex items-center gap-2 px-2 py-1'>
-                      <ShieldAlert className='w-4 h-4 text-orange-600' />{' '}
+                      <ShieldAlert className='w-4 h-4 text-orange-600' />{ ' ' }
                       <span className='text-xs'>New Suspended</span>
-                      <span className='ml-2 font-semibold'>{summary.newSuspendedUsers}</span>
+                      <span className='ml-2 font-semibold'>{ summary.newSuspendedUsers }</span>
                     </Badge>
                     <Badge className='inline-flex items-center gap-2 px-2 py-1'>
-                      <UserMinus className='w-4 h-4 text-yellow-600' />{' '}
+                      <UserMinus className='w-4 h-4 text-yellow-600' />{ ' ' }
                       <span className='text-xs'>New Pending</span>
-                      <span className='ml-2 font-semibold'>{summary.newPendingUsers}</span>
+                      <span className='ml-2 font-semibold'>{ summary.newPendingUsers }</span>
                     </Badge>
                     <Badge className='inline-flex items-center gap-2 px-2 py-1'>
-                      <UserMinus className='w-4 h-4 text-red-600' />{' '}
+                      <UserMinus className='w-4 h-4 text-red-600' />{ ' ' }
                       <span className='text-xs'>New Banned</span>
-                      <span className='ml-2 font-semibold'>{summary.newBannedUsers}</span>
+                      <span className='ml-2 font-semibold'>{ summary.newBannedUsers }</span>
                     </Badge>
                   </div>
                 </div>
               </div>
             </>
-          )}
+          ) }
         </CardContent>
       </Card>
 
-      {/* System-wide community & content stats */}
+      {/* System-wide community & content stats */ }
       <Card>
         <CardHeader>
           <CardTitle className='text-sm flex items-center justify-between'>
-            System-wide community & content stats -{' '}
-            {new Date(systemStats.timestamp).toLocaleString()}
+            System-wide community & content stats -{ ' ' }
+            { systemStats ? new Date(systemStats.timestamp).toLocaleString() : '' }
             <span className='text-xs text-muted-foreground'>
-              {systemStats
+              { systemStats
                 ? `${new Date(systemStats.timestamp).toLocaleString()} • ${formatDistanceToNow(
-                    new Date(systemStats.timestamp),
-                    { addSuffix: true }
-                  )}`
-                : ''}
+                  new Date(systemStats.timestamp),
+                  { addSuffix: true }
+                )}`
+                : '' }
             </span>
           </CardTitle>
           <CardDescription>
@@ -453,11 +453,11 @@ export default function AdminDashboardPage() {
         </CardHeader>
 
         <CardContent>
-          {isLoading || !systemStats ? (
+          { isLoading || !systemStats ? (
             <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3'>
-              {[...Array(6)].map((_, i) => (
-                <Skeleton key={i} className='h-16 w-full' />
-              ))}
+              { [ ...Array(6) ].map((_, i) => (
+                <Skeleton key={ i } className='h-16 w-full' />
+              )) }
             </div>
           ) : (
             <div className='space-y-4'>
@@ -468,33 +468,33 @@ export default function AdminDashboardPage() {
                     <div className='text-sm font-medium'>Communities</div>
                   </div>
                   <div className='mt-2 text-xs text-muted-foreground'>
-                    Total: {systemStats.communities.totalCommunities}
+                    Total: { systemStats.communities.totalCommunities }
                   </div>
 
                   <div className='grid grid-cols-1 sm:grid-cols-2 gap-2 mt-3'>
                     <div className='p-2 border rounded-md'>
                       <div className='text-xs font-medium mb-1'>STATUS</div>
                       <div className='h-64'>
-                        {communitiesStatusChart ? (
+                        { communitiesStatusChart ? (
                           <Doughnut
-                            data={communitiesStatusChart.data}
-                            options={communitiesStatusChart.options}
+                            data={ communitiesStatusChart.data }
+                            options={ communitiesStatusChart.options }
                           />
                         ) : (
                           <div className='h-36 flex items-center justify-center text-sm text-muted-foreground'>
                             No status data
                           </div>
-                        )}
+                        ) }
                       </div>
                       <div className='mt-2 flex flex-col gap-2'>
                         <Badge className='px-2 py-1 text-xs'>
-                          Active: {systemStats.communities.activeCommunities}
+                          Active: { systemStats.communities.activeCommunities }
                         </Badge>
                         <Badge className='px-2 py-1 text-xs'>
-                          Suspended: {systemStats.communities.suspendedCommunities}
+                          Suspended: { systemStats.communities.suspendedCommunities }
                         </Badge>
                         <Badge className='px-2 py-1 text-xs'>
-                          Deleted: {systemStats.communities.deletedCommunities}
+                          Deleted: { systemStats.communities.deletedCommunities }
                         </Badge>
                       </div>
                     </div>
@@ -502,23 +502,23 @@ export default function AdminDashboardPage() {
                     <div className='p-2 border rounded-md'>
                       <div className='text-xs font-medium mb-1'>MODE</div>
                       <div className='h-64'>
-                        {communitiesModeChart ? (
+                        { communitiesModeChart ? (
                           <Doughnut
-                            data={communitiesModeChart.data}
-                            options={communitiesModeChart.options}
+                            data={ communitiesModeChart.data }
+                            options={ communitiesModeChart.options }
                           />
                         ) : (
                           <div className='h-36 flex items-center justify-center text-sm text-muted-foreground'>
                             No mode data
                           </div>
-                        )}
+                        ) }
                       </div>
                       <div className='mt-2 flex flex-col gap-2'>
                         <Badge className='px-2 py-1 text-xs'>
-                          NSFW: {systemStats.communities.nsfwCommunities}
+                          NSFW: { systemStats.communities.nsfwCommunities }
                         </Badge>
                         <Badge className='px-2 py-1 text-xs'>
-                          Private: {systemStats.communities.privateCommunities}
+                          Private: { systemStats.communities.privateCommunities }
                         </Badge>
                       </div>
                     </div>
@@ -526,7 +526,7 @@ export default function AdminDashboardPage() {
 
                   <div className='mt-3 flex flex-wrap gap-2'>
                     <Badge className='px-2 py-1 text-xs'>
-                      New communities: {systemStats.communities.newCommunitiesPreviousDay}
+                      New communities: { systemStats.communities.newCommunitiesPreviousDay }
                     </Badge>
                   </div>
                 </div>
@@ -537,32 +537,32 @@ export default function AdminDashboardPage() {
                     <div className='text-sm font-medium'>Memberships</div>
                   </div>
                   <div className='mt-2 text-xs text-muted-foreground'>
-                    Total memberships: {systemStats.memberships.totalMemberships}
+                    Total memberships: { systemStats.memberships.totalMemberships }
                   </div>
                   <div className='h-64 mt-2'>
-                    {membershipsChart ? (
-                      <Doughnut data={membershipsChart.data} options={membershipsChart.options} />
+                    { membershipsChart ? (
+                      <Doughnut data={ membershipsChart.data } options={ membershipsChart.options } />
                     ) : (
                       <div className='h-40 flex items-center justify-center text-sm text-muted-foreground'>
                         No breakdown
                       </div>
-                    )}
+                    ) }
                   </div>
                   <div className='mt-3 flex flex-wrap gap-2'>
                     <Badge className='px-2 py-1 text-xs'>
-                      Active: {systemStats.memberships.activeMemberships}
+                      Active: { systemStats.memberships.activeMemberships }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Pending: {systemStats.memberships.pendingMemberships}
+                      Pending: { systemStats.memberships.pendingMemberships }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Banned: {systemStats.memberships.bannedMemberships}
+                      Banned: { systemStats.memberships.bannedMemberships }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Owners: {systemStats.memberships.totalOwners}
+                      Owners: { systemStats.memberships.totalOwners }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Moderators: {systemStats.memberships.totalModerators}
+                      Moderators: { systemStats.memberships.totalModerators }
                     </Badge>
                   </div>
                 </div>
@@ -573,39 +573,39 @@ export default function AdminDashboardPage() {
                     <div className='text-sm font-medium'>Content</div>
                   </div>
                   <div className='mt-2 text-xs text-muted-foreground'>
-                    Posts: {systemStats.content.posts.totalPosts} • Comments:{' '}
-                    {systemStats.content.comments.totalComments}
+                    Posts: { systemStats.content.posts.totalPosts } • Comments:{ ' ' }
+                    { systemStats.content.comments.totalComments }
                   </div>
                   <div className='h-64 mt-2'>
-                    {contentChart ? (
-                      <Bar data={contentChart.data} options={contentChart.options} />
+                    { contentChart ? (
+                      <Bar data={ contentChart.data } options={ contentChart.options } />
                     ) : (
                       <div className='h-40 flex items-center justify-center text-sm text-muted-foreground'>
                         No content metrics
                       </div>
-                    )}
+                    ) }
                   </div>
                   <div className='mt-3 flex flex-wrap gap-2'>
                     <Badge className='px-2 py-1 text-xs'>
-                      Total posts: {systemStats.content.posts.totalPosts}
+                      Total posts: { systemStats.content.posts.totalPosts }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Published: {systemStats.content.posts.publishedPosts}
+                      Published: { systemStats.content.posts.publishedPosts }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Drafts: {systemStats.content.posts.draftPosts}
+                      Drafts: { systemStats.content.posts.draftPosts }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      NSFW posts: {systemStats.content.posts.nsfwPosts}
+                      NSFW posts: { systemStats.content.posts.nsfwPosts }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Comments: {systemStats.content.comments.totalComments}
+                      Comments: { systemStats.content.comments.totalComments }
                     </Badge>
-                    {systemStats.content.votes && (
+                    { systemStats.content.votes && (
                       <Badge className='px-2 py-1 text-xs'>
-                        Votes: {systemStats.content.votes.totalVotes}
+                        Votes: { systemStats.content.votes.totalVotes }
                       </Badge>
-                    )}
+                    ) }
                   </div>
                 </div>
               </div>
@@ -617,26 +617,26 @@ export default function AdminDashboardPage() {
                     <div className='text-sm font-medium'>Reports</div>
                   </div>
                   <div className='mt-2 text-xs text-muted-foreground'>
-                    Total: {systemStats.reports.totalReports}
+                    Total: { systemStats.reports.totalReports }
                   </div>
                   <div className='h-40 mt-2'>
-                    {reportsChart ? (
-                      <Doughnut data={reportsChart.data} options={reportsChart.options} />
+                    { reportsChart ? (
+                      <Doughnut data={ reportsChart.data } options={ reportsChart.options } />
                     ) : (
                       <div className='h-40 flex items-center justify-center text-sm text-muted-foreground'>
                         No report breakdown
                       </div>
-                    )}
+                    ) }
                   </div>
                   <div className='mt-3 flex flex-wrap gap-2'>
                     <Badge className='px-2 py-1 text-xs'>
-                      Pending: {systemStats.reports.pendingReports}
+                      Pending: { systemStats.reports.pendingReports }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Resolved: {systemStats.reports.resolvedReports}
+                      Resolved: { systemStats.reports.resolvedReports }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Dismissed: {systemStats.reports.dismissedReports}
+                      Dismissed: { systemStats.reports.dismissedReports }
                     </Badge>
                   </div>
                 </div>
@@ -647,50 +647,50 @@ export default function AdminDashboardPage() {
                     <div className='text-sm font-medium'>Moderation</div>
                   </div>
                   <div className='mt-2 text-xs text-muted-foreground'>
-                    Actions: {systemStats.moderation.moderationActions}
+                    Actions: { systemStats.moderation.moderationActions }
                   </div>
                   <div className='h-40 mt-2'>
-                    {moderationChart ? (
-                      <Bar data={moderationChart.data} options={moderationChart.options} />
+                    { moderationChart ? (
+                      <Bar data={ moderationChart.data } options={ moderationChart.options } />
                     ) : (
                       <div className='h-40 flex items-center justify-center text-sm text-muted-foreground'>
                         No moderation metrics
                       </div>
-                    )}
+                    ) }
                   </div>
                   <div className='mt-3 flex flex-wrap gap-2'>
                     <Badge className='px-2 py-1 text-xs'>
-                      Actions: {systemStats.moderation.moderationActions}
+                      Actions: { systemStats.moderation.moderationActions }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Bans: {systemStats.moderation.bansIssued}
+                      Bans: { systemStats.moderation.bansIssued }
                     </Badge>
                     <Badge className='px-2 py-1 text-xs'>
-                      Unbans: {systemStats.moderation.unbansIssued}
+                      Unbans: { systemStats.moderation.unbansIssued }
                     </Badge>
-                    {typeof systemStats.moderation.postsRemoved === 'number' && (
+                    { typeof systemStats.moderation.postsRemoved === 'number' && (
                       <Badge className='px-2 py-1 text-xs'>
-                        Posts removed: {systemStats.moderation.postsRemoved}
+                        Posts removed: { systemStats.moderation.postsRemoved }
                       </Badge>
-                    )}
-                    {typeof systemStats.moderation.commentsRemoved === 'number' && (
+                    ) }
+                    { typeof systemStats.moderation.commentsRemoved === 'number' && (
                       <Badge className='px-2 py-1 text-xs'>
-                        Comments removed: {systemStats.moderation.commentsRemoved}
+                        Comments removed: { systemStats.moderation.commentsRemoved }
                       </Badge>
-                    )}
+                    ) }
                   </div>
                 </div>
               </div>
 
               <div className='text-xs text-muted-foreground mt-2'>
-                Snapshot created: {new Date(systemStats.timestamps.createdAt).toLocaleString()} (
-                {formatDistanceToNow(new Date(systemStats.timestamps.createdAt), {
+                Snapshot created: { new Date(systemStats.timestamps.createdAt).toLocaleString() } (
+                { formatDistanceToNow(new Date(systemStats.timestamps.createdAt), {
                   addSuffix: true,
-                })}
+                }) }
                 )
               </div>
             </div>
-          )}
+          ) }
         </CardContent>
       </Card>
     </div>
