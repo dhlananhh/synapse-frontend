@@ -154,6 +154,7 @@ export interface PendingFollowRequestsResponse {
 }
 
 export interface SimpleProfile {
+  userId?: string;
   id: string;
   username: string;
   firstName: string;
