@@ -38,8 +38,7 @@ export default function TopCommunitiesWidget() {
     const fetchTopCommunities = async () => {
       setIsLoading(true);
       try {
-        const response =
-          await communityService.getCommunities();
+        const response = await communityService.getCommunities();
         setTopCommunities(response.communities);
       } catch (error) {
         console.error("Failed to fetch top communities:", error);

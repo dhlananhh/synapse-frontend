@@ -24,8 +24,12 @@ import {
 import {
   Cog,
   LogOut,
+  ShieldCheck,
   UserRound,
+  List as ListIcon
 } from "lucide-react";
+import { GrGroup, GrUserSettings } from "react-icons/gr";
+import { BsPostcardHeart } from "react-icons/bs";
 
 
 interface UserNavProps {
@@ -83,7 +87,7 @@ export function UserNav({ user }: UserNavProps) {
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
               <Link
-                href={ `/profile/me` }
+                href={ `/u/me` }
               >
                 <UserRound className="mr-2 h-4 w-4" />
                 <span>Profile</span>
@@ -94,12 +98,46 @@ export function UserNav({ user }: UserNavProps) {
 
             <DropdownMenuItem asChild>
               <Link
+                href={ `/u/me/posts` }
+              >
+                <BsPostcardHeart className="mr-2 h-4 w-4" />
+                <span>My Posts</span>
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <Link
+                href={ `/u/me/communities` }
+              >
+                <GrGroup className="mr-2 h-4 w-4" />
+                <span>My Communities</span>
+              </Link>
+            </DropdownMenuItem>
+
+            <DropdownMenuSeparator />
+
+            <DropdownMenuItem asChild>
+              <Link
                 href={ `/preferences/me` }
               >
-                <Cog className="mr-2 h-4 w-4" />
+                <GrUserSettings className="mr-2 h-4 w-4" />
                 <span>Preferences</span>
               </Link>
             </DropdownMenuItem>
+
+            {
+              user.role === "SYSTEM_ADMIN" && (
+                <DropdownMenuItem asChild>
+                  <Link href="/admin">
+                    <ShieldCheck className="mr-2 h-4 w-4 text-primary" />
+                    <span>Admin Dashboard</span>
+                  </Link>
+                </DropdownMenuItem>
+              )
+            }
+
           </DropdownMenuGroup>
 
           <DropdownMenuSeparator />

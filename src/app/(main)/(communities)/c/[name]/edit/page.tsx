@@ -222,7 +222,7 @@ export default function EditCommunityPage() {
         </Card>
 
         {/* Card for deleting the community */ }
-        <Card className="border-destructive/50 bg-destructive/5">
+        <Card className="border-destructive/50 bg-destructive/5 mb-16">
           <CardHeader>
             <CardTitle className="text-destructive">Danger Zone</CardTitle>
             <CardDescription className="text-destructive/90">

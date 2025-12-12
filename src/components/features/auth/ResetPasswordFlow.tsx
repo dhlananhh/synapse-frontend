@@ -8,8 +8,8 @@ import { SetNewPasswordForm } from "./SetNewPasswordForm";
 type Step = "request" | "verify" | "set_new_password";
 
 export function ResetPasswordFlow() {
-  const [step, setStep] = useState<Step>("request");
-  const [email, setEmail] = useState("");
+  const [ step, setStep ] = useState<Step>("request");
+  const [ email, setEmail ] = useState("");
 
   const handleCodeRequestSuccess = (
     requestedEmail: string
@@ -24,20 +24,20 @@ export function ResetPasswordFlow() {
 
   return (
     <div className="mx-auto w-full max-w-md">
-      {step === "request" && (
+      { step === "request" && (
         <RequestPasswordResetForm
-          onSuccess={handleCodeRequestSuccess}
+          onSuccess={ handleCodeRequestSuccess }
         />
-      )}
-      {step === "verify" && (
+      ) }
+      { step === "verify" && (
         <VerifyResetCodeForm
-          email={email}
-          onSuccess={handleVerificationSuccess}
+          email={ email }
+          onSuccess={ handleVerificationSuccess }
         />
-      )}
-      {step === "set_new_password" && (
+      ) }
+      { step === "set_new_password" && (
         <SetNewPasswordForm />
-      )}
+      ) }
     </div>
   );
 }

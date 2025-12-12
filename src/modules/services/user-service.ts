@@ -161,4 +161,5 @@ export const userService = {
       userApiClient
         .get("/me/follow-requests")
         .then((res) => res.data),
+
 };

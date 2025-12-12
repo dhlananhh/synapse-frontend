@@ -109,7 +109,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="pt-12 space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
           User Preferences

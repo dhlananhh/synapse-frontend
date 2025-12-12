@@ -63,7 +63,7 @@ export function SetNewPasswordForm() {
   };
 
   return (
-    <Card className="mx-auto max-w-lg w-full">
+    <Card className="mx-auto w-full max-w-lg shadow-xl">
       <CardHeader className="items-center text-center">
         <Link
           href="/"

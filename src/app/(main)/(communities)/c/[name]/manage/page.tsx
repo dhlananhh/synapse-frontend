@@ -130,32 +130,42 @@ export default function CommunityManagePage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        { availableTools.map((tool) => (
-          <Link
-            href={ tool.href }
-            key={ tool.title }
-            className="group"
-          >
-            <Card className="hover:border-primary h-full transition-colors hover:shadow-lg">
-              <CardHeader className="flex-row items-center gap-4">
-                <tool.icon className="text-primary h-8 w-8" />
-                <div>
-                  <CardTitle>{ tool.title }</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>
-                  { tool.description }
-                </CardDescription>
-                <div className="text-primary mt-4 flex items-center text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100">
-                  Go to { tool.title }
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        )) }
+      <div
+        className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 animate-fade-in-down"
+        style={ { animationDelay: '200ms' } }
+      >
+        {
+          availableTools.map((tool, index) => (
+            <Link
+              href={ tool.href }
+              key={ tool.title }
+              className="group"
+            >
+              <Card
+                className="h-full border hover:border-primary transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+                style={ { animationDelay: `${index * 100}ms` } }
+              >
+                <CardHeader className="flex-row items-center gap-4">
+                  <tool.icon
+                    className="h-8 w-8 text-primary transition-transform duration-300 group-hover:scale-110"
+                  />
+                  <div>
+                    <CardTitle>{ tool.title }</CardTitle>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription>
+                    { tool.description }
+                  </CardDescription>
+                  <div className="text-primary mt-4 flex items-center text-sm font-semibold opacity-0 transition-opacity group-hover:opacity-100">
+                    Go to { tool.title }
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))
+        }
       </div>
     </div>
   );

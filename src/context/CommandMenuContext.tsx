@@ -1,11 +1,11 @@
 "use client";
 
-import {
+import React, {
   createContext,
   useContext,
   useState,
   useEffect,
-  ReactNode,
+  ReactNode
 } from "react";
 import CommandMenu from "@/components/features/command/CommandMenu";
 
@@ -14,16 +14,10 @@ interface CommandMenuContextType {
   setIsOpen: (isOpen: boolean) => void;
 }
 
-const CommandMenuContext = createContext<
-  CommandMenuContextType | undefined
->(undefined);
+const CommandMenuContext = createContext<CommandMenuContextType | undefined>(undefined);
 
-export function CommandMenuProvider({
-  children,
-}: {
-  children: ReactNode;
-}) {
-  const [isOpen, setIsOpen] = useState(false);
+export function CommandMenuProvider({ children }: { children: ReactNode }) {
+  const [ isOpen, setIsOpen ] = useState(false);
 
   useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -34,15 +28,13 @@ export function CommandMenuProvider({
     };
 
     document.addEventListener("keydown", down);
-    return () =>
-      document.removeEventListener("keydown", down);
+    return () => document.removeEventListener("keydown", down);
   }, []);
 
+
   return (
-    <CommandMenuContext.Provider
-      value={{ isOpen, setIsOpen }}
-    >
-      {children}
+    <CommandMenuContext.Provider value={ { isOpen, setIsOpen } }>
+      { children }
       <CommandMenu />
     </CommandMenuContext.Provider>
   );
@@ -51,9 +43,7 @@ export function CommandMenuProvider({
 export function useCommandMenu() {
   const context = useContext(CommandMenuContext);
   if (!context) {
-    throw new Error(
-      "useCommandMenu must be used within a CommandMenuProvider"
-    );
+    throw new Error("useCommandMenu must be used within a CommandMenuProvider");
   }
   return context;
 }

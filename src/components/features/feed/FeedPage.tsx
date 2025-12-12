@@ -1,23 +1,17 @@
-"use client";
+'use client'
 
-import React from "react";
-import CreatePostWidget from "@/components/shared/CreatePostWidget";
-import { Navbar } from "@/components/shared/Navbar";
-import TopCommunitiesWidget from "@/components/features/community/widgets/TopCommunitiesWidget";
+import React from 'react'
+import { useSearchParams } from 'next/navigation'
+import FeedList from './FeedList'
+
 
 export default function FeedPage() {
-  return (
-    <div className="grid grid-cols-1 gap-y-4 py-6 md:grid-cols-3 md:gap-x-6">
-      <Navbar />
+  const searchParams = useSearchParams()
+  const feedType = searchParams.get('feed') || 'hot'
 
-      <div className="md:col-span-2">
-        <CreatePostWidget />
-      </div>
-      <aside className="hidden md:block">
-        <div className="sticky top-20 space-y-4">
-          <TopCommunitiesWidget />
-        </div>
-      </aside>
+  return (
+    <div className='w-full space-y-4'>
+      <FeedList type={ feedType as 'hot' | 'trending' | 'top' | 'global' } />
     </div>
-  );
+  )
 }

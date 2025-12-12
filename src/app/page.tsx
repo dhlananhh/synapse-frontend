@@ -7,25 +7,22 @@ import LandingPage from "@/components/features/landing/LandingPage";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function HomePage() {
-  const { user, isLoading } = useAuth();
-  console.log(
-    `isLoading state retreived from AuthContext ${isLoading}`
-  );
+  const { user, isLoading } = useAuth()
 
   if (isLoading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <div className="flex flex-col items-center gap-4">
-          <Skeleton className="h-16 w-16 rounded-full" />
-          <Skeleton className="h-4 w-[250px]" />
-          <Skeleton className="h-4 w-[200px]" />
+      <div className='w-full h-screen flex items-center justify-center'>
+        <div className='flex flex-col items-center gap-4'>
+          <Skeleton className='h-16 w-16 rounded-full' />
+          <Skeleton className='h-4 w-[250px]' />
+          <Skeleton className='h-4 w-[200px]' />
         </div>
       </div>
     );
   }
 
   if (user) {
-    return <FeedPage />;
+    return <FeedPage />
   }
 
   return <LandingPage />;
