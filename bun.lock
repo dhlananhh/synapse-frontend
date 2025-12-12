@@ -97,7 +97,7 @@
       },
       "devDependencies": {
         "@eslint/eslintrc": "^3",
-        "@next/eslint-plugin-next": "^15.4.6",
+        "@next/eslint-plugin-next": "^15.5.9",
         "@tailwindcss/postcss": "^4.1.12",
         "@types/bun": "latest",
         "@types/country-list": "^2.1.4",
@@ -2276,14 +2276,14 @@
       "sha512-4GlTZ+EJM7WaW2HEZcyU317tIQDjkQIyENDLxYJfSWlfqguN+dHkZgyQTV/7ykvobU7yEH5gKvreNrH4B6QgIg=="
     ],
     "@next/eslint-plugin-next": [
-      "@next/eslint-plugin-next@15.5.0",
+      "@next/eslint-plugin-next@15.5.9",
       "",
       {
         "dependencies": {
           "fast-glob": "3.3.1"
         }
       },
-      "sha512-+k83U/fST66eQBjTltX2T9qUYd43ntAe+NZ5qeZVTQyTiFiHvTLtkpLKug4AnZAtuI/lwz5tl/4QDJymjVkybg=="
+      "sha512-kUzXx0iFiXw27cQAViE1yKWnz/nF8JzRmwgMRTMh8qMY90crNsdXJRh2e+R0vBpFR3kk1yvAR7wev7+fCCb79Q=="
     ],
     "@next/swc-darwin-arm64": [
       "@next/swc-darwin-arm64@15.5.7",
@@ -12180,16 +12180,6 @@
         }
       },
       "sha512-Er2nc/H7RrMXZBFCEim6TCmMk02Z8vLC2Rbi1KEBggpo0fS6l0S1nnapwmIi3yW/+GOJap1Krg4w0Hg80oCqgQ=="
-    ],
-    "eslint-config-next/@next/eslint-plugin-next": [
-      "@next/eslint-plugin-next@15.5.9",
-      "",
-      {
-        "dependencies": {
-          "fast-glob": "3.3.1"
-        }
-      },
-      "sha512-kUzXx0iFiXw27cQAViE1yKWnz/nF8JzRmwgMRTMh8qMY90crNsdXJRh2e+R0vBpFR3kk1yvAR7wev7+fCCb79Q=="
     ],
     "eslint-config-next/@typescript-eslint/eslint-plugin": [
       "@typescript-eslint/eslint-plugin@8.39.1",
