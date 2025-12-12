@@ -1,15 +1,18 @@
-import React from "react";
-import type { Metadata } from "next";
-import { Lexend } from "next/font/google";
-import "../styles/globals.css";
-import { cn } from "@/libs/utils";
-import { Toaster } from "@/components/ui/sonner";
-import { AuthProvider } from "@/context/AuthContext";
-import I18nProvider from "@/components/providers/I18nProvider";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
-import TopProgressBar from "@/components/providers/TopProgressBar";
-import NotificationSimulator from "@/components/providers/NotificationSimulator";
-import { CommandMenuProvider } from "@/context/CommandMenuContext";
+import React from 'react'
+import type { Metadata } from 'next'
+import { Lexend } from 'next/font/google'
+import '../styles/globals.css'
+import { cn } from '@/libs/utils'
+import { Toaster } from '@/components/ui/sonner'
+import { AuthProvider } from '@/context/AuthContext'
+import { SocketProvider } from '@/context/SocketContext'
+import I18nProvider from '@/components/providers/I18nProvider'
+import { ThemeProvider } from '@/components/providers/ThemeProvider'
+import TopProgressBar from '@/components/providers/TopProgressBar'
+import NotificationSimulator from '@/components/providers/NotificationSimulator'
+import { CommandMenuProvider } from '@/context/CommandMenuContext'
+import Footer from '@/components/shared/Footer'
+import ChatWrapper from '@/components/features/chat/ChatWrapper'
 
 const lexend = Lexend({
   subsets: [ "latin" ],
@@ -31,10 +34,12 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={ cn(
-          "bg-background min-h-screen font-sans antialiased",
-          lexend.variable
-        ) }
+        className={
+          cn(
+            "bg-background h-full w-full font-sans antialiased",
+            lexend.variable
+          )
+        }
       >
         <I18nProvider>
           <ThemeProvider
@@ -48,9 +53,10 @@ export default function RootLayout({
             <CommandMenuProvider>
               <AuthProvider>
                 <NotificationSimulator />
-                <main className="container mx-auto max-w-7xl flex-grow pt-16">
+                <main className='mx-auto h-full w-full flex-grow'>
                   { children }
                 </main>
+                {/* <ChatWidget /> */ }
               </AuthProvider>
             </CommandMenuProvider>
 

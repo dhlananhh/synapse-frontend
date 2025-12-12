@@ -36,9 +36,8 @@ export interface FollowRelationship {
   id: string;
   followerId: string;
   followingId: string;
-  status: "PENDING" | "ACCEPTED" | "REJECTED"; // add other statuses if needed
+  status: "PENDING" | "ACCEPTED" | "REJECTED";
   createdAt?: string;
-  // add other fields if your backend includes them
 }
 
 export interface UserProfile {
@@ -51,9 +50,12 @@ export interface UserProfile {
   location: string | null;
   avatarUrl: string | null;
   isPrivate: boolean;
+  email?: string;
   createdAt?: string;
   followerCount?: number;
   followingCount?: number;
+  role?: "USER" | "SYSTEM_ADMIN";
+  status?: "ACTIVE" | "PENDING" | "SUSPENDED" | "BANNED";
   relationshipStatus?: {
     requesterToTarget: FollowRelationship | null;
     targetToRequester: FollowRelationship | null;

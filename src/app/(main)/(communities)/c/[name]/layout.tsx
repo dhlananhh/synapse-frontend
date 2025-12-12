@@ -1,94 +1,106 @@
-"use client";
+"use client"
 
-import React, { useEffect, useState } from "react";
-import { notFound, useSearchParams } from "next/navigation";
-import { communityService } from "@/modules/services/community-service";
-
-import AboutCommunityWidget from "@/components/features/community/widgets/AboutCommunityWidget";
-import FlairFilterWidget from "@/components/features/community/widgets/CommunityFlairsWidget";
+import React, { useEffect, useState } from "react"
+import { notFound, useSearchParams } from "next/navigation"
+import { communityService } from "@/modules/services/community-service"
 import {
   Community,
   CommunityMembership,
-} from "@/types/services/community";
-import { CommunityContext } from "@/context/CommunityContext";
-import CommunityRulesWidget from "@/components/features/community/widgets/CommunityRulesWidget";
-import ModeratorListWidget from "@/components/features/community/widgets/ModeratorListWidget";
-import { MembershipContext } from "@/context/MembershipContext";
-import CommunityFlairsWidget from "@/components/features/community/widgets/CommunityFlairsWidget";
+  CommunityFlair,
+  CommunityRule,
+} from "@/types/services/community"
+import { CommunityContext } from "@/context/CommunityContext"
+import { MembershipContext } from "@/context/MembershipContext"
+
+// UI Widgets
+import AboutCommunityWidget from "@/components/features/community/widgets/AboutCommunityWidget"
+import CommunityFlairsWidget from "@/components/features/community/widgets/CommunityFlairsWidget"
+import CommunityRulesWidget from "@/components/features/community/widgets/CommunityRulesWidget"
+import ModeratorListWidget from "@/components/features/community/widgets/ModeratorListWidget"
+import { Loader2 } from "lucide-react"
+
 
 interface CommunityLayoutProps {
-  children: React.ReactNode;
-  params: any;
+  children: React.ReactNode
+  params: any
 }
 
-export default function CommunityLayout({
-  children,
-  params,
-}: CommunityLayoutProps) {
-  // Unwrap params using React.use as required by Next.js App Router
-  const { name } = React.use(params) as { name: string };
-  const [community, setCommunity] =
-    useState<Community | null>(null);
-  const [membership, setMembership] =
-    useState<CommunityMembership | null>(null);
-  const [loading, setLoading] = useState(true);
-  const searchParams = useSearchParams();
-  const activeFlairId = searchParams.get("flair");
+
+export default function CommunityLayout({ children, params }: CommunityLayoutProps) {
+  const { name } = React.use(params) as { name: string }
+  const [ community, setCommunity ] = useState<Community | null>(null)
+  const [ membership, setMembership ] = useState<CommunityMembership | null>(null)
+  const [ flairs, setFlairs ] = useState<CommunityFlair[]>([])
+  const [ rules, setRules ] = useState<CommunityRule[]>([])
+  const [ loading, setLoading ] = useState(true)
 
   useEffect(() => {
-    let isMounted = true;
-    setLoading(true);
-    Promise.all([
-      communityService.getCommunityByName(name),
-      communityService.getMembership(name),
-    ])
-      .then(([communityData, membershipData]) => {
-        if (isMounted) {
-          setCommunity(communityData);
-          setMembership(membershipData);
+    let isMounted = true
+    setLoading(true)
+    communityService.getCommunityByName(name)
+      .then(async (communityData) => {
+        if (!isMounted) return
+        setCommunity(communityData)
+        try {
+          const [ membershipData, flairsData, rulesData ] = await Promise.all([
+            communityService.getMembership(name),
+            communityService.getFlairs(communityData.id),
+            communityService.getRules(communityData.id),
+          ])
+          if (isMounted) {
+            setMembership(membershipData)
+            setFlairs(flairsData)
+            setRules(rulesData)
+          }
+        } catch (error) {
+          console.error("Error loading supplementary data", error)
         }
       })
-      .catch(() => {
-        if (isMounted) {
-          setCommunity(null);
-          setMembership(null);
-        }
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, [name]);
+      .catch(() => { if (isMounted) setCommunity(null) })
+      .finally(() => { if (isMounted) setLoading(false) })
+    return () => { isMounted = false }
+  }, [ name ])
 
-  if (loading) return <div>Loading...</div>;
-  if (!community) {
-    notFound();
-    return null;
+
+  if (loading) {
+    return (
+      <div className="flex h-96 w-full items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin text-muted-foreground" />
+      </div>
+    );
   }
 
-  console.log("here is the community ", community);
+  if (!community) {
+    notFound()
+    return null
+  }
 
   return (
     <CommunityContext.Provider
-      value={{ community, setCommunity }}
+      value={ { community, setCommunity, flairs, setFlairs, rules, setRules } }
     >
       <MembershipContext.Provider
-        value={{ membership, setMembership }}
+        value={ { membership, setMembership } }
       >
-        <div className="grid grid-cols-1 gap-y-4 md:grid-cols-3 md:gap-x-4">
-          <div className="col-span-2">{children}</div>
-          <aside className="hidden md:block">
-            <div className="sticky top-20 max-h-[calc(100vh-5rem)] space-y-4 overflow-y-auto pr-2">
+
+        <div className="w-full max-w-[1200px] mx-auto grid grid-cols-1 gap-6 py-6 md:grid-cols-12">
+
+          <main className="md:col-span-8 space-y-4">
+            { children }
+          </main>
+
+          <aside className="hidden md:block md:col-span-4">
+            <div className="sticky top-20 flex flex-col gap-4 overflow-y-auto scrollbar-hide pt-6">
               <AboutCommunityWidget />
               <CommunityFlairsWidget />
               <CommunityRulesWidget />
               <ModeratorListWidget />
             </div>
           </aside>
+
         </div>
+
       </MembershipContext.Provider>
     </CommunityContext.Provider>
-  );
+  )
 }
