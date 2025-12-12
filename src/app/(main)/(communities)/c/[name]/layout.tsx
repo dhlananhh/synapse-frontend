@@ -36,7 +36,6 @@ export default function CommunityLayout({ children, params }: CommunityLayoutPro
 
   useEffect(() => {
     let isMounted = true
-    setLoading(true)
     communityService.getCommunityByName(name)
       .then(async (communityData) => {
         if (!isMounted) return
@@ -56,9 +55,17 @@ export default function CommunityLayout({ children, params }: CommunityLayoutPro
           console.error("Error loading supplementary data", error)
         }
       })
-      .catch(() => { if (isMounted) setCommunity(null) })
-      .finally(() => { if (isMounted) setLoading(false) })
-    return () => { isMounted = false }
+      .catch(() => {
+        if (isMounted)
+          setCommunity(null)
+      })
+      .finally(() => {
+        if (isMounted)
+          setLoading(false)
+      })
+    return () => {
+      isMounted = false
+    }
   }, [ name ])
 
 
