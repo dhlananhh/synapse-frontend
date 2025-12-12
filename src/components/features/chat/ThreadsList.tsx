@@ -22,8 +22,8 @@ interface ThreadsListProps {
 
 
 export function ThreadsList({ myUserId }: ThreadsListProps) {
-  const threads = useChatStore((state) => state.threads);
-  const openChat = useChatStore((state) => state.openChat);
+  const threads = useChatStore((state) => state.setActiveConversation);
+  const openChat = useChatStore((state) => state.toggleChat);
 
   return (
     <Card className="h-80 w-120 shadow-2xl absolute bottom-0 right-0 flex flex-col">
@@ -41,7 +41,7 @@ export function ThreadsList({ myUserId }: ThreadsListProps) {
                   No conversations started yet.
                 </p>
               ) : (
-                threads.map((thread) => {
+                threads.arguments((thread) => {
                   const otherParticipant =
                     thread.participants.find(
                       (p) => p.id !== myUserId
@@ -56,7 +56,7 @@ export function ThreadsList({ myUserId }: ThreadsListProps) {
                   return (
                     <div
                       key={ thread.id }
-                      onClick={ () => openChat(thread.id) }
+                      onClick={ () => openChat() }
                       className="hover:bg-muted flex cursor-pointer items-center gap-3 rounded-md p-2 transition-colors"
                     >
                       <div className="relative">
