@@ -2,17 +2,11 @@ import { Metadata, ResolvingMetadata } from "next";
 import React from "react";
 
 
-type Props = {
-  params: { userId: string };
-  children: React.ReactNode;
-};
-
-
 export async function generateMetadata(
-  props: Props,
+  { params }: { params: { userId: string } },
   parent?: ResolvingMetadata
 ): Promise<Metadata> {
-  const userId = decodeURIComponent(String(props.params.userId));
+  const userId = decodeURIComponent(String(params.userId));
   return {
     title: `Profile of @${userId} | Synapse`,
     description: `View the profile, posts, and activity of ${userId} on the Synapse discussion forum.`,
