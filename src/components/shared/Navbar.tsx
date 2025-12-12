@@ -15,21 +15,22 @@ import { UserNav } from './UserNav'
 import MobileNav from '@/components/shared/MobileNav'
 import SearchBar from '@/components/shared/SearchBar'
 import { UserProfile } from '@/types/services/user'
-
 import NotificationPopover from '@/components/shared/NotificationPopover'
 
-export function Navbar() {
+
+export default function Navbar() {
   const { user, isLoading } = useAuth()
-  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [ profile, setProfile ] = useState<UserProfile | null>(null)
   const toggleChat = useChatStore((state) => state.toggleChat)
 
   useEffect(() => {
     if (user?.id) {
       userService.getUserProfile(user.id).then(setProfile)
     } else {
-      setProfile(null)
+      const timer = setTimeout(() => setProfile(null), 0)
+      return () => clearTimeout(timer)
     }
-  }, [user?.id])
+  }, [ user?.id ])
 
   const renderAuthSection = () => {
     if (isLoading) {
@@ -52,21 +53,21 @@ export function Navbar() {
           </Button>
 
           <NotificationPopover
-            initialNotifications={[]}
-            onOpen={() => {
+            initialNotifications={ [] }
+            onOpen={ () => {
               // place to fetch/subscribe to notifications (e.g. call socket or API)
               console.log('Notifications opened')
-            }}
+            } }
           />
 
           <div
             className='cursor-pointer p-2 rounded hover:bg-muted/50 transition flex items-center gap-2'
-            onClick={toggleChat}
+            onClick={ toggleChat }
             title='Toggle Chat'
           >
             <MessageCircleMore className='w-8 h-8' />
           </div>
-          <UserNav user={profile} role={user.role} />
+          <UserNav user={ profile } />
         </div>
       )
     }
@@ -86,7 +87,7 @@ export function Navbar() {
   return (
     <header className='fixed top-0 inset-x-0 h-16 z-50 border-b bg-background/80 backdrop-blur-lg'>
       <div className='container h-full max-w-full mx-auto flex items-center justify-between px-4'>
-        {/* Left: Logo & App Name */}
+        {/* Left: Logo & App Name */ }
         <div className='flex items-center gap-2'>
           <Link href='/home' className='flex items-center gap-2'>
             <BrainCircuit className='h-8 w-8 text-primary' />
@@ -94,13 +95,13 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Search Bar */}
+        {/* Center: Search Bar */ }
         <div className='flex-1 flex justify-center'>
           <SearchBar />
         </div>
 
-        {/* Right: Auth/User Nav */}
-        <div className='flex items-center gap-2'>{renderAuthSection()}</div>
+        {/* Right: Auth/User Nav */ }
+        <div className='flex items-center gap-2'>{ renderAuthSection() }</div>
       </div>
     </header>
   )
