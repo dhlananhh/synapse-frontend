@@ -38,11 +38,11 @@ export const RegisterFormSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters long.'),
   birthday: z
     .date({
-      required_error: 'Your date of birth is required.',
+      error: 'Your date of birth is required.',
     })
     .max(eighteenYearsAgo, { message: 'You must be at least 18 years old to use Synapse.' }),
   gender: z.enum([ 'MALE', 'FEMALE' ], {
-    required_error: 'Please select a gender.',
+    message: 'Please select a gender.',
   }),
 })
 export type TRegisterFormSchema = z.infer<typeof RegisterFormSchema>
@@ -64,3 +64,16 @@ export const ChangePasswordSchema = z.object({
 });
 
 export type TChangePasswordSchema = z.infer<typeof ChangePasswordSchema>;
+
+
+// Reset password schema
+export const ResetPasswordSchema = z.object({
+  email: z.string().email(),
+  code: z.string().min(6, "The reset code must be 6 digits."),
+  password: z.string().min(8, "Password must be at least 8 characters long."),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: [ "confirmPassword" ],
+});
+export type TResetPasswordSchema = z.infer<typeof ResetPasswordSchema>;

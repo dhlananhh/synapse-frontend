@@ -36,12 +36,12 @@ export interface VerifyResetCodePayload {
 }
 
 export interface SetNewPasswordPayload {
-  new_password: string
+  newPassword: string;
 }
 
 export interface ChangePasswordPayload {
-  current_password: string
-  new_password: string
+  currentPassword: string
+  newPassword: string
 }
 
 // =================================
