@@ -1,13 +1,17 @@
 import { Metadata, ResolvingMetadata } from 'next'
 import React from 'react'
 
+
 type Props = {
   params: { userId: string }
   children: React.ReactNode
 }
 
-export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
-  const params = props.params
+
+export async function generateMetadata(
+  { params }: { params: { userId: string } },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
   const userId = decodeURIComponent(params.userId)
 
   return {
@@ -17,5 +21,9 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
 }
 
 export default function Layout({ children, params }: Props) {
-  return <div className='container max-w-4xl px-4 py-16 ml-68'>{children}</div>
+  return (
+    <div className='container max-w-4xl px-4 py-16 ml-68'>
+      { children }
+    </div>
+  )
 }
