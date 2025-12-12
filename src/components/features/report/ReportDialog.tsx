@@ -77,8 +77,8 @@ export default function ReportDialog({
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent onClick={(e) => e.stopPropagation()}>
+    <Dialog open={ isOpen } onOpenChange={ (open) => !open && onClose() }>
+      <DialogContent onClick={ (e) => e.stopPropagation() }>
         <DialogTitle>Submit a report</DialogTitle>
         <DialogHeader>
           <h2 className='text-md font-light text-gray-500'>
@@ -86,40 +86,40 @@ export default function ReportDialog({
             content?
           </h2>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          {/* Reason Selection */}
+        <form onSubmit={ handleSubmit(onSubmit) }>
+          {/* Reason Selection */ }
           <div className='mb-4'>
             <label className='block text-sm font-medium mb-2'>Reason</label>
             <RadioGroup
-              onValueChange={(value: ReportFormData['reason']) => setValue('reason', value)} // Explicitly type value
+              onValueChange={ (value: ReportFormData[ 'reason' ]) => setValue('reason', value) } // Explicitly type value
             >
-              {reportSchema.shape.reason.options.map((option) => (
-                <div key={option} className='flex items-center gap-2'>
-                  <RadioGroupItem value={option} id={option} />
-                  <label htmlFor={option} className='text-sm text-gray-400'>
-                    {reasonDescriptions[option]} {/* Display textual representation */}
+              { reportSchema.shape.reason.options.map((option) => (
+                <div key={ option } className='flex items-center gap-2'>
+                  <RadioGroupItem value={ option } id={ option } />
+                  <label htmlFor={ option } className='text-sm text-gray-400'>
+                    { reasonDescriptions[ option ] } {/* Display textual representation */ }
                   </label>
                 </div>
-              ))}
+              )) }
             </RadioGroup>
-            {errors.reason && <p className='text-red-500 text-sm'>{errors.reason.message}</p>}
+            { errors.reason && <p className='text-red-500 text-sm'>{ errors.reason.message }</p> }
           </div>
 
-          {/* Reason Detail */}
+          {/* Reason Detail */ }
           <div className='mb-4'>
             <label className='block text-sm font-medium mb-2'>Additional Details (Optional)</label>
             <Textarea
-              {...register('reasonDetail')}
+              { ...register('reasonDetail') }
               placeholder='Provide more details (max 500 characters)'
-              onClick={(e) => e.stopPropagation()} // Stop event propagation
+              onClick={ (e) => e.stopPropagation() } // Stop event propagation
             />
-            {errors.reasonDetail && (
-              <p className='text-red-500 text-sm'>{errors.reasonDetail.message}</p>
-            )}
+            { errors.reasonDetail && (
+              <p className='text-red-500 text-sm'>{ errors.reasonDetail.message }</p>
+            ) }
           </div>
 
           <DialogFooter>
-            <Button type='button' variant='secondary' onClick={onClose}>
+            <Button type='button' variant='secondary' onClick={ onClose }>
               Cancel
             </Button>
             <Button type='submit' variant='default'>
