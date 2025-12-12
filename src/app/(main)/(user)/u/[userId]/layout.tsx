@@ -1,5 +1,5 @@
-import { Metadata, ResolvingMetadata } from 'next'
-import React from 'react'
+import { Metadata, ResolvingMetadata } from "next"
+import React from "react"
 
 
 type Props = {
@@ -20,9 +20,10 @@ export async function generateMetadata(
   }
 }
 
+
 export default function Layout({ children, params }: Props) {
   return (
-    <div className='container max-w-4xl px-4 py-16 ml-68'>
+    <div className="container max-w-4xl px-4 py-16 ml-68">
       { children }
     </div>
   )
