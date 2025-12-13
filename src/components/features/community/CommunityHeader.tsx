@@ -64,7 +64,10 @@ export default function CommunityHeader({
 
   // Membership control button
   let membershipControl: React.ReactNode = null
-  if (!membership) {
+
+  const canJoin = !membership || membership.status === 'LEFT' || membership.status === 'REJECTED'
+
+  if (canJoin) {
     membershipControl = (
       <Button variant='default' size='sm' onClick={handleJoin} disabled={loading === 'join'}>
         <Plus className='w-4 h-4 mr-1' />
@@ -110,7 +113,8 @@ export default function CommunityHeader({
     }
     // OWNER: no button
   }
-  // BANNED: no button
+  // BANNED, REMOVED: no button
+  // INVITED: skipped (no action for now)
 
   // Show "Create Post" for all ACTIVE members
   const showCreatePost = membership && membership.status === 'ACTIVE'

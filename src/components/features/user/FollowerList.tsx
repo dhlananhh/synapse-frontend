@@ -26,7 +26,7 @@ export function FollowerList({ userId }: { userId: string }) {
       {followers.map((item) => (
         <li key={item.id}>
           <Link
-            href={`/profile/${item.follower.id}`}
+            href={`/u/${item.follower.id}`}
             className='block hover:bg-accent rounded transition'
           >
             <FollowerItem follower={item.follower} />

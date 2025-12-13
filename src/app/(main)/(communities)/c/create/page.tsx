@@ -1,5 +1,6 @@
 'use client'
 
+import { Suspense } from 'react'
 import { CommunityCreationWizard } from '@/components/features/community/CommunityCreationWizard'
 
 export default function CreateCommunityPage() {
@@ -9,7 +10,9 @@ export default function CreateCommunityPage() {
       <p className='text-muted-foreground mb-8'>
         Build and grow a community about a topic you are passionate about.
       </p>
-      <CommunityCreationWizard />
+      <Suspense fallback={null}>
+        <CommunityCreationWizard />
+      </Suspense>
     </div>
   )
 }

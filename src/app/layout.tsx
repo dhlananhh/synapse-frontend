@@ -9,7 +9,7 @@ import { SocketProvider } from '@/context/SocketContext'
 import I18nProvider from '@/components/providers/I18nProvider'
 import { ThemeProvider } from '@/components/providers/ThemeProvider'
 import TopProgressBar from '@/components/providers/TopProgressBar'
-import NotificationSimulator from '@/components/providers/NotificationSimulator'
+// import NotificationSimulator from '@/components/providers/NotificationSimulator'
 import { CommandMenuProvider } from '@/context/CommandMenuContext'
 import Footer from '@/components/shared/Footer'
 import ChatWrapper from '@/components/features/chat/ChatWrapper'
@@ -46,7 +46,7 @@ export default function RootLayout({
             <CommandMenuProvider>
               <AuthProvider>
                 <SocketProvider>
-                  <NotificationSimulator />
+                  {/* <NotificationSimulator /> */}
                   {/* Removed Navbar from RootLayout */}
                   <main className='flex-grow w-full'>{children}</main> {/* Removed container */}
                   <Footer />

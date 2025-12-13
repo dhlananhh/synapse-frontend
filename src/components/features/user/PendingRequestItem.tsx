@@ -17,7 +17,7 @@ export function PendingRequestItem({
   return (
     <div className='flex items-center justify-between gap-3'>
       <Link
-        href={`/profile/${requester.id}`}
+        href={`/u/${requester.id}`}
         className='flex items-center gap-3 flex-1 hover:bg-accent rounded transition px-2 py-1'
       >
         <Avatar className='w-8 h-8'>

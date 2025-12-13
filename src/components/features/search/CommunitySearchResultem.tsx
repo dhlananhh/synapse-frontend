@@ -26,7 +26,7 @@ export function CommunitySearchResultItem({ community }: { community: SearchComm
         <div>
           <div className='font-semibold text-lg'>c/{community.name}</div>
           <div className='flex gap-2 mt-2 mb-2'>
-            {community.status === 'PRIVATE' && (
+            {community.isPrivate && (
               <span
                 title='Private Community'
                 className='inline-flex items-center gap-1 px-3 py-1 rounded bg-indigo-700 text-white text-xs font-bold'

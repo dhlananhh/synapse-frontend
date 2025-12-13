@@ -1,104 +1,104 @@
-'use client'
+// 'use client'
 
-import React, { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+// import React, { useEffect, useState } from 'react'
+// import { useParams } from 'next/navigation'
 
-import { useAuth } from '@/context/AuthContext'
-import { FollowerResponse, FollowingResponse, UserProfile } from '@/types/services/user'
-import { userService } from '@/modules/services/user-service'
+// import { useAuth } from '@/context/AuthContext'
+// import { FollowerResponse, FollowingResponse, UserProfile } from '@/types/services/user'
+// import { userService } from '@/modules/services/user-service'
 
-import { UserProfileHeader } from '@/components/features/user/OwnProfileHeader'
-import { UserProfileTabs } from '@/components/features/user/UserProfileTabs'
-import { PrivateProfileView } from './PrivateProfileView'
-import UserProfileSkeleton from '@/components/features/user/UserProfileSkeleton'
+// import { UserProfileHeader } from '@/components/features/user/OwnProfileHeader'
+// import { UserProfileTabs } from '@/components/features/user/UserProfileTabs'
+// import { PrivateProfileView } from './PrivateProfileView'
+// import UserProfileSkeleton from '@/components/features/user/UserProfileSkeleton'
 
-interface Counts {
-  followers: number
-  following: number
-}
+// interface Counts {
+//   followers: number
+//   following: number
+// }
 
-export function UserProfileInterface() {
-  const params = useParams()
-  const { user: currentUser } = useAuth()
-  const userId = params.userId as string
+// export function UserProfileInterface() {
+//   const params = useParams()
+//   const { user: currentUser } = useAuth()
+//   const userId = params.userId as string
 
-  const [user, setUser] = useState<UserProfile | null>(null)
-  const [loading, setLoading] = useState(true)
+//   const [user, setUser] = useState<UserProfile | null>(null)
+//   const [loading, setLoading] = useState(true)
 
-  const [followers, setFollowers] = useState<FollowerResponse[]>([])
-  const [following, setFollowing] = useState<FollowingResponse[]>([])
-  const [counts, setCounts] = useState<Counts>({ followers: 0, following: 0 })
+//   const [followers, setFollowers] = useState<FollowerResponse[]>([])
+//   const [following, setFollowing] = useState<FollowingResponse[]>([])
+//   const [counts, setCounts] = useState<Counts>({ followers: 0, following: 0 })
 
-  useEffect(() => {
-    if (userId) {
-      const fetchUser = async () => {
-        try {
-          setLoading(true)
+//   useEffect(() => {
+//     if (userId) {
+//       const fetchUser = async () => {
+//         try {
+//           setLoading(true)
 
-          const [userData, followersData, followingData] = await Promise.all([
-            userService.getUserProfile(userId),
-            userService.getFollowers(userId),
-            userService.getFollowing(userId),
-          ])
+//           const [userData, followersData, followingData] = await Promise.all([
+//             userService.getUserProfile(userId),
+//             userService.getFollowers(userId),
+//             userService.getFollowing(userId),
+//           ])
 
-          setUser(userData)
-          setFollowers(followersData)
-          setFollowing(followingData)
-          setCounts({
-            followers: followersData.length,
-            following: followingData.length,
-          })
-        } catch (error) {
-          console.error(`Failed to fetch profile data for user ${userId}:`, error)
-          setUser(null)
-        } finally {
-          setLoading(false)
-        }
-      }
-      fetchUser()
-    }
-  }, [userId])
+//           setUser(userData)
+//           setFollowers(followersData)
+//           setFollowing(followingData)
+//           setCounts({
+//             followers: followersData.length,
+//             following: followingData.length,
+//           })
+//         } catch (error) {
+//           console.error(`Failed to fetch profile data for user ${userId}:`, error)
+//           setUser(null)
+//         } finally {
+//           setLoading(false)
+//         }
+//       }
+//       fetchUser()
+//     }
+//   }, [userId])
 
-  const handleProfileUpdate = (updatedUser: UserProfile) => {
-    setUser(updatedUser)
-  }
+//   const handleProfileUpdate = (updatedUser: UserProfile) => {
+//     setUser(updatedUser)
+//   }
 
-  if (loading) {
-    return <UserProfileSkeleton />
-  }
+//   if (loading) {
+//     return <UserProfileSkeleton />
+//   }
 
-  if (!user) {
-    return (
-      <div className='text-center py-10'>
-        <h2 className='text-xl font-semibold'>User not found.</h2>
-        <p className='text-muted-foreground'>
-          The user you are looking for does not exist or the profile could not be loaded.
-        </p>
-      </div>
-    )
-  }
+//   if (!user) {
+//     return (
+//       <div className='text-center py-10'>
+//         <h2 className='text-xl font-semibold'>User not found.</h2>
+//         <p className='text-muted-foreground'>
+//           The user you are looking for does not exist or the profile could not be loaded.
+//         </p>
+//       </div>
+//     )
+//   }
 
-  const isOwnProfile = currentUser?.id === user.id
-  const isFollowing = false
-  const isPending = false
-  const canViewProfile = !user.isPrivate || isOwnProfile || isFollowing
+//   const isOwnProfile = currentUser?.id === user.id
+//   const isFollowing = false
+//   const isPending = false
+//   const canViewProfile = !user.isPrivate || isOwnProfile || isFollowing
 
-  if (canViewProfile) {
-    return (
-      <div className='container mx-auto max-w-4xl py-8 space-y-8'>
-        <UserProfileHeader user={user} counts={counts} onProfileUpdate={handleProfileUpdate} />
+//   if (canViewProfile) {
+//     return (
+//       <div className='container mx-auto max-w-4xl py-8 space-y-8'>
+//         <UserProfileHeader user={user} counts={counts} onProfileUpdate={handleProfileUpdate} />
 
-        <UserProfileTabs userId={user.id} followers={followers} following={following} />
-      </div>
-    )
-  }
+//         <UserProfileTabs userId={user.id} followers={followers} following={following} />
+//       </div>
+//     )
+//   }
 
-  return (
-    <PrivateProfileView
-      user={user}
-      counts={counts}
-      isFollowing={isFollowing}
-      isPending={isPending}
-    />
-  )
-}
+//   return (
+//     <PrivateProfileView
+//       user={user}
+//       counts={counts}
+//       isFollowing={isFollowing}
+//       isPending={isPending}
+//     />
+//   )
+// }

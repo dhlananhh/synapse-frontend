@@ -53,7 +53,7 @@ export interface CommunityMembership {
   userId: string
   username: string
   role: 'OWNER' | 'MODERATOR' | 'MEMBER'
-  status: 'ACTIVE' | 'PENDING' | 'BANNED'
+  status: 'ACTIVE' | 'PENDING' | 'BANNED' | 'LEFT' | 'REJECTED'
   joinedAt: string | null
 }
 

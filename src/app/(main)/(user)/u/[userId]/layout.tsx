@@ -1,21 +1,21 @@
 import { Metadata, ResolvingMetadata } from 'next'
 import React from 'react'
 
-type Props = {
-  params: { userId: string }
+type LayoutProps = {
   children: React.ReactNode
 }
 
-export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
-  const params = props.params
-  const userId = decodeURIComponent(params.userId)
-
+export async function generateMetadata(
+  props: { params: Promise<{ userId: string }> },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { userId } = await props.params
   return {
     title: `Profile of @${userId} | Synapse`,
-    description: `View the profile, posts, and activity of ${userId} on the Synapse discussion forum.`,
+    description: `View the profile, posts, and activity of ${userId} on Synapse.`,
   }
 }
 
-export default function Layout({ children, params }: Props) {
+export default function Layout({ children }: LayoutProps) {
   return <div className='container max-w-4xl px-4 py-16 ml-68'>{children}</div>
 }

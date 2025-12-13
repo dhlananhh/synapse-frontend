@@ -20,7 +20,7 @@ export default function ManageCommunitiesPage() {
     setLoading(true)
     setError(null)
     communityService
-      .getMyCommunities()
+      .getMyCommunities({ statuses: ['ACTIVE'] })
       .then((items) => {
         if (!mounted) return
         setAll(items ?? [])
@@ -110,7 +110,7 @@ export default function ManageCommunitiesPage() {
                 <div className='flex items-center justify-between gap-4'>
                   <div className='min-w-0'>
                     <Link
-                      href={`/c/${c.communityId}`}
+                      href={`/c/${c.name}`}
                       className='font-medium text-sm hover:underline block truncate'
                     >
                       {c.name}

@@ -52,7 +52,7 @@ export default function ResolvedItemCard({ item, updateResolvedState }: Resolved
     const fetchProfiles = async () => {
       try {
         // collect ids to fetch: actor, target.authorId (for comments), target.userId (for membership)
-        const idsToFetch: (string | undefined)[] = [
+        const idsToFetch: (string | null)[] = [
           item.actorId,
           item.target.authorId,
           item.target.userId,
@@ -176,10 +176,10 @@ export default function ResolvedItemCard({ item, updateResolvedState }: Resolved
               </div>
             </div>
 
-            {/* show a short summary about the membership action if available */}
-            {item.target.summary && (
+            {/* show a short summary about the membership action if available
+            {item.target. && (
               <p className='text-sm text-gray-500 mt-2'>{item.target.summary}</p>
-            )}
+            )} */}
           </>
         )}
       </div>

@@ -41,7 +41,7 @@ export function DeleteCommunityDialog({
 
     setIsDeleting(true)
     try {
-      // await communityService.deleteCommunity(community.id);
+      await communityService.deleteCommunity(community.id)
       toast.success(`Community "c/${community.name}" has been permanently deleted.`, {
         duration: 5000,
       })

@@ -52,3 +52,33 @@ export const VerifyEmailSchema = z.object({
   code: z.string().min(6, { message: 'Your code must be 6 digits.' }),
 })
 export type TVerifyEmailSchema = z.infer<typeof VerifyEmailSchema>
+
+export const ResetPasswordSchema = z
+  .object({
+    email: z.string().trim().email('A valid email is required'),
+    code: z
+      .string()
+      .trim()
+      .min(6, 'Reset code must be 6 digits')
+      .max(6, 'Reset code must be 6 digits')
+      .regex(/^\d{6}$/, 'Reset code must be 6 digits'),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .max(128, 'Password is too long')
+      .refine((v) => /[A-Z]/.test(v), 'Must include an uppercase letter')
+      .refine((v) => /[a-z]/.test(v), 'Must include a lowercase letter')
+      .refine((v) => /\d/.test(v), 'Must include a number'),
+    confirmPassword: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['confirmPassword'],
+        message: 'Passwords do not match',
+      })
+    }
+  })
+
+export type TResetPasswordSchema = z.infer<typeof ResetPasswordSchema>

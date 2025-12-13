@@ -56,7 +56,7 @@ export function FollowingList({
         {following.map((item) => (
           <li key={item.id} className='flex items-center justify-between'>
             <Link
-              href={`/profile/${item.following.id}`}
+              href={`/u/${item.following.id}`}
               className='block hover:bg-accent rounded transition flex-1'
             >
               <FollowingItem following={item.following} />

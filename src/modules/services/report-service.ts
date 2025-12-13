@@ -133,7 +133,9 @@ export const fetchResolvedItems = async (query: {
 
   try {
     const params: Record<string, any> = { communityId, cursor, limit }
-    if (actions) params.actions = actions
+    // provide a sensible default when actions is not supplied
+    const actionsToUse = actions ?? 'REMOVED_MOD,LOCKED,DISMISSED'
+    if (actionsToUse) params.actions = actionsToUse
     if (targetTypes) params.targetTypes = targetTypes
 
     const response = await reportApiClient.get('/resolved', { params })
@@ -151,7 +153,8 @@ export const fetchResolvedItems = async (query: {
       ? data
       : []
 
-    const pagination = data?.pagination ?? { // keep shape compatible with ResolvedItemsResponse
+    const pagination = data?.pagination ?? {
+      // keep shape compatible with ResolvedItemsResponse
       nextCursor: null,
       hasMore: false,
     }
