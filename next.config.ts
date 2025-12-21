@@ -18,7 +18,7 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: 'synapse-user-avatars.s3.ap-southeast-1.amazonaws.com',
+        hostname: 'synapse-forum-project.s3.ap-southeast-2.amazonaws.com',
         port: '',
         pathname: '/**',
       },
