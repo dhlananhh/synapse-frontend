@@ -27,7 +27,7 @@ export default function EditPostForm({ post, onSubmit, isSubmitting }: EditPostF
       title: post.title,
       contentHtml: post.contentHtml,
       contentJson: post.contentJson,
-      links: post.links,
+      links: post.links.map((link) => link.url),
       mediaTempKeys: [],
       reuseMediaKeys: post.media?.map((m) => m.key as string) || [],
       flairId: post.flairId,

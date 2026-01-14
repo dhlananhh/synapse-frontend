@@ -126,7 +126,7 @@ export default function CommunityPostsTab({ communityId, communityName, limit = 
             const profiles = await userService.getSimpleProfiles(missing)
             const map: Record<string, SimpleProfile> = {}
             for (const prof of profiles ?? []) {
-              const key = (prof.id ?? (prof.userId as string) ?? prof.username) as string
+              const key = (prof.id ?? (prof.id as string) ?? prof.username) as string
               if (key) map[key] = prof
             }
             setAuthorsMap((prev) => ({ ...prev, ...map }))

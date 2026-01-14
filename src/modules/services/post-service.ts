@@ -5,7 +5,13 @@ import {
   ListCommunityPostsParams,
   ListCommunityPostsResponse,
 } from '@/types/services/post'
-import type { PostDetails, PostVersion } from '@/types/services/post'
+import type {
+  PostDetails,
+  PostVersion,
+  PostSuggestion,
+  SuggestionsResponse,
+  SearchPostsResponse,
+} from '@/types/services/post'
 import type { TEditPostSchema } from '@/libs/validators/post-validator'
 
 export async function createPost(
@@ -204,6 +210,56 @@ export async function fetchRecentPosts(signal?: AbortSignal): Promise<PostDetail
   return res.data.posts
 }
 
+/**
+ * Fetch post autocomplete suggestions.
+ * GET /suggestions?searchTerm=...&limit=...
+ */
+export async function getPostSuggestions(
+  searchTerm: string,
+  limit = 10,
+  signal?: AbortSignal
+): Promise<PostSuggestion[]> {
+  const res = await postApiClient.get<SuggestionsResponse>('/suggestions', {
+    params: { searchTerm, limit },
+    signal,
+  })
+  return res.data.suggestions
+}
+
+/**
+ * Search posts (public) - for unauthenticated users.
+ * GET /public?q=...&page=...&pageSize=...
+ */
+export async function searchPublicPosts(
+  q?: string,
+  page = 1,
+  pageSize = 10,
+  signal?: AbortSignal
+): Promise<SearchPostsResponse> {
+  const res = await postApiClient.get<SearchPostsResponse>('/public', {
+    params: { q: q?.trim() || undefined, page, pageSize },
+    signal,
+  })
+  return res.data
+}
+
+/**
+ * Search posts (private) - for authenticated users.
+ * GET /private?q=...&page=...&pageSize=...
+ */
+export async function searchPrivatePosts(
+  q?: string,
+  page = 1,
+  pageSize = 10,
+  signal?: AbortSignal
+): Promise<SearchPostsResponse> {
+  const res = await postApiClient.get<SearchPostsResponse>('/private', {
+    params: { q: q?.trim() || undefined, page, pageSize },
+    signal,
+  })
+  return res.data
+}
+
 // Add to your export:
 export const postService = {
   createPost,
@@ -220,4 +276,7 @@ export const postService = {
   unvotePost,
   fetchUserVotes,
   fetchRecentPosts,
+  getPostSuggestions,
+  searchPublicPosts,
+  searchPrivatePosts,
 }

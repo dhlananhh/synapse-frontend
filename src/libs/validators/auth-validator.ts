@@ -41,7 +41,7 @@ export const RegisterFormSchema = z.object({
       required_error: 'Your date of birth is required.',
     })
     .max(eighteenYearsAgo, { message: 'You must be at least 18 years old to use Synapse.' }),
-  gender: z.enum([ 'MALE', 'FEMALE' ], {
+  gender: z.enum(['MALE', 'FEMALE'], {
     required_error: 'Please select a gender.',
   }),
 })
@@ -53,14 +53,32 @@ export const VerifyEmailSchema = z.object({
 })
 export type TVerifyEmailSchema = z.infer<typeof VerifyEmailSchema>
 
-// Change password schema
-export const ChangePasswordSchema = z.object({
-  current_password: z.string().min(1, "Current password is required."),
-  new_password: z.string().min(8, "New password must be at least 8 characters."),
-  confirm_password: z.string()
-}).refine(data => data.new_password === data.confirm_password, {
-  message: "New passwords don't match",
-  path: [ "confirmPassword" ],
-});
+export const ResetPasswordSchema = z
+  .object({
+    email: z.string().trim().email('A valid email is required'),
+    code: z
+      .string()
+      .trim()
+      .min(6, 'Reset code must be 6 digits')
+      .max(6, 'Reset code must be 6 digits')
+      .regex(/^\d{6}$/, 'Reset code must be 6 digits'),
+    password: z
+      .string()
+      .min(8, 'Password must be at least 8 characters')
+      .max(128, 'Password is too long')
+      .refine((v) => /[A-Z]/.test(v), 'Must include an uppercase letter')
+      .refine((v) => /[a-z]/.test(v), 'Must include a lowercase letter')
+      .refine((v) => /\d/.test(v), 'Must include a number'),
+    confirmPassword: z.string(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.password !== data.confirmPassword) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['confirmPassword'],
+        message: 'Passwords do not match',
+      })
+    }
+  })
 
-export type TChangePasswordSchema = z.infer<typeof ChangePasswordSchema>;
+export type TResetPasswordSchema = z.infer<typeof ResetPasswordSchema>
