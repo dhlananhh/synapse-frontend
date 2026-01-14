@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, Suspense } from 'react'
 import Link from 'next/link'
 import { PlusCircle, MessageCircleMore, Bell, BrainCircuit } from 'lucide-react'
 
@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Skeleton } from '@/components/ui/skeleton'
 
 import { UserNav } from './UserNav'
-import MobileNav from '@/components/shared/MobileNav'
+// import MobileNav from '@/components/shared/MobileNav'
 import SearchBar from '@/components/shared/SearchBar'
 import { UserProfile } from '@/types/services/user'
 import NotificationPopover from '@/components/shared/NotificationPopover'
@@ -97,7 +97,11 @@ export default function Navbar() {
 
         {/* Center: Search Bar */ }
         <div className='flex-1 flex justify-center'>
-          <SearchBar />
+          <Suspense
+            fallback={<div className='text-center text-muted-foreground mt-10'>Searching...</div>}
+          >
+            <SearchBar />
+          </Suspense>
         </div>
 
         {/* Right: Auth/User Nav */ }

@@ -1,0 +1,59 @@
+# Dependencies (exclude installs but keep lockfiles)
+node_modules
+**/node_modules
+.pnp
+.pnp.js
+bun.lockb
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+coverage/
+
+# Env and secrets (never ship these into the image)
+.env
+.env.*
+!.env.example
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs and temp
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.log
+tmp/
+temp/
+.tmp/
+.cache/
+
+# Editor / OS noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Git
+.git/
+.gitignore
+
+# Tests & stories (not needed in container runtime)
+**/*.test.*
+**/*.spec.*
+__tests__/
+__mocks__/
+storybook-static/
+.storybook/
+
+# Misc
+*.swp
+*.swo
+*.tsbuildinfo
+
+# Next.js-specific misc
+.vercel/
