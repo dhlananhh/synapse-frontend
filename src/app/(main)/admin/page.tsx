@@ -317,7 +317,7 @@ export default function AdminDashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle className='text-sm flex items-center justify-between'>
-            Platform snapshot - {new Date(summary.summaryDate).toLocaleDateString()}
+            Platform snapshot - {summary ? new Date(summary.summaryDate).toLocaleDateString() : ''}
             <span className='text-xs text-muted-foreground'>
               {summary
                 ? `${new Date(summary.summaryDate).toLocaleDateString()} • ${formatDistanceToNow(
@@ -436,8 +436,8 @@ export default function AdminDashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle className='text-sm flex items-center justify-between'>
-            System-wide community & content stats -{' '}
-            {new Date(systemStats.timestamp).toLocaleString()}
+            System-wide community & content stats
+            {systemStats ? ` - ${new Date(systemStats.timestamp).toLocaleString()}` : ''}
             <span className='text-xs text-muted-foreground'>
               {systemStats
                 ? `${new Date(systemStats.timestamp).toLocaleString()} • ${formatDistanceToNow(
@@ -668,7 +668,7 @@ export default function AdminDashboardPage() {
                     <Badge className='px-2 py-1 text-xs'>
                       Unbans: {systemStats.moderation.unbansIssued}
                     </Badge>
-                    {typeof systemStats.moderation.postsRemoved === 'number' && (
+                    {/* {typeof systemStats..postsRemoved === 'number' && (
                       <Badge className='px-2 py-1 text-xs'>
                         Posts removed: {systemStats.moderation.postsRemoved}
                       </Badge>
@@ -677,7 +677,7 @@ export default function AdminDashboardPage() {
                       <Badge className='px-2 py-1 text-xs'>
                         Comments removed: {systemStats.moderation.commentsRemoved}
                       </Badge>
-                    )}
+                    )} */}
                   </div>
                 </div>
               </div>

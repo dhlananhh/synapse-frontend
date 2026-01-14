@@ -75,7 +75,7 @@ export default function CommunityMembersTab({ communityId, limit = 20 }: Props) 
             const profiles = await userService.getSimpleProfiles(missing)
             const map: Record<string, SimpleProfile> = {}
             for (const prof of profiles ?? []) {
-              const key = (prof.id ?? (prof.userId as string) ?? prof.username) as string
+              const key = (prof.id ?? (prof.id as string) ?? prof.username) as string
               if (key) map[key] = prof
             }
             setProfilesMap((prev) => ({ ...prev, ...map }))
@@ -146,9 +146,9 @@ export default function CommunityMembersTab({ communityId, limit = 20 }: Props) 
   const roleIndicator = (role?: string) => {
     switch ((role || '').toUpperCase()) {
       case 'OWNER':
-        return <Crown className='w-4 h-4 text-yellow-500' title='Owner' />
+        return <Crown className='w-4 h-4 text-yellow-500' />
       case 'MODERATOR':
-        return <Shield className='w-4 h-4 text-indigo-500' title='Moderator' />
+        return <Shield className='w-4 h-4 text-indigo-500' />
       default:
         return null
     }

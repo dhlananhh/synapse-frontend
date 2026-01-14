@@ -122,3 +122,56 @@ export interface PostVersion {
   versionMedia: PostMedia[]
   moderationAction: ModerationAction | null
 }
+
+export interface PostSuggestion {
+  id: string
+  title: string
+}
+
+export interface SuggestionsResponse {
+  suggestions: PostSuggestion[]
+}
+
+/**
+ * Compact post shape returned by search endpoints (summary, not full PostDetails).
+ * Fields match the search API response shape — adjust optionality if needed.
+ */
+export interface SearchPost {
+  id: string
+  authorId: string
+  title: string
+  contentHtml: string
+  contentPreview?: string
+  links: {
+    url: string
+    title?: string
+    description?: string
+    thumbnail?: string | null
+  }[]
+  type: PostType
+  status: PostStatus
+  createdAt: string
+  score?: number
+  hotScore?: number
+  currentVersionId?: string
+  media?: PostMedia[]
+  taggedUserIds?: string[]
+  community?: PostCommunity
+  rank?: number
+}
+
+/**
+ * Search / listing response used by public/private search endpoints
+ */
+export interface SearchPagination {
+  currentPage: number
+  totalPages: number
+  totalRecords: number
+  hasNextPage: boolean
+  hasPreviousPage: boolean
+}
+
+export interface SearchPostsResponse {
+  posts: SearchPost[]
+  pagination: SearchPagination
+}
